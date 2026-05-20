@@ -17,31 +17,17 @@ export type TimeSlot =
   | 'overtime'
 
 export interface GameStats {
-  stress: number      // 0–100
-  energy: number      // 0–100
-  reputation: number  // 0–100
-  salary: number
-  bugCount: number
+  stress: number   // 0–100, thua khi = 100
+  energy: number   // 0–100, thua khi = 0
+  salary: number   // tổng lương tích lũy
 }
 
 export interface DaySummary {
   day: DayOfWeek
   survived: boolean
   statsSnapshot: GameStats
+  salaryEarned: number
   eventsHandled: number
-}
-
-export interface GameState {
-  profession: Profession | null
-  currentDay: DayOfWeek | null
-  currentTimeSlot: TimeSlot | null
-  stats: GameStats
-  activeBuffs: string[]
-  feedLog: FeedEntry[]
-  achievements: string[]
-  dayHistory: DaySummary[]
-  isGameOver: boolean
-  gameOverReason?: string
 }
 
 export interface FeedEntry {

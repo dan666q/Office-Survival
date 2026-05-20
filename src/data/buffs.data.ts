@@ -7,7 +7,7 @@ export interface Buff {
   cost: number
   professions?: Profession[]
   effects: {
-    stat: 'stress' | 'energy' | 'reputation' | 'salary' | 'bugCount'
+    stat: 'stress' | 'energy' | 'salary'
     value: number
     perSlot?: boolean
   }[]
@@ -16,7 +16,7 @@ export interface Buff {
 }
 
 export const BUFFS: Buff[] = [
-  // ===== BUFF CHUNG (Gen Z Office) =====
+  // ===== BUFF CHUNG =====
   {
     id: 'ca_phe_sua_da',
     name: 'Cà phê sữa đá',
@@ -63,7 +63,6 @@ export const BUFFS: Buff[] = [
     effects: [
       { stat: 'energy', value: +20 },
       { stat: 'stress', value: -8 },
-      { stat: 'reputation', value: +5 },
     ],
   },
   {
@@ -90,7 +89,7 @@ export const BUFFS: Buff[] = [
     professions: ['it'],
     effects: [
       { stat: 'energy', value: +25 },
-      { stat: 'bugCount', value: -3 },
+      { stat: 'stress', value: -10 },
     ],
   },
   {
@@ -116,8 +115,7 @@ export const BUFFS: Buff[] = [
     professions: ['it'],
     effects: [
       { stat: 'energy', value: +15 },
-      { stat: 'bugCount', value: -1 },
-      { stat: 'reputation', value: +8 },
+      { stat: 'stress', value: -5 },
     ],
   },
 
@@ -131,8 +129,8 @@ export const BUFFS: Buff[] = [
     duration: 'day',
     professions: ['seo_bds'],
     effects: [
-      { stat: 'reputation', value: +25 },
       { stat: 'salary', value: +2500000 },
+      { stat: 'stress', value: -5 },
     ],
   },
   {
@@ -144,8 +142,8 @@ export const BUFFS: Buff[] = [
     duration: 'day',
     professions: ['seo_bds'],
     effects: [
-      { stat: 'reputation', value: +15 },
       { stat: 'salary', value: +1500000 },
+      { stat: 'energy', value: +10 },
     ],
   },
   {
@@ -158,12 +156,12 @@ export const BUFFS: Buff[] = [
     professions: ['seo_bds'],
     effects: [
       { stat: 'salary', value: +3500000 },
-      { stat: 'reputation', value: +20 },
       { stat: 'stress', value: -10 },
+      { stat: 'energy', value: +5 },
     ],
   },
 
-  // ===== KẾ TOÁN (Đã bổ sung thêm) =====
+  // ===== KẾ TOÁN =====
   {
     id: 'excel_than_thanh',
     name: 'Excel Thần Thánh',
@@ -175,7 +173,6 @@ export const BUFFS: Buff[] = [
     effects: [
       { stat: 'energy', value: +20 },
       { stat: 'stress', value: -18 },
-      { stat: 'bugCount', value: -2 },
     ],
   },
   {
@@ -187,9 +184,9 @@ export const BUFFS: Buff[] = [
     duration: 'day',
     professions: ['ke_toan'],
     effects: [
-      { stat: 'reputation', value: +25 },
       { stat: 'stress', value: -20 },
       { stat: 'energy', value: +12 },
+      { stat: 'salary', value: +500000 },
     ],
   },
   {
@@ -202,7 +199,6 @@ export const BUFFS: Buff[] = [
     professions: ['ke_toan'],
     effects: [
       { stat: 'energy', value: +22 },
-      { stat: 'bugCount', value: -3 },
       { stat: 'stress', value: -15 },
     ],
   },
@@ -217,11 +213,14 @@ export const BUFFS: Buff[] = [
     effects: [
       { stat: 'energy', value: +15 },
       { stat: 'stress', value: -12 },
-      { stat: 'reputation', value: +10 },
     ],
   },
 ]
 
-export const getBuffById = (id: string) => BUFFS.find(b => b.id === id)
+export const getBuffById = (id: string) =>
+  BUFFS.find(b => b.id === id)
+
 export const getBuffsByProfession = (profession: Profession) =>
-  BUFFS.filter(b => !b.professions || b.professions.includes(profession))
+  BUFFS.filter(
+    b => !b.professions || b.professions.includes(profession)
+  )

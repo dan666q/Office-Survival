@@ -1,6 +1,6 @@
-import type { Profession, TimeSlot } from "./game.types"
+import type { Profession, TimeSlot } from './game.types'
 
-export type StatKey = 'stress' | 'energy' | 'reputation' | 'salary' | 'bugCount'
+export type StatKey = 'stress' | 'energy' | 'salary'
 export type Priority = 'low' | 'medium' | 'high' | 'critical'
 
 export interface StatEffect {

@@ -57,16 +57,12 @@ export default function VictoryScreen() {
         </div>
 
         {/* STATS */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <StatCard label="Stress" value={`${stats.stress}%`} />
 
           <StatCard label="Energy" value={`${stats.energy}%`} />
 
-          <StatCard label="Reputation" value={`${stats.reputation}`} />
-
           <StatCard label="Salary" value={`${formatMoney(stats.salary)}đ`} />
-
-          <StatCard label="Bug Count" value={`${stats.bugCount}`} />
         </div>
 
         {/* CONTENT */}
@@ -90,17 +86,6 @@ export default function VictoryScreen() {
               <SummaryRow label="Tuần làm việc" value="Hoàn thành" />
 
               <SummaryRow
-                label="Đánh giá HR"
-                value={
-                  stats.reputation >= 80
-                    ? "🌟 Nhân viên xuất sắc"
-                    : stats.reputation >= 60
-                    ? "👍 Đáng tin cậy"
-                    : "😅 Vẫn còn tồn tại"
-                }
-              />
-
-              <SummaryRow
                 label="Tình trạng tinh thần"
                 value={
                   stats.stress >= 80
@@ -108,6 +93,17 @@ export default function VictoryScreen() {
                     : stats.stress >= 50
                     ? "😵 Hơi mất nhân tính"
                     : "😌 Tạm thời ổn"
+                }
+              />
+
+              <SummaryRow
+                label="Năng lượng còn lại"
+                value={
+                  stats.energy <= 20
+                    ? "😴 Kiệt sức"
+                    : stats.energy <= 50
+                    ? "😵 Đuối dần"
+                    : "⚡ Vẫn chiến được"
                 }
               />
             </div>

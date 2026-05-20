@@ -127,11 +127,14 @@ export default function ProfessionScreen() {
                       color="bg-yellow-300"
                     />
 
-                    {/* Reputation */}
+                    {/* Salary */}
                     <StatBar
-                      label="Reputation"
-                      value={job.startingStats.reputation}
-                      color="bg-cyan-400"
+                      label="Salary"
+                      value={Math.min(
+                        Math.floor(job.startingStats.salary / 100000),
+                        100
+                      )}
+                      color="bg-emerald-400"
                     />
                   </div>
                 </div>
@@ -207,7 +210,7 @@ function StatBar({ label, value, color }: StatBarProps) {
       <div className="h-2 rounded-full bg-white/5 overflow-hidden">
         <div
           className={`h-full rounded-full ${color}`}
-          style={{ width: `${value}%` }}
+          style={{ width: `${Math.min(value, 100)}%` }}
         />
       </div>
     </div>

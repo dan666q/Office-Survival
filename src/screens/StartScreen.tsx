@@ -106,7 +106,7 @@ export default function StartScreen() {
               Bắt đầu tuần làm việc 💀
             </button>
 
-            <button
+            {/* <button
               className="
                 h-14
                 px-6
@@ -120,7 +120,10 @@ export default function StartScreen() {
               "
             >
               Thành tích
-            </button>
+            </button> */}
+            {/* <button onClick={() => goToScreen("profession")} className="...">
+              Chơi ngay 🎮
+            </button> */}
           </div>
 
           {/* Footer */}

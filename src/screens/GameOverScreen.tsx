@@ -67,16 +67,12 @@ export default function GameOverScreen() {
         </div>
 
         {/* STATS */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <StatCard label="Stress" value={`${stats.stress}%`} />
 
           <StatCard label="Energy" value={`${stats.energy}%`} />
 
-          <StatCard label="Reputation" value={`${stats.reputation}`} />
-
           <StatCard label="Salary" value={`${formatMoney(stats.salary)}đ`} />
-
-          <StatCard label="Bug Count" value={`${stats.bugCount}`} />
         </div>
 
         {/* SUMMARY */}
@@ -92,7 +88,7 @@ export default function GameOverScreen() {
                   profession === "it"
                     ? "💻 IT Dev"
                     : profession === "seo_bds"
-                    ? "🏠 Sales BĐS"
+                    ? "🏠 SEO BĐS"
                     : "📊 Kế Toán"
                 }
               />
@@ -112,13 +108,11 @@ export default function GameOverScreen() {
               />
 
               <SummaryRow
-                label="Đánh giá HR"
+                label="Khả năng quay lại công ty"
                 value={
-                  stats.reputation >= 70
-                    ? "Nhân viên tận tụy"
-                    : stats.reputation >= 40
-                    ? "Cần cải thiện thái độ"
-                    : "Khó hòa nhập tập thể"
+                  stats.energy <= 10
+                    ? "Không thể hồi phục"
+                    : "Cần nghỉ phép dài hạn"
                 }
               />
             </div>

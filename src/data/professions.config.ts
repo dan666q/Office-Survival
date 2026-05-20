@@ -1,5 +1,4 @@
-import type { Profession } from '../types/game.types'
-import type { GameStats } from '../types/game.types'
+import type { Profession, GameStats } from '../types/game.types'
 
 export interface ProfessionConfig {
   id: Profession
@@ -9,6 +8,7 @@ export interface ProfessionConfig {
   difficulty: 'Dễ' | 'Trung bình' | 'Khó'
   enemy: string
   startingStats: GameStats
+  dailySalary: number
   uniqueBuffIds: string[]
 }
 
@@ -23,11 +23,10 @@ export const PROFESSIONS_CONFIG: ProfessionConfig[] = [
     startingStats: {
       stress: 20,
       energy: 100,
-      reputation: 60,
-      salary: 0,
-      bugCount: 0,
+      salary: 100000, // 100k trong túi ngày đầu
     },
-    uniqueBuffIds: ['stackoverflow', 'dark_mode', 'dual_monitor'],
+    dailySalary: 682000, // 15tr/tháng ÷ 22 ngày
+    uniqueBuffIds: ['stackoverflow', 'dark_mode', 'dual_monitor', 'chatgpt_pro'],
   },
   {
     id: 'seo_bds',
@@ -39,11 +38,10 @@ export const PROFESSIONS_CONFIG: ProfessionConfig[] = [
     startingStats: {
       stress: 30,
       energy: 90,
-      reputation: 50,
-      salary: 0,
-      bugCount: 0,
+      salary: 100000,
     },
-    uniqueBuffIds: ['chot_deal', 'crm_pro', 'sales_script'],
+    dailySalary: 364000, // 8tr/tháng ÷ 22 ngày
+    uniqueBuffIds: ['chot_deal', 'crm_pro', 'sales_script', 'hot_listing'],
   },
   {
     id: 'ke_toan',
@@ -55,10 +53,9 @@ export const PROFESSIONS_CONFIG: ProfessionConfig[] = [
     startingStats: {
       stress: 40,
       energy: 85,
-      reputation: 70,
-      salary: 0,
-      bugCount: 0,
+      salary: 100000,
     },
-    uniqueBuffIds: ['excel_than_thanh', 'may_tinh_bo_tui', 'ca_phe_den'],
+    dailySalary: 455000, // 10tr/tháng ÷ 22 ngày
+    uniqueBuffIds: ['excel_than_thanh', 'may_tinh_bo_tui', 'ca_phe_den', 'ke_toan_truong_review'],
   },
 ]

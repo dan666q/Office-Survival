@@ -16,7 +16,7 @@ const REST_OPTIONS = [
     id: "beer",
     title: "🍻 Uống bia với đồng nghiệp",
     description: "Vui lúc đó, mệt hôm sau",
-    effects: ["+15 Energy", "+10 Stress", "+ Reputation"],
+    effects: ["+15 Energy", "+10 Stress"],
     color: "from-amber-500/20 to-orange-500/10",
     border: "border-amber-500/40",
   },
@@ -29,6 +29,15 @@ const REST_OPTIONS = [
     border: "border-red-500/40",
   },
 ] as const;
+
+const DAY_LABELS: Record<string, string> = {
+  monday: "Thứ Hai",
+  tuesday: "Thứ Ba",
+  wednesday: "Thứ Tư",
+  thursday: "Thứ Năm",
+  friday: "Thứ Sáu",
+  saturday: "Thứ Bảy",
+};
 
 const formatMoney = (value: number) => {
   return new Intl.NumberFormat("vi-VN").format(value);
@@ -55,7 +64,10 @@ export default function DailySummaryScreen() {
               </p>
 
               <h1 className="text-3xl md:text-5xl font-black">
-                Kết thúc <span className="text-cyan-300">{currentDay}</span>
+                Kết thúc{" "}
+                <span className="text-cyan-300">
+                  {DAY_LABELS[currentDay ?? ""] ?? currentDay}
+                </span>
               </h1>
 
               <p className="text-white/60 mt-3 max-w-2xl">
@@ -81,7 +93,7 @@ export default function DailySummaryScreen() {
         </div>
 
         {/* STATS */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <StatCard
             label="Stress"
             value={`${stats.stress}%`}
@@ -95,21 +107,9 @@ export default function DailySummaryScreen() {
           />
 
           <StatCard
-            label="Reputation"
-            value={`${stats.reputation}`}
-            glow="from-cyan-500/30 to-transparent"
-          />
-
-          <StatCard
             label="Salary"
             value={`${formatMoney(stats.salary)}đ`}
             glow="from-yellow-500/30 to-transparent"
-          />
-
-          <StatCard
-            label="Bug Count"
-            value={`${stats.bugCount}`}
-            glow="from-orange-500/30 to-transparent"
           />
         </div>
 
@@ -127,6 +127,11 @@ export default function DailySummaryScreen() {
               <SummaryRow
                 label="Events xử lý"
                 value={`${latestDay?.eventsHandled ?? 0}`}
+              />
+
+              <SummaryRow
+                label="Lương hôm nay"
+                value={`${formatMoney(latestDay?.salaryEarned ?? 0)}đ`}
               />
 
               <SummaryRow label="Tỉ lệ sống sót" value="100%" />
