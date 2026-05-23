@@ -132,7 +132,7 @@ export default function StartScreen() {
 
           {/* Footer */}
           <div className="mt-8 flex items-center justify-between text-xs text-zinc-500">
-            <p>Phiên bản 0.1 - nào pro hơn thì có update </p>
+            <p>Phiên bản 1.0 - cảm ơn Antigravity</p>
             <p>by @dan666q</p>
           </div>
         </motion.div>
