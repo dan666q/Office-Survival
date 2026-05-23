@@ -2,19 +2,20 @@ import type { DayOfWeek, TimeSlot } from './game.types'
 
 export interface TimeSlotConfig {
   slot: TimeSlot
-  label: string           // "08:00 – 09:00"
-  displayName: string     // "Vào ca"
-  eventCount: number | [number, number]  // số cố định hoặc [min, max]
+  label: string
+  displayName: string
+  eventCount: number | [number, number]
   energyDrain: number
   canSkip?: boolean
 }
 
 export interface DayConfig {
   day: DayOfWeek
-  title: string           // "Thứ Hai Kinh Hoàng"
+  title: string
   description: string
-  eventTimer: number      // giây mỗi event
-  concurrent: boolean     // có 2 event cùng lúc không
+  eventTimer: number
+  newEventInterval: number
+  concurrent: boolean
   timeSlots: TimeSlotConfig[]
   statModifiers: {
     stressRate: number

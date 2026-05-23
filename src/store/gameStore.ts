@@ -2,118 +2,33 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Profession, DayOfWeek, TimeSlot, GameStats, FeedEntry, DaySummary } from '../types/game.types'
 import type { GameEvent } from '../types/event.types'
-import { IT_EVENTS, SEO_EVENTS, KETOAN_EVENTS } from '../data'
 import { DAYS_CONFIG } from '../data'
 import { BUFFS } from '../data/buffs.data'
-import { PROFESSIONS_CONFIG } from '../data/professions.config'
 import { checkNewAchievements, ACHIEVEMENTS } from '../utils/achievementChecker'
-
-const DAY_ORDER: DayOfWeek[] = [
-  'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'
-]
-
-const TIMESLOT_ORDER: TimeSlot[] = [
-  'morning_start', 'morning', 'lunch', 'afternoon', 'end_of_day', 'overtime'
-]
-
-const DEFAULT_STATS: GameStats = {
-  stress: 0,
-  energy: 100,
-  salary: 100000,
-}
-
-const LUNCH_BUFF_LIMIT = 2
-
-// ==================== TIMESTAMP ====================
-
-const SLOT_START_MINUTES: Record<string, number> = {
-  morning_start: 8 * 60,
-  morning: 9 * 60,
-  lunch: 12 * 60,
-  afternoon: 13 * 60,
-  end_of_day: 17 * 60,
-  overtime: 19 * 60,
-}
-
-const SLOT_END_MINUTES: Record<string, number> = {
-  morning_start: 9 * 60,
-  morning: 12 * 60,
-  lunch: 13 * 60,
-  afternoon: 17 * 60,
-  end_of_day: 19 * 60,
-  overtime: 22 * 60,
-}
-
-let currentMinutes = 8 * 60
-
-function initSlotTime(slot: string) {
-  currentMinutes = SLOT_START_MINUTES[slot] ?? 8 * 60
-}
-
-function getNextTime(slot: string | null): string {
-  const max = SLOT_END_MINUTES[slot ?? 'morning_start'] ?? 9 * 60
-  currentMinutes += Math.floor(Math.random() * 10) + 5
-  if (currentMinutes > max) currentMinutes = max
-  const h = Math.floor(currentMinutes / 60)
-  const m = currentMinutes % 60
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
-}
-
-// ==================== HELPERS ====================
-
-function getEventsForProfession(profession: Profession): GameEvent[] {
-  switch (profession) {
-    case 'it': return IT_EVENTS
-    case 'seo_bds': return SEO_EVENTS
-    case 'ke_toan': return KETOAN_EVENTS
-    default: return []
-  }
-}
-
-function getStartingStats(profession: Profession): GameStats {
-  const config = PROFESSIONS_CONFIG.find(p => p.id === profession)
-  return config?.startingStats ?? DEFAULT_STATS
-}
-
-function randomEvents(
-  allEvents: GameEvent[],
-  timeSlot: TimeSlot,
-  count: number | [number, number]
-): GameEvent[] {
-  const eligible = allEvents.filter(e =>
-    !e.timeSlots || e.timeSlots.includes(timeSlot)
-  )
-  const n = Array.isArray(count)
-    ? Math.floor(Math.random() * (count[1] - count[0] + 1)) + count[0]
-    : count
-  const shuffled = [...eligible].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, Math.min(n, shuffled.length))
-}
-
-function getNextDay(current: DayOfWeek | null): DayOfWeek | null {
-  if (!current) return 'monday'
-  const idx = DAY_ORDER.indexOf(current)
-  return idx < DAY_ORDER.length - 1 ? DAY_ORDER[idx + 1] : null
-}
-
-function getNextTimeSlot(current: TimeSlot | null): TimeSlot | null {
-  if (!current) return 'morning_start'
-  const idx = TIMESLOT_ORDER.indexOf(current)
-  return idx < TIMESLOT_ORDER.length - 1 ? TIMESLOT_ORDER[idx + 1] : null
-}
-
-function generateId(): string {
-  return Math.random().toString(36).slice(2, 9)
-}
-
-function clampStat(value: number, min = 0, max = 100): number {
-  return Math.max(min, Math.min(max, value))
-}
+import { soundManager } from '../utils/soundManager'
+import {
+  DEFAULT_STATS,
+  LUNCH_BUFF_LIMIT,
+  MAX_ACTIVE_EVENTS,
+  TIMEOUT_STRESS,
+  TIMEOUT_ENERGY,
+  TIMEOUT_SALARY,
+  initSlotTime,
+  getNextTime,
+  getEventsForProfession,
+  getStartingStats,
+  randomEvents,
+  getNextDay,
+  getNextTimeSlot,
+  generateId,
+  clampStat,
+  PROFESSIONS_CONFIG
+} from './gameHelpers'
 
 // ==================== STORE INTERFACE ====================
 
 interface GameStore {
-  screen: 'start' | 'profession' | 'game' | 'daily_summary' | 'game_over' | 'victory'
+  screen: 'start' | 'profession' | 'game' | 'daily_summary' | 'day_transition' | 'game_over' | 'victory'
   profession: Profession | null
   currentDay: DayOfWeek | null
   currentTimeSlot: TimeSlot | null
@@ -129,6 +44,10 @@ interface GameStore {
   slotEventsRemaining: number
   lunchBuffsBought: number
   dailySalaryEarned: number
+  usedEventIds: string[]
+  consecutiveTimeouts: number
+  dailyEventsHandled: number
+  actionsChosen: string[]
 
   goToScreen: (screen: GameStore['screen']) => void
   startGame: (profession: Profession) => void
@@ -138,8 +57,11 @@ interface GameStore {
   nextEvent: () => void
   nextTimeSlot: () => void
   nextDay: (restChoice: 'sleep' | 'beer' | 'overtime') => void
+  handleTimeout: (eventId: string) => void
+  pushNextActiveEvent: () => void
+  skipOvertime: () => void
 
-  applyStatEffects: (effects: { stat: keyof GameStats; value: number }[]) => void
+  applyStatEffects: (effects: { stat: keyof GameStats; value: number }[], stressRate?: number) => void
   addFeedEntry: (message: string, type?: FeedEntry['type']) => void
   buyBuff: (buffId: string) => void
 }
@@ -165,6 +87,12 @@ export const useGameStore = create<GameStore>()(
       slotEventsRemaining: 0,
       lunchBuffsBought: 0,
       dailySalaryEarned: 0,
+      usedEventIds: [],
+      consecutiveTimeouts: 0,
+      dailyEventsHandled: 0,
+      actionsChosen: [],
+
+      // ==================== NAVIGATION ====================
 
       goToScreen: (screen) => set({ screen }),
 
@@ -175,7 +103,7 @@ export const useGameStore = create<GameStore>()(
         const dayConfig = DAYS_CONFIG.find(d => d.day === firstDay)!
         const slotConfig = dayConfig.timeSlots.find(s => s.slot === firstSlot)!
         const allEvents = getEventsForProfession(profession)
-        const queue = randomEvents(allEvents, firstSlot, slotConfig.eventCount)
+        const queue = randomEvents(allEvents, firstSlot, slotConfig.eventCount, [])
 
         initSlotTime(firstSlot)
 
@@ -201,6 +129,10 @@ export const useGameStore = create<GameStore>()(
           slotEventsRemaining: queue.length,
           lunchBuffsBought: 0,
           dailySalaryEarned: 0,
+          usedEventIds: queue.map(e => e.id),
+          consecutiveTimeouts: 0,
+          dailyEventsHandled: 0,
+          actionsChosen: [],
         })
       },
 
@@ -223,26 +155,100 @@ export const useGameStore = create<GameStore>()(
           slotEventsRemaining: 0,
           lunchBuffsBought: 0,
           dailySalaryEarned: 0,
+          usedEventIds: [],
+          consecutiveTimeouts: 0,
+          dailyEventsHandled: 0,
+          actionsChosen: [],
         })
       },
 
+      // ==================== GAMEPLAY ====================
+
+      pushNextActiveEvent: () => {
+        const { eventQueue, activeEvents } = get()
+        if (eventQueue.length === 0) return
+        if (activeEvents.length >= MAX_ACTIVE_EVENTS) return
+
+        const [next, ...rest] = eventQueue
+        set({
+          activeEvents: [...activeEvents, next],
+          eventQueue: rest,
+        })
+      },
+
+      handleTimeout: (eventId) => {
+        const { activeEvents, currentDay, consecutiveTimeouts } = get()
+        const event = activeEvents.find(e => e.id === eventId)
+        if (!event) return
+
+        const dayConfig = DAYS_CONFIG.find(d => d.day === currentDay)
+        const stressRate = dayConfig?.statModifiers.stressRate ?? 1
+
+        // Penalty nặng hơn nếu timeout liên tiếp
+        const penaltyMultiplier = consecutiveTimeouts >= 1 ? 1.5 : 1
+
+        get().applyStatEffects([
+          { stat: 'stress', value: Math.round(TIMEOUT_STRESS * penaltyMultiplier) },
+          { stat: 'energy', value: Math.round(TIMEOUT_ENERGY * penaltyMultiplier) },
+          { stat: 'salary', value: Math.round(TIMEOUT_SALARY * penaltyMultiplier) },
+        ], stressRate)
+
+        soundManager.playDanger();
+
+        get().addFeedEntry(
+          consecutiveTimeouts >= 1
+            ? 'Lại đứng hình nữa rồi! PM escalate lên director. Tình hình căng lắm 💀'
+            : 'Bạn đứng hình quá lâu. PM escalate lên management rồi 💀',
+          'danger'
+        )
+
+        // Chain event nếu timeout 2 lần liên tiếp
+        if (consecutiveTimeouts >= 1) {
+          const allEvents = getEventsForProfession(get().profession!)
+          const escalateEvent = allEvents.find(e => e.id === 'it_boss_message' || e.id === 'seo_boss_pressure' || e.id === 'kt_q4_report')
+          if (escalateEvent) {
+            set({ eventQueue: [escalateEvent, ...get().eventQueue] })
+          }
+        }
+
+        const remaining = activeEvents.filter(e => e.id !== eventId)
+        set({
+          activeEvents: remaining,
+          consecutiveTimeouts: consecutiveTimeouts + 1,
+          dailyEventsHandled: get().dailyEventsHandled + 1,
+        })
+
+        if (remaining.length === 0) get().nextEvent()
+      },
+
       selectAction: (eventId, actionId) => {
-        const { activeEvents, profession, achievements, stats, dayHistory, currentDay } = get()
+        const { activeEvents, profession, achievements, stats, dayHistory, currentDay, actionsChosen } = get()
 
         const event = activeEvents.find(e => e.id === eventId)
         if (!event) return
         const action = event.actions.find(a => a.id === actionId)
         if (!action) return
 
-        get().applyStatEffects(action.effects)
+        const dayConfig = DAYS_CONFIG.find(d => d.day === currentDay)
+        const stressRate = dayConfig?.statModifiers.stressRate ?? 1
+
+        get().applyStatEffects(action.effects, stressRate)
+        soundManager.playSuccess();
         get().addFeedEntry(action.feedMessage, 'info')
 
-        const remaining = activeEvents.filter(e => e.id !== eventId)
-        set({ activeEvents: remaining })
+        const nextActionsChosen = [...actionsChosen, actionId]
+
+        // Reset consecutive timeouts khi chọn action
+        set({
+          activeEvents: activeEvents.filter(e => e.id !== eventId),
+          consecutiveTimeouts: 0,
+          dailyEventsHandled: get().dailyEventsHandled + 1,
+          actionsChosen: nextActionsChosen,
+        })
 
         // Check achievements
         const newUnlocked = checkNewAchievements(
-          { stats, dayHistory, currentDay, actionsChosen: [actionId] },
+          { stats, dayHistory, currentDay, actionsChosen: nextActionsChosen },
           achievements
         )
         if (newUnlocked.length > 0) {
@@ -266,13 +272,13 @@ export const useGameStore = create<GameStore>()(
           if (chained.length > 0) {
             setTimeout(() => {
               set({ eventQueue: [...chained, ...get().eventQueue] })
-              get().nextEvent()
+              if (get().activeEvents.length === 0) get().nextEvent()
             }, action.chainEvents[0].delay ?? 1500)
             return
           }
         }
 
-        if (remaining.length === 0) get().nextEvent()
+        if (get().activeEvents.length === 0) get().nextEvent()
       },
 
       nextEvent: () => {
@@ -290,27 +296,24 @@ export const useGameStore = create<GameStore>()(
       },
 
       nextTimeSlot: () => {
-        const { currentDay, currentTimeSlot, profession, stats, activeBuffs } = get()
+        const { currentDay, currentTimeSlot, profession, stats, activeBuffs, usedEventIds } = get()
         if (!currentDay || !currentTimeSlot || !profession) return
 
         const nextSlot = getNextTimeSlot(currentTimeSlot)
 
-        // Hết ngày → daily summary + cộng lương ngày
-        if (!nextSlot || currentTimeSlot === 'end_of_day') {
+        // Hết ngày → daily summary + cộng lương
+        if (!nextSlot || currentTimeSlot === 'overtime') {
           const profConfig = PROFESSIONS_CONFIG.find(p => p.id === profession)
           const dailySalary = profConfig?.dailySalary ?? 0
           const salaryEarned = get().dailySalaryEarned + dailySalary
-          const newStats = {
-            ...stats,
-            salary: stats.salary + dailySalary,
-          }
+          const newStats = { ...stats, salary: stats.salary + dailySalary }
 
           const summary: DaySummary = {
             day: currentDay,
             survived: true,
             statsSnapshot: { ...newStats },
             salaryEarned,
-            eventsHandled: 0,
+            eventsHandled: get().dailyEventsHandled,
           }
 
           get().addFeedEntry(
@@ -323,6 +326,7 @@ export const useGameStore = create<GameStore>()(
             stats: newStats,
             dayHistory: [...get().dayHistory, summary],
             dailySalaryEarned: salaryEarned,
+            dailyEventsHandled: 0,
           })
           return
         }
@@ -345,9 +349,15 @@ export const useGameStore = create<GameStore>()(
         const dayConfig = DAYS_CONFIG.find(d => d.day === currentDay)!
         const slotConfig = dayConfig.timeSlots.find(s => s.slot === nextSlot)!
         const allEvents = getEventsForProfession(profession)
-        const newQueue = randomEvents(allEvents, nextSlot, slotConfig.eventCount)
 
-        let newStats = { ...stats, energy: clampStat(stats.energy - slotConfig.energyDrain) }
+        // Dùng usedEventIds để tránh lặp event trong ngày
+        const newQueue = randomEvents(allEvents, nextSlot, slotConfig.eventCount, usedEventIds)
+        const newUsedIds = [...usedEventIds, ...newQueue.map(e => e.id)]
+
+        let newStats = {
+          ...stats,
+          energy: clampStat(stats.energy - Math.round(slotConfig.energyDrain * dayConfig.statModifiers.energyDrainRate)),
+        }
 
         buffEffects.forEach(({ stat, value }) => {
           if (stat === 'salary') {
@@ -385,6 +395,33 @@ export const useGameStore = create<GameStore>()(
           activeEvents: [newQueue[0]].filter(Boolean),
           slotEventsRemaining: newQueue.length,
           lunchBuffsBought,
+          usedEventIds: newUsedIds,
+          consecutiveTimeouts: 0,
+        })
+      },
+
+      skipOvertime: () => {
+        // Người chơi chọn về nhà thay vì OT
+        const { currentDay, stats, profession } = get()
+        if (!currentDay || !profession) return
+        const profConfig = PROFESSIONS_CONFIG.find(p => p.id === profession)
+        const dailySalary = profConfig?.dailySalary ?? 0
+        const salaryEarned = get().dailySalaryEarned + dailySalary
+        const newStats = { ...stats, salary: stats.salary + dailySalary }
+        const summary: DaySummary = {
+          day: currentDay,
+          survived: true,
+          statsSnapshot: { ...newStats },
+          salaryEarned,
+          eventsHandled: get().dailyEventsHandled,
+        }
+        get().addFeedEntry(`Bạn quyết định về nhà. Người khôn ngoan. 🏠`, 'success')
+        set({
+          screen: 'daily_summary',
+          stats: newStats,
+          dayHistory: [...get().dayHistory, summary],
+          dailySalaryEarned: salaryEarned,
+          dailyEventsHandled: 0,
         })
       },
 
@@ -393,16 +430,27 @@ export const useGameStore = create<GameStore>()(
         if (!currentDay || !profession) return
 
         const restEffects = {
-          sleep:    { energy: +30, stress: -15 },
-          beer:     { energy: +15, stress: +10 },
-          overtime: { energy: +5,  stress: +15 },
+          sleep:    { energy: +40, stress: -20, salary: -300000 },
+          beer:     { energy: +20, stress: +5,  salary: +200000 },
+          overtime: { energy: +10, stress: +20, salary: +800000 },
         }
+
         const effect = restEffects[restChoice]
+
+        // Overtime penalty nếu stress cao
+        const extraStress = restChoice === 'overtime' && stats.stress > 70 ? 10 : 0
+
         const newStats: GameStats = {
           ...stats,
           energy: clampStat(stats.energy + effect.energy),
-          stress: clampStat(stats.stress + effect.stress),
-          salary: stats.salary + (restChoice === 'overtime' ? 500000 : 0),
+          stress: clampStat(stats.stress + effect.stress + extraStress),
+          salary: Math.max(0, stats.salary + effect.salary),
+        }
+
+        // 30% chance drama nếu uống bia
+        if (restChoice === 'beer' && Math.random() < 0.3) {
+          get().addFeedEntry('Tối qua uống hơi nhiều. Sáng nay đồng nghiệp nhìn bạn với ánh mắt lạ 👀', 'warning')
+          newStats.stress = clampStat(newStats.stress + 10)
         }
 
         const nextDay = getNextDay(currentDay)
@@ -421,13 +469,13 @@ export const useGameStore = create<GameStore>()(
         const dayConfig = DAYS_CONFIG.find(d => d.day === nextDay)!
         const slotConfig = dayConfig.timeSlots.find(s => s.slot === firstSlot)!
         const allEvents = getEventsForProfession(profession)
-        const queue = randomEvents(allEvents, firstSlot, slotConfig.eventCount)
+        const queue = randomEvents(allEvents, firstSlot, slotConfig.eventCount, [])
 
         initSlotTime(firstSlot)
         get().addFeedEntry(`${dayConfig.title} bắt đầu. Tiếp tục thôi. 💪`, 'info')
 
         set({
-          screen: 'game',
+          screen: 'day_transition',
           currentDay: nextDay,
           currentTimeSlot: firstSlot,
           stats: newStats,
@@ -437,75 +485,65 @@ export const useGameStore = create<GameStore>()(
           slotEventsRemaining: queue.length,
           lunchBuffsBought: 0,
           dailySalaryEarned: 0,
+          usedEventIds: queue.map(e => e.id),
+          consecutiveTimeouts: 0,
+          dailyEventsHandled: 0,
         })
+
+        // #7: Check achievements sau khi sang ngày mới
+        const newAchievements = checkNewAchievements(
+          { stats: newStats, dayHistory: [...get().dayHistory], currentDay: nextDay, actionsChosen: get().actionsChosen },
+          get().achievements
+        )
+        if (newAchievements.length > 0) {
+          set({ achievements: [...get().achievements, ...newAchievements] })
+          newAchievements.forEach(id => {
+            const found = ACHIEVEMENTS.find(a => a.id === id)
+            if (found) get().addFeedEntry(`🏅 Achievement mới: ${found.emoji} ${found.label}`, 'success')
+          })
+        }
       },
 
-      applyStatEffects: (effects) => {
+      // ==================== STATS ====================
+
+      applyStatEffects: (effects, stressRate = 1) => {
         const { stats } = get()
-      
         const newStats = { ...stats }
-      
+
         effects.forEach(({ stat, value }) => {
           if (stat === 'salary') {
             newStats.salary = Math.max(0, newStats.salary + value)
+          } else if (stat === 'stress') {
+            // Nhân stress với stressRate của ngày
+            newStats.stress = clampStat(newStats.stress + Math.round(value * stressRate))
           } else {
             newStats[stat] = clampStat(newStats[stat] + value)
           }
         })
-      
-        // =========================
-        // GAME OVER: HẾT TIỀN
-        // =========================
-        const salaryEffect = effects.find(e => e.stat === 'salary')
-      
-        if (
-          stats.salary <= 0 &&
-          salaryEffect &&
-          salaryEffect.value < 0
-        ) {
-          set({
-            stats: newStats,
-            screen: 'game_over',
-            isGameOver: true,
-            gameOverReason:
-              'Bạn tiếp tục làm thất thoát tiền công ty khi tài khoản đã cạn sạch. HR mời bạn lên phòng họp lúc 8:00 sáng. 💸',
-          })
-      
-          return
-        }
-      
-        // =========================
-        // GAME OVER: STRESS
-        // =========================
+
         if (newStats.stress >= 100) {
           set({
             stats: newStats,
             screen: 'game_over',
             isGameOver: true,
-            gameOverReason:
-              'Stress đạt 100%. Bạn burnout hoàn toàn và nộp đơn xin nghỉ việc. 💀',
+            gameOverReason: 'Stress đạt 100%. Bạn burnout hoàn toàn và nộp đơn xin nghỉ việc. 💀',
           })
-      
           return
         }
-      
-        // =========================
-        // GAME OVER: ENERGY
-        // =========================
         if (newStats.energy <= 0) {
           set({
             stats: newStats,
             screen: 'game_over',
             isGameOver: true,
-            gameOverReason:
-              'Năng lượng cạn kiệt. Bạn ngủ gục tại bàn làm việc. 😴',
+            gameOverReason: 'Năng lượng cạn kiệt. Bạn ngủ gục tại bàn làm việc. 😴',
           })
-      
           return
         }
-      
+
         set({ stats: newStats })
       },
+
+      // ==================== FEED ====================
 
       addFeedEntry: (message, type = 'info') => {
         const { feedLog, currentTimeSlot } = get()
@@ -517,6 +555,8 @@ export const useGameStore = create<GameStore>()(
         }
         set({ feedLog: [...feedLog, entry].slice(-50) })
       },
+
+      // ==================== BUFFS ====================
 
       buyBuff: (buffId) => {
         const { stats, activeBuffs, currentTimeSlot, lunchBuffsBought } = get()
@@ -551,6 +591,8 @@ export const useGameStore = create<GameStore>()(
           lunchBuffsBought: lunchBuffsBought + 1,
         })
 
+        soundManager.playSuccess();
+
         get().addFeedEntry(`Đã mua ${buff.icon} ${buff.name}!`, 'success')
       },
     }),
@@ -570,6 +612,10 @@ export const useGameStore = create<GameStore>()(
         screen: state.screen,
         lunchBuffsBought: state.lunchBuffsBought,
         dailySalaryEarned: state.dailySalaryEarned,
+        usedEventIds: state.usedEventIds,
+        consecutiveTimeouts: state.consecutiveTimeouts,
+        dailyEventsHandled: state.dailyEventsHandled,
+        actionsChosen: state.actionsChosen,
       }),
     }
   )
