@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useGameStore } from "../store/gameStore";
+import { soundManager } from "../utils/soundManager";
 
 export default function StartScreen() {
   const goToScreen = useGameStore((s) => s.goToScreen);
@@ -88,7 +89,10 @@ export default function StartScreen() {
           {/* Buttons */}
           <div className="mt-10 flex flex-col md:flex-row gap-4">
             <button
-              onClick={() => goToScreen("profession")}
+              onClick={() => {
+                soundManager.playClick();
+                goToScreen("profession");
+              }}
               className="
                 flex-1
                 h-14

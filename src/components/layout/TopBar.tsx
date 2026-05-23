@@ -1,3 +1,5 @@
+import { useState, useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useGameStore } from "../../store/gameStore";
 import { getMood, formatSalary } from "../../utils/statCalculator";
 
@@ -10,12 +12,59 @@ const DAY_LABELS: Record<string, string> = {
   saturday: "Thứ Bảy",
 };
 
+interface StatIndicator {
+  id: string;
+  stat: "stress" | "energy" | "salary";
+  value: number;
+}
+
 export default function TopBar() {
   const { stats, currentDay } = useGameStore();
   const mood = getMood(stats);
 
   const stressDanger = stats.stress >= 80;
   const energyDanger = stats.energy <= 20;
+
+  const [indicators, setIndicators] = useState<StatIndicator[]>([]);
+  const prevStatsRef = useRef(stats);
+
+  useEffect(() => {
+    const prev = prevStatsRef.current;
+    const newInds: StatIndicator[] = [];
+
+    if (stats.stress !== prev.stress) {
+      newInds.push({
+        id: Math.random().toString(),
+        stat: "stress",
+        value: stats.stress - prev.stress,
+      });
+    }
+    if (stats.energy !== prev.energy) {
+      newInds.push({
+        id: Math.random().toString(),
+        stat: "energy",
+        value: stats.energy - prev.energy,
+      });
+    }
+    if (stats.salary !== prev.salary) {
+      newInds.push({
+        id: Math.random().toString(),
+        stat: "salary",
+        value: stats.salary - prev.salary,
+      });
+    }
+
+    if (newInds.length > 0) {
+      setIndicators((prevList) => [...prevList, ...newInds]);
+      newInds.forEach((ind) => {
+        setTimeout(() => {
+          setIndicators((prevList) => prevList.filter((x) => x.id !== ind.id));
+        }, 1200);
+      });
+    }
+
+    prevStatsRef.current = stats;
+  }, [stats]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-900/95 backdrop-blur">
@@ -40,7 +89,7 @@ export default function TopBar() {
         {/* Row 2 — stats */}
         <div className="flex items-center gap-3 flex-wrap">
           {/* Stress */}
-          <div className="flex items-center gap-1.5 flex-1 min-w-[120px]">
+          <div className="flex items-center gap-1.5 flex-1 min-w-[120px] relative">
             <span className="text-[10px] text-zinc-500 uppercase tracking-wide whitespace-nowrap">
               Stress
             </span>
@@ -59,10 +108,30 @@ export default function TopBar() {
             >
               {stats.stress}%
             </span>
+
+            {/* Floating Indicators */}
+            <AnimatePresence>
+              {indicators
+                .filter((ind) => ind.stat === "stress")
+                .map((ind) => (
+                  <motion.span
+                    key={ind.id}
+                    initial={{ opacity: 0, y: 5, scale: 0.8 }}
+                    animate={{ opacity: 1, y: -22, scale: 1.15 }}
+                    exit={{ opacity: 0, y: -35 }}
+                    transition={{ duration: 0.9, ease: "easeOut" }}
+                    className={`absolute right-8 text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] z-30 pointer-events-none ${
+                      ind.value > 0 ? "text-red-400" : "text-emerald-400"
+                    }`}
+                  >
+                    {ind.value > 0 ? `+${ind.value}%` : `${ind.value}%`}
+                  </motion.span>
+                ))}
+            </AnimatePresence>
           </div>
 
           {/* Energy */}
-          <div className="flex items-center gap-1.5 flex-1 min-w-[120px]">
+          <div className="flex items-center gap-1.5 flex-1 min-w-[120px] relative">
             <span className="text-[10px] text-zinc-500 uppercase tracking-wide whitespace-nowrap">
               Energy
             </span>
@@ -81,19 +150,59 @@ export default function TopBar() {
             >
               {stats.energy}%
             </span>
+
+            {/* Floating Indicators */}
+            <AnimatePresence>
+              {indicators
+                .filter((ind) => ind.stat === "energy")
+                .map((ind) => (
+                  <motion.span
+                    key={ind.id}
+                    initial={{ opacity: 0, y: 5, scale: 0.8 }}
+                    animate={{ opacity: 1, y: -22, scale: 1.15 }}
+                    exit={{ opacity: 0, y: -35 }}
+                    transition={{ duration: 0.9, ease: "easeOut" }}
+                    className={`absolute right-8 text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] z-30 pointer-events-none ${
+                      ind.value > 0 ? "text-emerald-400" : "text-red-400"
+                    }`}
+                  >
+                    {ind.value > 0 ? `+${ind.value}%` : `${ind.value}%`}
+                  </motion.span>
+                ))}
+            </AnimatePresence>
           </div>
 
           {/* Divider */}
           <div className="hidden sm:block w-px h-4 bg-zinc-700" />
 
           {/* Salary */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 relative">
             <span className="text-[10px] text-zinc-500 uppercase tracking-wide">
               Lương
             </span>
             <span className="text-sm font-bold text-yellow-300">
               {formatSalary(stats.salary)}
             </span>
+
+            {/* Floating Indicators */}
+            <AnimatePresence>
+              {indicators
+                .filter((ind) => ind.stat === "salary")
+                .map((ind) => (
+                  <motion.span
+                    key={ind.id}
+                    initial={{ opacity: 0, y: 5, scale: 0.8 }}
+                    animate={{ opacity: 1, y: -22, scale: 1.15 }}
+                    exit={{ opacity: 0, y: -35 }}
+                    transition={{ duration: 0.9, ease: "easeOut" }}
+                    className={`absolute right-0 text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] z-30 pointer-events-none ${
+                      ind.value > 0 ? "text-emerald-400" : "text-red-400"
+                    }`}
+                  >
+                    {ind.value > 0 ? `+${(ind.value / 1000).toFixed(0)}k` : `${(ind.value / 1000).toFixed(0)}k`}
+                  </motion.span>
+                ))}
+            </AnimatePresence>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useGameStore } from "../../store/gameStore";
 
 const typeStyles = {
@@ -50,29 +51,34 @@ export default function CenterPanel() {
           </div>
         )}
 
-        {feedLog.map((entry) => (
-          <div
-            key={entry.id}
-            className={`
-              flex gap-2 rounded-lg border px-2.5 py-2
-              text-xs leading-relaxed
-              ${typeStyles[entry.type]}
-            `}
-          >
-            {/* Icon */}
-            <span className="flex-shrink-0 font-bold mt-0.5 opacity-60">
-              {typeIcons[entry.type]}
-            </span>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <p className="break-words">{entry.message}</p>
-              <span className="text-[10px] opacity-40 mt-0.5 block">
-                {entry.timestamp}
+        <AnimatePresence initial={false}>
+          {feedLog.map((entry) => (
+            <motion.div
+              key={entry.id}
+              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className={`
+                flex gap-2 rounded-lg border px-2.5 py-2
+                text-xs leading-relaxed
+                ${typeStyles[entry.type]}
+              `}
+            >
+              {/* Icon */}
+              <span className="flex-shrink-0 font-bold mt-0.5 opacity-60">
+                {typeIcons[entry.type]}
               </span>
-            </div>
-          </div>
-        ))}
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <p className="break-words">{entry.message}</p>
+                <span className="text-[10px] opacity-40 mt-0.5 block">
+                  {entry.timestamp}
+                </span>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
 
         {/* Blinking cursor */}
         <div className="flex items-center gap-1 px-2 py-1">

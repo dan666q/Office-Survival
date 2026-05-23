@@ -1,8 +1,18 @@
 import { useGameStore } from "../../store/gameStore";
 import { getMood, formatSalary } from "../../utils/statCalculator";
-import { BUFFS } from "../../data/buffs.data";
+import { getBuffsForProfession } from "../../store/professionRegistry";
+import { soundManager } from "../../utils/soundManager";
 
 const LUNCH_BUFF_LIMIT = 2;
+
+// Thông báo nghèo ngẫu nhiên 😭
+const BROKE_MESSAGES = [
+  "💸 Tài khoản âm tinh thần. Ví rỗng, buff khóa.",
+  "🤑 Không đủ tiền mua một ly trà sữa, nói gì buff.",
+  "😭 Lương chưa về mà shop đã muốn tiền.",
+  "💀 Broke tier. Mở shop ra chỉ để xem thôi.",
+  "🥲 Nhìn buff mà không mua được. Đau lòng.",
+];
 
 export default function RightPanel() {
   const {
@@ -15,12 +25,12 @@ export default function RightPanel() {
   } = useGameStore();
   const mood = getMood(stats);
 
+
+
   const isLunchTime = currentTimeSlot === "lunch";
   const canBuyMore = isLunchTime && lunchBuffsBought < LUNCH_BUFF_LIMIT;
 
-  const availableBuffs = BUFFS.filter(
-    (b) => !b.professions || (profession && b.professions.includes(profession))
-  );
+  const availableBuffs = getBuffsForProfession(profession);
 
   const activeBuffData = availableBuffs.filter((b) =>
     activeBuffs.includes(b.id)
@@ -28,6 +38,11 @@ export default function RightPanel() {
   const shopBuffs = availableBuffs
     .filter((b) => !activeBuffs.includes(b.id))
     .slice(0, 6);
+
+  // Kiểm tra có đủ tiền mua bất kỳ buff nào không
+  const canAffordAny = isLunchTime && shopBuffs.some((b) => stats.salary >= b.cost);
+  const isBroke = isLunchTime && !canAffordAny && shopBuffs.length > 0 && lunchBuffsBought === 0;
+  const brokeMessage = BROKE_MESSAGES[Math.floor(Date.now() / 10000) % BROKE_MESSAGES.length];
 
   return (
     <div className="flex flex-col h-full min-h-0 divide-y divide-zinc-800">
@@ -43,13 +58,19 @@ export default function RightPanel() {
       {/* Salary */}
       <div className="px-3 py-3 flex-shrink-0">
         <p className="text-[10px] uppercase tracking-widest text-zinc-600 mb-2">
-          Lương hôm nay
+          Lương tích lũy
         </p>
-        <p className="text-xl font-black text-yellow-300">
+        <p className={`text-xl font-black transition-colors duration-300 ${stats.salary <= 0 ? "text-red-400" : "text-yellow-300"}`}>
           {formatSalary(stats.salary)}
         </p>
-        <p className="text-[10px] text-zinc-600 mt-0.5">Tích lũy cả tuần</p>
+        {stats.salary <= 0 && (
+          <p className="text-[10px] text-red-500/70 mt-0.5">
+            Âm tài khoản rồi đó 😬
+          </p>
+        )}
       </div>
+
+
 
       {/* Active buffs */}
       {activeBuffData.length > 0 && (
@@ -93,6 +114,7 @@ export default function RightPanel() {
           )}
         </div>
 
+        {/* Locked (không phải lunch) */}
         {!isLunchTime && (
           <div className="rounded-lg border border-dashed border-zinc-800 p-4 text-center">
             <p className="text-2xl mb-2">🔒</p>
@@ -100,6 +122,15 @@ export default function RightPanel() {
               Shop chỉ mở trong giờ ăn trưa
               <br />
               <span className="text-zinc-700">12:00 – 13:00</span>
+            </p>
+          </div>
+        )}
+
+        {/* Broke notice */}
+        {isBroke && (
+          <div className="mb-3 rounded-xl border border-red-500/30 bg-red-500/5 px-3 py-2.5">
+            <p className="text-[11px] text-red-300 font-medium leading-relaxed">
+              {brokeMessage}
             </p>
           </div>
         )}
@@ -117,7 +148,12 @@ export default function RightPanel() {
               return (
                 <div
                   key={buff.id}
-                  onClick={() => !disabled && buyBuff(buff.id)}
+                  onClick={() => {
+                    if (!disabled) {
+                      soundManager.playClick();
+                      buyBuff(buff.id);
+                    }
+                  }}
                   className={`
                     rounded-lg border px-2.5 py-2 transition-all duration-200
                     ${
@@ -136,7 +172,7 @@ export default function RightPanel() {
                     </div>
                     <span
                       className={`text-[10px] font-bold whitespace-nowrap ${
-                        canAfford ? "text-yellow-400" : "text-zinc-600"
+                        canAfford ? "text-yellow-400" : "text-red-400"
                       }`}
                     >
                       {formatSalary(buff.cost)}
@@ -160,6 +196,12 @@ export default function RightPanel() {
                       </span>
                     ))}
                   </div>
+                  {/* Không đủ tiền indicator */}
+                  {!canAfford && isLunchTime && canBuyMore && (
+                    <p className="text-[9px] text-red-400/70 mt-1">
+                      Thiếu {formatSalary(buff.cost - stats.salary)}
+                    </p>
+                  )}
                   {!canBuyMore && canAfford && (
                     <p className="text-[9px] text-yellow-600 mt-1">
                       Đã mua đủ 2 món hôm nay

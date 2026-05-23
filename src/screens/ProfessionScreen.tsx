@@ -1,7 +1,8 @@
 // src/screens/ProfessionScreen.tsx
 
-import { PROFESSIONS_CONFIG } from "../data/professions.config";
+import { PROFESSIONS_CONFIG } from "../store/professionRegistry";
 import { useGameStore } from "../store/gameStore";
+import { soundManager } from "../utils/soundManager";
 
 export default function ProfessionScreen() {
   const startGame = useGameStore((s) => s.startGame);
@@ -17,7 +18,10 @@ export default function ProfessionScreen() {
         {/* Header */}
         <div className="mb-10">
           <button
-            onClick={() => goToScreen("start")}
+            onClick={() => {
+              soundManager.playClick();
+              goToScreen("start");
+            }}
             className="
               mb-6
               text-sm
@@ -166,7 +170,10 @@ export default function ProfessionScreen() {
 
                 {/* CTA */}
                 <button
-                  onClick={() => startGame(job.id)}
+                  onClick={() => {
+                    soundManager.playClick();
+                    startGame(job.id);
+                  }}
                   className="
                     mt-8
                     w-full
