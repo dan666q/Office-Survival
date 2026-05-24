@@ -618,268 +618,276 @@ export const keToanPack: ProfessionPack = {
       ],
     },
     {
-      id: 'kt_new_1',
-      title: 'Có thông tư thuế mới ban hành ảnh trực tiếp đến báo cáo quý 🔄',
-      description: 'Tổng cục Thuế ban hành thông tư mới hướng dẫn kê khai hóa đơn điện tử đầu vào có hiệu lực ngay lập tức. Toàn bộ sổ sách quý này cần rà soát lại.',
-      priority: 'high',
-      professions: ['ke_toan'],
-      actions: [
-        {
-          id: 'kt_new_1_a',
-          label: '⏱️ Dành cả buổi chiều nghiên cứu và cập nhật biểu mẫu kê khai',
-          effects: [
-            { stat: 'energy', value: -20 },
-            { stat: 'stress', value: +10 },
-          ],
-          feedMessage: 'Bạn nghiên cứu kỹ văn bản mới và điều chỉnh biểu mẫu. Số liệu quý hoàn toàn chuẩn chỉnh pháp lý. 👏',
-        },
-        {
-          id: 'kt_new_1_b',
-          label: '🩹 Cứ làm theo thông tư cũ, có gì quyết toán cuối năm sửa sau',
-          effects: [
-            { stat: 'stress', value: +15 },
-          ],
-          setFlags: { tax_risk: true },
-          feedMessage: 'Bạn tặc lưỡi chọn phương án cũ cho nhanh. Stress tăng nhẹ vì lo sợ bị kiểm toán phạt sau này. 🤫',
-        },
-      ],
-    },
-    {
-      id: 'kt_new_2',
-      title: 'Quỹ tiền mặt lẻ bị lệch 200k sau khi thủ quỹ mua đồ pantry 💸',
-      description: 'Thủ quỹ đi mua trà, bánh ngọt cho pantry công ty về bàn giao sổ sách nhưng khi kiểm tra két thực tế phát hiện hụt mất 200k không rõ lý do.',
-      priority: 'medium',
-      professions: ['ke_toan'],
-      actions: [
-        {
-          id: 'kt_new_2_a',
-          label: '🔍 Bắt thủ quỹ ngồi rà soát đếm lại hóa đơn siêu thị từng mặt hàng',
-          effects: [
-            { stat: 'energy', value: -15 },
-            { stat: 'stress', value: +5 },
-          ],
-          feedMessage: 'Sau 30 phút rà soát, phát hiện siêu thị tính nhầm tiền 1 mặt hàng đắt đỏ. Thủ quỹ chạy đi lấy lại tiền thành công. 😮‍💨',
-        },
-        {
-          id: 'kt_new_2_b',
-          label: '💸 Tự bỏ 200k tiền túi bù vào két cho khớp sổ sách nhanh gọn',
-          effects: [
-            { stat: 'salary', value: -20000 },
-            { stat: 'stress', value: -5 },
-          ],
-          feedMessage: 'Bạn chi 20k điểm lương (tương đương 200k thực tế) bù vào cho khớp số. Sổ sách cân ngay lập tức mà không tốn công tranh cãi. 💸',
-        },
-      ],
-    },
-    {
-      id: 'kt_new_3',
-      title: 'Đối tác trả lại hóa đơn đỏ vì viết tắt chữ "Phường" thành "P." 📝',
-      description: 'Kế toán đối tác cực kỳ khó tính gửi trả lại hóa đơn giá trị gia tăng trị giá 200 triệu vì địa chỉ viết tắt chữ "Phường" thành chữ "P.".',
-      priority: 'medium',
-      professions: ['ke_toan'],
-      actions: [
-        {
-          id: 'kt_new_3_a',
-          label: '🛠️ Làm thủ tục thu hồi hóa đơn cũ và xuất hóa đơn mới thay thế',
-          effects: [
-            { stat: 'energy', value: -15 },
-            { stat: 'stress', value: +5 },
-          ],
-          feedMessage: 'Bạn kiên nhẫn làm biên bản hủy và xuất lại bản mới. Đối tác hài lòng duyệt thanh toán ngay lập tức. 👍',
-        },
-        {
-          id: 'kt_new_3_b',
-          label: '🗣️ Gọi điện đôi co gay gắt giải thích "P." và "Phường" là một',
-          effects: [
-            { stat: 'stress', value: +20 },
-          ],
-          feedMessage: 'Bạn tranh luận căng thẳng. Bên kia giận dỗi đóng băng khoản thanh toán làm công ty bị trễ dòng tiền, sếp khiển trách bạn. ⚔️',
-        },
-      ],
-    },
-    {
-      id: 'kt_new_4',
-      title: 'Kiểm toán bất ngờ yêu cầu chứng từ 3 năm trước trong 2 tiếng 🚨',
-      description: 'Đoàn kiểm toán thuế đang kiểm tra hồ sơ và bất ngờ yêu cầu bạn lục lại toàn bộ chứng từ chi phí tiếp khách từ 3 năm trước. Hạn chót chỉ có 2 tiếng.',
+      id: 'kt_ar_aging_90days',
+      title: 'Công nợ phải thu (AR) quá hạn 90 ngày — khách hàng bặt vô âm tín 📬',
+      description: 'Khi lọc báo cáo AR Aging, bạn phát hiện một khách hàng doanh nghiệp lớn đang nợ 450 triệu đã quá hạn thanh toán 90 ngày và không trả lời cuộc gọi, email nào.',
       priority: 'critical',
       professions: ['ke_toan'],
       actions: [
         {
-          id: 'kt_new_4_a',
-          label: '🏃 Xuống kho lưu trữ ẩm thấp lục tìm điên cuồng',
+          id: 'kt_ar_aging_a',
+          label: '📞 Lập bộ phận thu hồi nợ chính thức, gửi thông báo nợ quá hạn có ký xác nhận',
           effects: [
-            { stat: 'energy', value: -25 },
+            { stat: 'energy', value: -20 },
             { stat: 'stress', value: +15 },
           ],
-          feedMessage: 'Bạn cắm đầu lục kho bụi bặm. May mắn tìm thấy đúng thùng hồ sơ năm đó bàn giao đầy đủ cho đoàn. 😮‍💨',
+          feedMessage: 'Bạn gửi công văn đòi nợ chính thức có dấu đỏ. Khách hàng cuối cùng phản hồi và cam kết thanh toán theo lịch trả góp. AR Aging report sạch dần. 📬',
         },
         {
-          id: 'kt_new_4_b',
-          label: '🤐 Trình bày lý do hồ sơ cũ đã được lưu kho trung tâm cần 1 ngày để trích xuất',
-          effects: [
-            { stat: 'stress', value: +10 },
-          ],
-          feedMessage: 'Bạn khéo léo thương lượng trì hoãn thành công. Đoàn kiểm toán đồng ý gia hạn sang sáng mai giúp bạn dễ thở hơn. 🧘',
-        },
-      ],
-    },
-    {
-      id: 'kt_new_5',
-      title: 'Sếp lớn mang hóa đơn tiếp khách karaoke không hợp lệ về thanh toán 🎤',
-      description: 'Sếp tổng đi tiếp khách mang về một hóa đơn karaoke dịch vụ mờ mịt trị giá 15 triệu, yêu cầu bạn đưa vào chi phí hợp lý của doanh nghiệp để được khấu trừ.',
-      priority: 'high',
-      professions: ['ke_toan'],
-      actions: [
-        {
-          id: 'kt_new_5_a',
-          label: '🛠️ Khéo léo hạch toán chuyển sang chi phí hội nghị/khách hàng',
-          effects: [
-            { stat: 'energy', value: -15 },
-            { stat: 'stress', value: +10 },
-          ],
-          feedMessage: 'Bạn khéo léo làm hồ sơ đi kèm biến hóa đơn đó thành chi phí hợp lệ. Sếp gật gù hài lòng vì bạn biết linh động công việc. 🤫',
-        },
-        {
-          id: 'kt_new_5_b',
-          label: '🙅 Từ chối thẳng thừng vì hóa đơn không đủ điều kiện pháp lý',
+          id: 'kt_ar_aging_b',
+          label: '🩹 Trích lập dự phòng nợ khó đòi 100% để đẩy chi phí giảm thuế TNDN',
           effects: [
             { stat: 'stress', value: +20 },
             { stat: 'salary', value: -100000 },
           ],
-          feedMessage: 'Bạn nhận lỗi với sếp. Sếp mắng bạn một trận lôi đình vì làm việc cẩu thả và phạt bạn trừ 100k điểm lương. 💀',
+          setFlags: { audit_discrepancy: true },
+          feedMessage: 'Bạn trích lập dự phòng toàn bộ khoản nợ. Chi phí quý tăng vọt, sếp tổng choáng khi nhìn P&L và gọi bạn vào giải trình ngay lập tức. 💸',
         },
       ],
     },
     {
-      id: 'kt_new_6',
-      title: 'Bản quyền phần mềm Misa hết hạn đúng ngày quyết toán tháng 🔒',
-      description: 'Hôm nay là hạn cuối nộp báo cáo thuế tháng. Vừa mở phần mềm Misa lên thì báo lỗi: "Bản quyền đã hết hạn, vui lòng gia hạn để tiếp tục nhập liệu".',
+      id: 'kt_ap_duplicate_payment',
+      title: 'Phát hiện thanh toán trùng (Duplicate AP Payment) cho nhà cung cấp 💸',
+      description: 'Khi đối chiếu sổ AP cuối tháng, bạn phát hiện một invoice 180 triệu của nhà cung cấp đã bị xử lý thanh toán 2 lần vào 2 ngày khác nhau do lỗi nhập liệu trùng mã invoice.',
       priority: 'critical',
       professions: ['ke_toan'],
       actions: [
         {
-          id: 'kt_new_6_a',
-          label: '📞 Gọi khẩn cấp cho đại lý Misa gia hạn cấp tốc và xin key tạm',
-          effects: [
-            { stat: 'energy', value: -10 },
-            { stat: 'stress', value: +15 },
-          ],
-          feedMessage: 'Học hỗ trợ cấp key thử nghiệm dùng tạm 3 ngày giúp bạn kịp nhập liệu hoàn thành báo cáo thuế đúng giờ. 😮‍💨',
-        },
-        {
-          id: 'kt_new_6_b',
-          label: '💻 Tự export dữ liệu thô sang Excel tự cộng tay tính toán báo cáo',
-          effects: [
-            { stat: 'energy', value: -30 },
-            { stat: 'stress', value: +20 },
-          ],
-          feedMessage: 'Bạn thức đêm cộng tay số liệu trên Excel khổng lồ. Mệt rã rời thân xác. Trình Excel của bạn tăng lên. 👨‍💻',
-        },
-      ],
-    },
-    {
-      id: 'kt_new_7',
-      title: 'Nhân viên mới nằng nặc đòi ứng lương trước thời hạn 💵',
-      description: 'Một cậu nhân viên thử việc mới vào được 1 tuần chạy đến khóc lóc trình bày hoàn cảnh khó khăn, xin bạn duyệt tạm ứng trước 3 triệu lương.',
-      priority: 'low',
-      professions: ['ke_toan'],
-      actions: [
-        {
-          id: 'kt_new_7_a',
-          label: '📝 Hướng dẫn cậu ấy viết đơn xin duyệt ngoại lệ trình sếp ký',
-          effects: [
-            { stat: 'energy', value: -10 },
-            { stat: 'stress', value: +5 },
-          ],
-          feedMessage: 'Đơn được duyệt. Bạn làm thủ tục chi tiền. Cậu nhân viên biết ơn bạn rối rít. 🤝',
-        },
-        {
-          id: 'kt_new_7_b',
-          label: '🙅 Từ chối thẳng theo đúng quy chế công ty (Thử việc không được ứng)',
-          effects: [
-            { stat: 'stress', value: -5 },
-          ],
-          feedMessage: 'Bạn lạnh lùng từ chối theo nguyên tắc. Cậu ấy buồn bã đi ra. Bạn giữ vững quy chế và không tốn công làm giấy tờ phụ. 🧘',
-        },
-      ],
-    },
-    {
-      id: 'kt_new_8',
-      title: 'Hệ thống Internet Banking ngân hàng bị lỗi treo giao dịch 📉',
-      description: 'Đang thực hiện chuyển khoản lương loạt cho nhân sự thì hệ thống Techcombank Business bị lỗi, giao dịch ở trạng thái "Đang xử lý" treo cứng suốt 3 tiếng.',
-      priority: 'high',
-      professions: ['ke_toan'],
-      actions: [
-        {
-          id: 'kt_new_8_a',
-          label: '📞 Gọi ngay cho hotline nhân viên hỗ trợ doanh nghiệp của ngân hàng',
-          effects: [
-            { stat: 'energy', value: -10 },
-            { stat: 'stress', value: +10 },
-          ],
-          feedMessage: 'Họ ghi nhận tra soát khẩn cấp và đẩy lệnh đi thủ công giúp bạn sau 1 tiếng. Lương nhân viên đã về tài khoản. 😮‍💨',
-        },
-        {
-          id: 'kt_new_8_b',
-          label: '🧘 Đợi hệ thống tự giải quyết và viết mail báo cáo sếp',
-          effects: [
-            { stat: 'stress', value: -5 },
-          ],
-          feedMessage: 'Bạn viết mail giải thích lỗi kỹ thuật của ngân hàng gửi sếp và nhân viên. Mọi người thông cảm kiên nhẫn chờ đợi. 🧘',
-        },
-      ],
-    },
-    {
-      id: 'kt_new_9',
-      title: 'Phát hiện kế toán cũ nộp trễ tiền Bảo hiểm xã hội bị phạt lãi 🔒',
-      description: 'Nhận được thông báo từ BHXH quận: Do doanh nghiệp nộp chậm tiền BHXH của 2 tháng trước nên phát sinh khoản phạt chậm nộp 1.5 triệu đồng.',
-      priority: 'high',
-      professions: ['ke_toan'],
-      actions: [
-        {
-          id: 'kt_new_9_a',
-          label: '💸 Làm thủ tục chi tiền nộp phạt ngay tránh phát sinh thêm lãi',
+          id: 'kt_ap_dup_a',
+          label: '📞 Liên hệ ngay nhà cung cấp yêu cầu hoàn trả khoản thanh toán thừa',
           effects: [
             { stat: 'energy', value: -15 },
-            { stat: 'salary', value: -15000 },
+            { stat: 'stress', value: +10 },
           ],
-          feedMessage: 'Bạn xử lý nộp phạt dứt điểm 1.5 triệu (tương đương 15k điểm lương) để sổ sách sạch sẽ, sẵn sàng giải trình với sếp. 💸',
+          feedMessage: 'Nhà cung cấp xác nhận nhận thừa tiền và đồng ý cấn trừ vào invoice lần sau. Bạn lập bút toán điều chỉnh AP, số liệu cân bằng trở lại. 😮‍💨',
         },
         {
-          id: 'kt_new_9_b',
-          label: '📝 Soạn văn bản giải trình khiếu nại đổ lỗi do lỗi hệ thống BHXH',
+          id: 'kt_ap_dup_b',
+          label: '🤐 Để im đó, tháng sau nhà cung cấp sẽ tự phát hiện rồi báo lại',
+          effects: [
+            { stat: 'stress', value: +25 },
+          ],
+          setFlags: { audit_discrepancy: true },
+          feedMessage: 'Bạn bỏ qua. 3 tuần sau kiểm toán nội bộ cắt ra con số chênh lệch 180 triệu khi đối chiếu AP Ledger và hỏi tại sao không có biên bản xử lý. 💀',
+        },
+      ],
+    },
+    {
+      id: 'kt_vat_refund_rejected',
+      title: 'Cục Thuế từ chối khấu trừ VAT đầu vào của lô hàng nhập khẩu 🚫',
+      description: 'Hồ sơ hoàn thuế VAT 120 triệu bị cơ quan thuế trả về với lý do: "Hóa đơn đầu vào không đúng mã số thuế người bán, không đủ điều kiện khấu trừ theo Thông tư 219."',
+      priority: 'critical',
+      professions: ['ke_toan'],
+      actions: [
+        {
+          id: 'kt_vat_a',
+          label: '📂 Liên hệ nhà cung cấp yêu cầu xuất lại hóa đơn đúng thông tin, bổ sung hồ sơ',
+          effects: [
+            { stat: 'energy', value: -25 },
+            { stat: 'stress', value: +15 },
+          ],
+          feedMessage: 'Nhà cung cấp xác nhận sai và xuất hóa đơn thay thế. Bạn nộp lại bộ hồ sơ hoàn thuế. Cơ quan thuế chấp nhận sau 2 tuần. 🧾',
+        },
+        {
+          id: 'kt_vat_b',
+          label: '🩹 Bỏ qua khoản VAT đó, hạch toán vào chi phí không được khấu trừ',
+          effects: [
+            { stat: 'salary', value: -120000 },
+            { stat: 'stress', value: -10 },
+          ],
+          feedMessage: 'Bạn hạch toán 120 triệu vào chi phí không hợp lệ. Thuế TNDN tăng lên, sếp bực bội nhưng không muốn chạy thủ tục hành chính dài dòng. 💸',
+        },
+      ],
+    },
+    {
+      id: 'kt_pl_report_pressure',
+      title: 'Sếp yêu cầu điều chỉnh P&L trước khi trình cổ đông 📊',
+      description: '"Doanh thu quý này nhìn yếu quá, em chuyển một phần doanh thu quý sau lên quý này và đẩy chi phí marketing xuống đi, anh cần con số đẹp cho hội đồng cổ đông tuần tới."',
+      priority: 'high',
+      professions: ['ke_toan'],
+      actions: [
+        {
+          id: 'kt_pl_a',
+          label: '📊 Từ chối thẳng và trình bày rủi ro pháp lý gian lận báo cáo tài chính',
+          effects: [
+            { stat: 'stress', value: +25 },
+            { stat: 'salary', value: -150000 },
+          ],
+          feedMessage: 'Bạn từ chối thẳng thắng và trình bày rõ rủi ro vi phạm Luật Kế toán. Sếp tức giận nhưng quyết định không ép thêm sau khi bạn đề cập "hậu quả pháp lý". Uy tín bạn tụt trong mắt sếp. 📊',
+        },
+        {
+          id: 'kt_pl_b',
+          label: '🤝 "Tối ưu hóa" nhẹ nhàng bằng cách thay đổi timing ghi nhận doanh thu',
+          effects: [
+            { stat: 'stress', value: +15 },
+            { stat: 'salary', value: +200000 },
+          ],
+          setFlags: { has_hidden_error: true, boss_pleased: true },
+          feedMessage: 'Bạn khéo léo điều chỉnh timing ghi nhận doanh thu hợp đồng dài hạn. P&L trông đẹp hơn. Sếp thưởng nóng 200k nhưng nếu bị kiểm toán bới ra thì bạn chịu hoàn toàn. 💀',
+        },
+      ],
+    },
+    {
+      id: 'kt_cashflow_crisis',
+      title: 'Báo cáo Cash Flow tháng này âm nặng — sếp hoảng loạn 📉',
+      description: 'Bạn vừa hoàn thành báo cáo Lưu chuyển tiền tệ: Operating Cash Flow âm 800 triệu do khách hàng trả chậm trong khi AP phải trả đúng hạn. Sếp tổng đang hỏi nguyên nhân.',
+      priority: 'critical',
+      professions: ['ke_toan'],
+      actions: [
+        {
+          id: 'kt_cf_a',
+          label: '📋 Phân tích chi tiết nguyên nhân và đề xuất kế hoạch tăng tốc thu hồi AR',
           effects: [
             { stat: 'energy', value: -20 },
             { stat: 'stress', value: +10 },
           ],
-          feedMessage: 'Bạn viết công văn giải trình khéo léo gỡ tội. Cơ quan BHXH đồng ý giảm nhẹ một phần khoản phạt cho doanh nghiệp. 👏',
+          feedMessage: 'Bạn lập bảng phân tích AR Aging kèm kế hoạch thu hồi nợ chi tiết theo từng khách hàng. Sếp bình tĩnh lại và giao bạn dẫn đầu nhóm thu hồi nợ. 📊',
+        },
+        {
+          id: 'kt_cf_b',
+          label: '🩹 Đề xuất vay ngắn hạn ngân hàng để bù đắp thiếu hụt tiền mặt tạm thời',
+          effects: [
+            { stat: 'stress', value: +20 },
+            { stat: 'salary', value: -150000 },
+          ],
+          feedMessage: 'Sếp đồng ý vay vốn ngắn hạn lãi suất cao. Tiền về đủ trả AP nhưng lãi vay phát sinh thêm 150k điểm lương bào mòn lợi nhuận quý. 💸',
         },
       ],
     },
     {
-      id: 'kt_new_10',
-      title: 'Excel bị crash bất ngờ mất sạch bảng báo cáo thuế chưa lưu 😭',
-      description: 'Đang cắm đầu làm báo cáo tài chính quý cực kỳ phức tạp suốt cả buổi chiều thì bỗng nhiên màn hình Excel đơ cứng và báo lỗi "Excel has stopped working". Bạn chưa bấm Save!',
+      id: 'kt_month_end_close',
+      title: 'Deadline đóng sổ cuối tháng — dữ liệu từ các phòng ban chưa về đủ 🕐',
+      description: 'Hôm nay 31/tháng, 17h là deadline close sổ để lập báo cáo nội bộ. Phòng Sales chưa nộp bảng doanh thu tuần cuối, phòng Vận hành chưa xác nhận chi phí logistics.',
       priority: 'critical',
       professions: ['ke_toan'],
       actions: [
         {
-          id: 'kt_new_10_a',
-          label: '📂 Mở Document Recovery mò mẫm tìm lại file AutoRecover',
+          id: 'kt_close_a',
+          label: '⚡ Gọi điện thẳng cho trưởng các phòng yêu cầu nộp số liệu khẩn trong 30 phút',
           effects: [
             { stat: 'energy', value: -15 },
-            { stat: 'stress', value: +15 },
-          ],
-          feedMessage: 'Trời thương! File AutoRecover lưu trữ phiên bản 10 phút trước. Bạn chỉ mất một chút công sức làm lại đoạn ngắn. 😮‍💨',
-        },
-        {
-          id: 'kt_new_10_b',
-          label: '😭 Khóc thét và bắt đầu gõ lại toàn bộ báo cáo từ đầu',
-          effects: [
-            { stat: 'energy', value: -30 },
             { stat: 'stress', value: +20 },
           ],
-          feedMessage: 'Không có file phục hồi! Bạn phải gõ điên cuồng lại toàn bộ số liệu báo cáo suốt tối muộn. Mệt rã rời thân xác. 😭',
+          feedMessage: 'Bạn làm già lên mạnh mẽ. Dữ liệu về đủ lúc 16h55. Bạn đóng sổ kịp deadline chỉ nhỉnh hơn 5 phút. Căng thẳng tột độ nhưng chính xác. ⏱️',
+        },
+        {
+          id: 'kt_close_b',
+          label: '📐 Dùng Accrual — tự ước tính chi phí chưa về bằng số liệu tháng trước',
+          effects: [
+            { stat: 'stress', value: +5 },
+            { stat: 'energy', value: -10 },
+          ],
+          setFlags: { has_hidden_error: true },
+          feedMessage: 'Bạn áp dụng accrual accounting để ước tính. Báo cáo đóng đúng hạn nhưng số liệu ước tính sẽ cần điều chỉnh khi thực tế về, có thể gây lệch báo cáo tháng sau. 🤫',
+        },
+      ],
+    },
+    {
+      id: 'kt_ap_vendor_threat',
+      title: 'Nhà cung cấp nguyên vật liệu dọa ngừng giao hàng vì AP quá hạn 60 ngày ⚠️',
+      description: '"Nếu không thanh toán 300 triệu công nợ quá hạn trong 24 giờ, chúng tôi sẽ tạm dừng toàn bộ hợp đồng cung cấp." — Email vừa bắn vào inbox lúc 8h sáng.',
+      priority: 'critical',
+      professions: ['ke_toan'],
+      actions: [
+        {
+          id: 'kt_ap_vendor_a',
+          label: '💸 Xử lý khẩn cấp lệnh thanh toán AP ngay hôm nay, trình sếp duyệt nhanh',
+          effects: [
+            { stat: 'energy', value: -20 },
+            { stat: 'stress', value: +10 },
+          ],
+          feedMessage: 'Bạn chạy nước rút trình sếp duyệt lệnh chi. Tiền chuyển đi lúc 14h. Nhà cung cấp xác nhận tiếp tục giao hàng. Công ty tránh được đứt chuỗi cung ứng. ✅',
+        },
+        {
+          id: 'kt_ap_vendor_b',
+          label: '🗣️ Thương lượng gia hạn thêm 15 ngày bằng cách cam kết trả lãi chậm nộp',
+          effects: [
+            { stat: 'stress', value: +15 },
+            { stat: 'salary', value: -80000 },
+          ],
+          feedMessage: 'Bạn khéo léo thương lượng gia hạn thêm 15 ngày với điều kiện trả thêm 2% lãi chậm nộp. Nhà cung cấp đồng ý. Bạn có thêm thời gian nhưng tốn 80k điểm lương tiền lãi. 😮‍💨',
+        },
+      ],
+    },
+    {
+      id: 'kt_tndn_finalization',
+      title: 'Quyết toán thuế TNDN — phát hiện chi phí không hợp lệ 3 tỷ đồng 🔍',
+      description: 'Khi rà soát hồ sơ quyết toán thuế Thu nhập doanh nghiệp, bạn phát hiện 3 tỷ chi phí tiếp khách, quảng cáo bị vượt trần 15% và không có đủ chứng từ theo quy định.',
+      priority: 'critical',
+      professions: ['ke_toan'],
+      actions: [
+        {
+          id: 'kt_tndn_a',
+          label: '📂 Loại bỏ đúng phần chi phí vượt trần, tính lại thuế TNDN phải nộp',
+          effects: [
+            { stat: 'energy', value: -25 },
+            { stat: 'salary', value: -200000 },
+            { stat: 'stress', value: +10 },
+          ],
+          feedMessage: 'Bạn điều chỉnh lại chính xác theo quy định. Thuế TNDN phải nộp thêm, công ty tốn thêm 200k điểm lương. Nhưng hồ sơ minh bạch, tránh được rủi ro phạt gấp đôi sau kiểm tra. 📊',
+        },
+        {
+          id: 'kt_tndn_b',
+          label: '🩹 Phân bổ lại chi phí vào các mục khác để lách trần 15%',
+          effects: [
+            { stat: 'stress', value: +25 },
+          ],
+          setFlags: { has_hidden_error: true, tax_audit_triggered: true },
+          feedMessage: 'Bạn phân bổ lại chi phí sang tài khoản khác. Tạm thời qua mặt được. Nhưng nếu cơ quan thuế yêu cầu đối chiếu chi tiết tài khoản này, rủi ro rất lớn. 💀',
+        },
+      ],
+    },
+    {
+      id: 'kt_intercompany_mismatch',
+      title: 'Giao dịch nội bộ (Intercompany) không khớp giữa công ty mẹ và con 🔄',
+      description: 'Khi hợp nhất báo cáo tài chính tập đoàn, số dư Intercompany giữa công ty mẹ và công ty con lệch nhau 250 triệu. Cả hai bên đều khẳng định số liệu của mình là đúng.',
+      priority: 'high',
+      professions: ['ke_toan'],
+      actions: [
+        {
+          id: 'kt_ic_a',
+          label: '🔍 Tổ chức họp đối chiếu số liệu trực tiếp với kế toán công ty con',
+          effects: [
+            { stat: 'energy', value: -20 },
+            { stat: 'stress', value: +10 },
+          ],
+          feedMessage: 'Sau 2 tiếng đối chiếu từng giao dịch, phát hiện công ty con ghi nhận một khoản phí dịch vụ nội bộ sai kỳ kế toán. Bút toán điều chỉnh được thực hiện, số liệu khớp hoàn toàn. ✅',
+        },
+        {
+          id: 'kt_ic_b',
+          label: '🩹 Ghi chú khoản lệch vào mục "Chênh lệch đang xử lý" và đẩy sang tháng sau',
+          effects: [
+            { stat: 'stress', value: +20 },
+          ],
+          setFlags: { audit_discrepancy: true },
+          feedMessage: 'Bạn để đó trong mục tạm thời. Kiểm toán độc lập phát hiện khoản "chênh lệch đang xử lý" 250 triệu này và đặt câu hỏi rất khó chịu trong buổi meeting. 😰',
+        },
+      ],
+    },
+    {
+      id: 'kt_tncn_wrong_pid',
+      title: 'Phát hiện sai mã số thuế TNCN của 12 nhân viên — kê khai đã nộp 😱',
+      description: 'Khi đối chiếu với cơ quan thuế, bạn phát hiện 12 nhân viên đã đăng ký mã số thuế cá nhân sai hoặc chưa kích hoạt, toàn bộ số tiền thuế TNCN khấu trừ đã nộp bị treo chờ xử lý.',
+      priority: 'high',
+      professions: ['ke_toan'],
+      actions: [
+        {
+          id: 'kt_tncn_a',
+          label: '📋 Thu thập lại toàn bộ MST đúng của 12 nhân viên và nộp điều chỉnh tờ khai',
+          effects: [
+            { stat: 'energy', value: -20 },
+            { stat: 'stress', value: +15 },
+          ],
+          feedMessage: 'Bạn kiên nhẫn thu thập MST chính xác từ từng người và làm hồ sơ điều chỉnh. Cơ quan thuế xác nhận xử lý xong sau 5 ngày làm việc. Sổ sách thuế sạch đẹp. 📋',
+        },
+        {
+          id: 'kt_tncn_b',
+          label: '⏳ Gửi email nhắc nhở nhân viên tự đi cập nhật MST với cơ quan thuế',
+          effects: [
+            { stat: 'stress', value: +10 },
+          ],
+          setFlags: { has_hidden_error: true },
+          feedMessage: 'Bạn đẩy việc về cho nhân viên. Nhiều người bận quên không đi. Khoản thuế TNCN treo tiếp tục tích lũy qua các tháng và bắt đầu gây vấn đề khi quyết toán cuối năm. 🤫',
         },
       ],
     },

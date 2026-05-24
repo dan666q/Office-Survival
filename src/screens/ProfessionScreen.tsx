@@ -9,7 +9,7 @@ export default function ProfessionScreen() {
   const goToScreen = useGameStore((s) => s.goToScreen);
 
   return (
-    <div className="min-h-screen bg-[#0f1117] text-white relative overflow-y-auto">
+    <div className="min-h-screen bg-[#0f1117] text-white relative overflow-hidden">
       {/* Glow background */}
       <div className="absolute top-[-120px] left-[-120px] w-[300px] h-[300px] bg-cyan-500/20 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute bottom-[-120px] right-[-120px] w-[300px] h-[300px] bg-purple-500/20 blur-3xl rounded-full pointer-events-none" />

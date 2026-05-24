@@ -10,7 +10,7 @@ export default function StartScreen() {
   const [showGuide, setShowGuide] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0f1117] text-white overflow-y-auto relative flex items-center justify-center py-8">
+    <div className="min-h-screen bg-[#0f1117] text-white relative flex items-center justify-center py-8 overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-[-120px] left-[-120px] w-[300px] h-[300px] bg-cyan-500/20 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute bottom-[-150px] right-[-100px] w-[350px] h-[350px] bg-purple-500/20 blur-3xl rounded-full pointer-events-none" />
