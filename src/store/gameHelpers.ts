@@ -1,7 +1,7 @@
 // src/store/gameHelpers.ts
 
 import type { DayOfWeek, TimeSlot, GameStats } from '../types/game.types'
-import type { GameEvent } from '../types/event.types'
+import type { GameEvent, StatRequirement } from '../types/event.types'
 import {
   PROFESSIONS_CONFIG,
   getEventsForProfession,
@@ -65,21 +65,97 @@ export function getNextTime(slot: string | null): string {
 
 // Handled dynamically by re-exports from ./professionRegistry
 
+export function checkRequirement(
+  reqs: { stats?: StatRequirement[]; flags?: Record<string, boolean> },
+  stats: GameStats,
+  flags: Record<string, boolean>
+): boolean {
+  if (reqs.stats) {
+    for (const r of reqs.stats) {
+      const val = stats[r.stat]
+      if (r.op === 'gt' && !(val > r.value)) return false
+      if (r.op === 'lt' && !(val < r.value)) return false
+      if (r.op === 'gte' && !(val >= r.value)) return false
+      if (r.op === 'lte' && !(val <= r.value)) return false
+    }
+  }
+  if (reqs.flags) {
+    for (const [f, val] of Object.entries(reqs.flags)) {
+      if (!!flags[f] !== val) return false
+    }
+  }
+  return true
+}
+
 export function randomEvents(
   allEvents: GameEvent[],
   timeSlot: TimeSlot,
   count: number | [number, number],
-  usedEventIds: string[] = []
+  usedEventIds: string[] = [],
+  weeklyEventCounts: Record<string, number> = {},
+  stats?: GameStats,
+  flags?: Record<string, boolean>,
+  currentDay?: DayOfWeek | null
 ): GameEvent[] {
-  const eligible = allEvents.filter(e =>
-    (!e.timeSlots || e.timeSlots.includes(timeSlot)) &&
-    !usedEventIds.includes(e.id)
-  )
   const n = Array.isArray(count)
     ? Math.floor(Math.random() * (count[1] - count[0] + 1)) + count[0]
     : count
-  const shuffled = [...eligible].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, Math.min(n, shuffled.length))
+
+  if (n <= 0) return []
+
+  const selectedEvents: GameEvent[] = []
+  const selectedIds = new Set<string>(usedEventIds)
+
+  // Step 1: Relax weekly limits step-by-step to fill the required count (from < 2 to < 10)
+  for (let limit = 2; limit <= 10; limit++) {
+    if (selectedEvents.length >= n) break
+
+    const eligible = allEvents.filter(e => {
+      if (selectedIds.has(e.id)) return false
+      
+      const matchesSlot = !e.timeSlots || e.timeSlots.includes(timeSlot)
+      const notWeeklyDepleted = (weeklyEventCounts[e.id] ?? 0) < limit
+      if (!matchesSlot || !notWeeklyDepleted) return false
+
+      if (e.requirements) {
+        if (currentDay && e.requirements.days && !e.requirements.days.includes(currentDay)) return false
+        if (stats && flags && !checkRequirement(e.requirements, stats, flags)) return false
+      }
+      return true
+    })
+
+    const shuffled = [...eligible].sort(() => Math.random() - 0.5)
+    const needed = n - selectedEvents.length
+    const pool = shuffled.slice(0, needed)
+    
+    pool.forEach(e => {
+      selectedEvents.push(e)
+      selectedIds.add(e.id)
+    })
+  }
+
+  // Step 2: Last-resort fallback — ignore stats/flags requirements if still not enough
+  if (selectedEvents.length < n) {
+    const eligibleWithoutReqs = allEvents.filter(e => {
+      if (selectedIds.has(e.id)) return false
+      const matchesSlot = !e.timeSlots || e.timeSlots.includes(timeSlot)
+      if (!matchesSlot) return false
+      
+      if (e.requirements && currentDay && e.requirements.days && !e.requirements.days.includes(currentDay)) return false
+      return true
+    })
+
+    const shuffled = [...eligibleWithoutReqs].sort(() => Math.random() - 0.5)
+    const needed = n - selectedEvents.length
+    const pool = shuffled.slice(0, needed)
+    
+    pool.forEach(e => {
+      selectedEvents.push(e)
+      selectedIds.add(e.id)
+    })
+  }
+
+  return selectedEvents
 }
 
 export function getNextDay(current: DayOfWeek | null): DayOfWeek | null {

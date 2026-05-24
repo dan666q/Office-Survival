@@ -1,7 +1,8 @@
 // src/components/event/EventCard.tsx
-import { useEffect } from "react";
 import EventTimer from "./EventTimer";
 import type { GameEvent } from "../../types/event.types";
+import { useGameStore } from "../../store/gameStore";
+import { checkRequirement } from "../../store/gameHelpers";
 
 interface EventCardProps {
   event: GameEvent;
@@ -32,27 +33,91 @@ const priorityLabel: Record<string, string> = {
   critical: "🔴 CRITICAL",
 };
 
+const FLAG_LABELS: Record<string, string> = {
+  gossip_spread: "Đã hóng drama",
+  printer_broken: "Máy in bị hỏng",
+  betrayer_tag: "Bị mang tiếng mách lẻo",
+  migrated_legacy: "Đã đồng ý migrate hệ thống",
+  intern_cried: "Làm intern khóc",
+  team_hates_you: "Bị đồng nghiệp cô lập",
+  has_hidden_error: "Sổ sách có sai số",
+  tax_audit_triggered: "Đang bị thanh tra Thuế",
+  audit_discrepancy: "Lệch số dư tiền mặt",
+  boss_pleased: "Được lòng sếp",
+  vip_client_found: "Chăm sóc khách VIP",
+  client_impressed: "Khách VIP ấn tượng",
+  deal_pending: "Chờ khách ký Penthouse",
+  color_changed: "Đã đổi màu phong thủy",
+  ds_deadline_approaching: "Đang chạy vội deadline",
+};
+
+const FLAG_LABELS_FALSE: Record<string, string> = {
+  gossip_spread: "Chưa hóng drama",
+  printer_broken: "Máy in bình thường",
+  betrayer_tag: "Không mách lẻo",
+  migrated_legacy: "Chưa migrate hệ thống",
+  intern_cried: "Chưa làm intern khóc",
+  team_hates_you: "Không bị cô lập",
+  has_hidden_error: "Sổ sách sạch sẽ",
+  tax_audit_triggered: "Không bị thanh tra Thuế",
+  audit_discrepancy: "Không lệch quỹ",
+  boss_pleased: "Chưa được sếp duyệt",
+  vip_client_found: "Chưa gặp khách VIP",
+  client_impressed: "Khách VIP chưa ấn tượng",
+  deal_pending: "Chưa có deal pending",
+  color_changed: "Chưa đổi màu phong thủy",
+  ds_deadline_approaching: "Không chạy deadline gấp",
+};
+
+const STAT_NAMES: Record<string, string> = {
+  salary: "Lương",
+  stress: "Stress",
+  energy: "Energy",
+};
+
+function formatRequirements(requirements: any): string {
+  const parts: string[] = [];
+
+  if (requirements.stats) {
+    for (const r of requirements.stats) {
+      const name = STAT_NAMES[r.stat] ?? r.stat;
+      let opStr = "";
+      if (r.op === "gt") opStr = ">";
+      else if (r.op === "gte") opStr = "≥";
+      else if (r.op === "lt") opStr = "<";
+      else if (r.op === "lte") opStr = "≤";
+
+      let valStr = "";
+      if (r.stat === "salary") {
+        valStr = `${(r.value / 1000).toFixed(0)}k`;
+      } else {
+        valStr = `${r.value}%`;
+      }
+      parts.push(`${name} ${opStr} ${valStr}`);
+    }
+  }
+
+  if (requirements.flags) {
+    for (const [flag, val] of Object.entries(requirements.flags)) {
+      if (val) {
+        parts.push(FLAG_LABELS[flag] ?? `Đã có: ${flag}`);
+      } else {
+        parts.push(FLAG_LABELS_FALSE[flag] ?? `Không có: ${flag}`);
+      }
+    }
+  }
+
+  return parts.join(", ");
+}
+
 export default function EventCard({
   event,
   timeLeft,
   progress,
   onSelectAction,
-  isFirst = false,
 }: EventCardProps) {
-  // Keyboard shortcut: 1/2/3 → chọn action khi card này là card đầu tiên
-  useEffect(() => {
-    if (!isFirst) return;
-    const handler = (e: KeyboardEvent) => {
-      // Chỉ kích hoạt nếu không đang gõ input
-      if (document.activeElement?.tagName === "INPUT") return;
-      const idx = parseInt(e.key) - 1;
-      if (idx >= 0 && idx < event.actions.length) {
-        onSelectAction(event.id, event.actions[idx].id);
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [event.id, event.actions, onSelectAction, isFirst]);
+  const stats = useGameStore((s) => s.stats);
+  const flags = useGameStore((s) => s.flags || {});
 
   return (
     <div
@@ -92,29 +157,38 @@ export default function EventCard({
 
       {/* Actions */}
       <div className="grid gap-2">
-        {event.actions.map((action, idx) => (
-          <button
-            key={action.id}
-            onClick={() => onSelectAction(event.id, action.id)}
-            className="
-              group relative rounded-xl border border-zinc-700 bg-zinc-800/80
-              px-4 py-3 text-left text-sm font-medium text-zinc-100
-              transition-all duration-200
-              hover:scale-[1.02]
-              hover:border-zinc-500
-              hover:bg-zinc-700
-              active:scale-[0.98]
-            "
-          >
-            {/* Keyboard shortcut badge */}
-            {isFirst && (
-              <span className="absolute top-2 right-2 hidden sm:inline-flex items-center justify-center w-4 h-4 rounded text-[9px] font-bold text-zinc-600 border border-zinc-700 bg-zinc-900 group-hover:text-zinc-400 group-hover:border-zinc-600 transition-colors">
-                {idx + 1}
-              </span>
-            )}
-            {action.label}
-          </button>
-        ))}
+        {event.actions.map((action) => {
+          const isUnlocked =
+            !action.requirements ||
+            checkRequirement(action.requirements, stats, flags);
+
+          return (
+            <button
+              key={action.id}
+              disabled={!isUnlocked}
+              onClick={() => isUnlocked && onSelectAction(event.id, action.id)}
+              className={`
+                group relative rounded-xl border px-4 py-3 text-left text-sm font-medium
+                transition-all duration-200
+                ${
+                  isUnlocked
+                    ? "border-zinc-700 bg-zinc-800/80 text-zinc-100 hover:scale-[1.02] hover:border-zinc-500 hover:bg-zinc-700 active:scale-[0.98]"
+                    : "border-zinc-800/50 bg-zinc-900/30 text-zinc-500 opacity-60 cursor-not-allowed"
+                }
+              `}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <span>{action.label}</span>
+                {!isUnlocked && (
+                  <span className="text-[10px] font-extrabold text-red-500/80 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                    <span>🔒</span>
+                    <span>Khóa ({formatRequirements(action.requirements)})</span>
+                  </span>
+                )}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -2,6 +2,8 @@ import type { ProfessionConfig, ProfessionPack, Buff } from '../types/game.types
 import type { GameEvent } from '../types/event.types'
 import { BUFFS as COMMON_BUFFS } from '../data/buffs.data'
 
+import { COMMON_EVENTS } from '../data/events/common.events'
+
 // Eager load all profession files under the src/data/professions/ directory
 const modules = import.meta.glob<any>('../data/professions/*.ts', { eager: true })
 
@@ -16,7 +18,11 @@ export const PROFESSIONS_CONFIG: ProfessionConfig[] = PROFESSION_PACKS.map((pack
 
 export function getEventsForProfession(profession: string): GameEvent[] {
   const pack = PROFESSION_PACKS.find((p) => p.config.id === profession)
-  return pack ? pack.events : []
+  const profEvents = pack ? pack.events : []
+  return [
+    ...profEvents,
+    ...COMMON_EVENTS.map(e => ({ ...e, professions: [profession] }))
+  ]
 }
 
 export function getBuffsForProfession(profession: string | null): Buff[] {

@@ -1,8 +1,7 @@
-// src/screens/VictoryScreen.tsx
-
 import { motion } from "framer-motion";
 import { useGameStore } from "../store/gameStore";
 import { PROFESSIONS_CONFIG } from "../store/professionRegistry";
+import { ACHIEVEMENTS } from "../utils/achievementChecker";
 
 const formatMoney = (value: number) => {
   return new Intl.NumberFormat("vi-VN").format(value);
@@ -118,20 +117,56 @@ export default function VictoryScreen() {
           <div className="order-1 lg:order-2 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 sm:p-6 flex flex-col">
             <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-5">🏅 Achievements</h2>
 
-            <div className="space-y-3 flex-1 overflow-auto">
+            <div className="space-y-3 flex-1 overflow-auto max-h-[400px] pr-1">
               {achievements.length > 0 ? (
-                achievements.map((achievement) => (
-                  <div
-                    key={achievement}
-                    className="
-                      rounded-2xl border border-emerald-400/20
-                      bg-emerald-500/10
-                      px-4 py-4
-                    "
-                  >
-                    <div className="font-semibold">🏆 {achievement}</div>
-                  </div>
-                ))
+                achievements.map((id) => {
+                  const found = ACHIEVEMENTS.find((a) => a.id === id);
+                  if (!found) return null;
+
+                  const rewardsText = found.rewards
+                    ? found.rewards
+                        .map((r) => {
+                          const name =
+                            r.stat === "salary"
+                              ? "Lương"
+                              : r.stat === "stress"
+                              ? "Stress"
+                              : "Energy";
+                          const val =
+                            r.stat === "salary"
+                              ? `${r.value > 0 ? "+" : ""}${(
+                                  r.value / 1000
+                                ).toFixed(0)}k`
+                              : `${r.value > 0 ? "+" : ""}${r.value}%`;
+                          return `${val} ${name}`;
+                        })
+                        .join(", ")
+                    : "";
+
+                  return (
+                    <div
+                      key={id}
+                      className="
+                        rounded-2xl border border-emerald-400/20
+                        bg-emerald-500/10
+                        px-4 py-3
+                      "
+                    >
+                      <div className="font-bold flex items-center gap-1.5">
+                        <span className="text-lg">{found.emoji}</span>
+                        <span>{found.label}</span>
+                      </div>
+                      <p className="text-xs text-emerald-200/70 mt-1">
+                        {found.description}
+                      </p>
+                      {rewardsText && (
+                        <div className="text-[10px] font-extrabold text-emerald-300 bg-emerald-500/20 border border-emerald-500/20 px-2 py-0.5 rounded-full inline-block mt-2">
+                          🎁 Nhận: {rewardsText}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
               ) : (
                 <div className="rounded-2xl border border-dashed border-white/10 p-5 text-white/50 text-sm">
                   Chưa unlock achievement nào 😭

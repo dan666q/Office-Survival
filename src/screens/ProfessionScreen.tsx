@@ -9,40 +9,41 @@ export default function ProfessionScreen() {
   const goToScreen = useGameStore((s) => s.goToScreen);
 
   return (
-    <div className="min-h-screen bg-[#0f1117] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#0f1117] text-white relative overflow-y-auto">
       {/* Glow background */}
-      <div className="absolute top-[-120px] left-[-120px] w-[300px] h-[300px] bg-cyan-500/20 blur-3xl rounded-full" />
-      <div className="absolute bottom-[-120px] right-[-120px] w-[300px] h-[300px] bg-purple-500/20 blur-3xl rounded-full" />
+      <div className="absolute top-[-120px] left-[-120px] w-[300px] h-[300px] bg-cyan-500/20 blur-3xl rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-120px] right-[-120px] w-[300px] h-[300px] bg-purple-500/20 blur-3xl rounded-full pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-10 md:py-16">
+      <div className="relative z-10 max-w-[1600px] mx-auto px-4 py-6 md:py-12">
         {/* Header */}
-        <div className="mb-10">
+        <div className="mb-6 sm:mb-8">
           <button
             onClick={() => {
               soundManager.playClick();
               goToScreen("start");
             }}
             className="
-              mb-6
-              text-sm
+              mb-4 sm:mb-6
+              text-xs sm:text-sm
               text-zinc-400
               hover:text-white
               transition-colors
+              flex items-center gap-1
             "
           >
             ← Quay lại
           </button>
 
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-zinc-300">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] sm:text-xs text-zinc-300">
               🧠 Chọn class nhân vật
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-black tracking-tight">
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight">
               Chọn nghề nghiệp
             </h1>
 
-            <p className="text-zinc-400 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl leading-relaxed">
               Mỗi nghề có độ khó, kiểu đau khổ và phương thức burnout riêng. Hãy
               chọn con đường mà bạn muốn hối hận.
             </p>
@@ -50,7 +51,7 @@ export default function ProfessionScreen() {
         </div>
 
         {/* Profession cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {PROFESSIONS_CONFIG.map((job) => (
             <div
               key={job.id}
@@ -63,24 +64,25 @@ export default function ProfessionScreen() {
                 hover:border-cyan-400/40
                 transition-all
                 overflow-hidden
+                flex flex-col
               "
             >
               {/* top glow */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-cyan-400/5" />
 
-              <div className="p-6">
+              <div className="p-5 sm:p-6 flex flex-col flex-1">
                 {/* Emoji */}
-                <div className="text-5xl mb-5">{job.emoji}</div>
+                <div className="text-4xl sm:text-5xl mb-4">{job.emoji}</div>
 
                 {/* Title */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-4">
-                    <h2 className="text-2xl font-bold">{job.name}</h2>
+                <div className="space-y-1.5 flex-1">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="text-xl sm:text-2xl font-bold">{job.name}</h2>
 
                     <span
                       className={`
-                        text-xs
-                        px-3 py-1 rounded-full border
+                        text-[10px]
+                        px-2.5 py-0.5 rounded-full border font-bold
                         ${
                           job.difficulty === "Dễ"
                             ? "bg-green-500/10 text-green-300 border-green-500/20"
@@ -94,29 +96,29 @@ export default function ProfessionScreen() {
                     </span>
                   </div>
 
-                  <p className="text-sm text-zinc-400 leading-relaxed min-h-[60px]">
+                  <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed min-h-[48px] sm:min-h-[60px]">
                     {job.tagline}
                   </p>
                 </div>
 
                 {/* Enemy */}
-                <div className="mt-6">
-                  <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">
+                <div className="mt-4">
+                  <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1.5">
                     Kẻ thù chính
                   </p>
 
-                  <div className="rounded-2xl bg-[#0f1117] border border-white/5 p-4 text-sm text-zinc-300">
+                  <div className="rounded-xl bg-[#0f1117] border border-white/5 p-3 text-xs sm:text-sm text-zinc-300 min-h-[56px]">
                     {job.enemy}
                   </div>
                 </div>
 
                 {/* Stats */}
-                <div className="mt-6 space-y-3">
-                  <p className="text-xs uppercase tracking-wider text-zinc-500">
+                <div className="mt-4 space-y-2.5">
+                  <p className="text-[10px] uppercase tracking-wider text-zinc-500">
                     Chỉ số khởi đầu
                   </p>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {/* Stress */}
                     <StatBar
                       label="Stress"
@@ -140,26 +142,27 @@ export default function ProfessionScreen() {
                       )}
                       color="bg-emerald-400"
                     />
+
                   </div>
                 </div>
 
                 {/* Buffs */}
-                <div className="mt-6">
-                  <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">
+                <div className="mt-4">
+                  <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1.5">
                     Buff đặc trưng
                   </p>
 
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {job.uniqueBuffIds.map((buff) => (
                       <div
                         key={buff}
                         className="
-                          px-3 py-2
-                          rounded-xl
+                          px-2 py-1
+                          rounded-lg
                           bg-white/5
                           border border-white/5
-                          text-xs
-                          text-zinc-300
+                          text-[10px] sm:text-xs
+                          text-zinc-400
                         "
                       >
                         {buff.replaceAll("_", " ")}
@@ -175,17 +178,19 @@ export default function ProfessionScreen() {
                     startGame(job.id);
                   }}
                   className="
-                    mt-8
+                    mt-6
                     w-full
-                    h-14
+                    h-12 sm:h-14
                     rounded-2xl
                     bg-cyan-400
                     hover:bg-cyan-300
                     text-black
                     font-bold
+                    text-sm sm:text-base
                     transition-all
                     shadow-lg
                     shadow-cyan-500/20
+                    active:scale-95
                   "
                 >
                   Chọn nghề này →
@@ -208,13 +213,13 @@ interface StatBarProps {
 function StatBar({ label, value, color }: StatBarProps) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-1">
-        <p className="text-sm text-zinc-300">{label}</p>
+      <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+        <p className="text-xs sm:text-sm text-zinc-300">{label}</p>
 
-        <p className="text-sm text-zinc-500">{value}</p>
+        <p className="text-xs sm:text-sm text-zinc-500">{value}</p>
       </div>
 
-      <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+      <div className="h-1.5 sm:h-2 rounded-full bg-white/5 overflow-hidden">
         <div
           className={`h-full rounded-full ${color}`}
           style={{ width: `${Math.min(value, 100)}%` }}

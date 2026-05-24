@@ -45,6 +45,8 @@ interface GameStore {
   lunchBuffsBought: number
   dailySalaryEarned: number
   usedEventIds: string[]
+  weeklyEventCounts: Record<string, number>
+  flags: Record<string, boolean>
   consecutiveTimeouts: number
   dailyEventsHandled: number
   actionsChosen: string[]
@@ -88,6 +90,8 @@ export const useGameStore = create<GameStore>()(
       lunchBuffsBought: 0,
       dailySalaryEarned: 0,
       usedEventIds: [],
+      weeklyEventCounts: {},
+      flags: {},
       consecutiveTimeouts: 0,
       dailyEventsHandled: 0,
       actionsChosen: [],
@@ -103,9 +107,12 @@ export const useGameStore = create<GameStore>()(
         const dayConfig = DAYS_CONFIG.find(d => d.day === firstDay)!
         const slotConfig = dayConfig.timeSlots.find(s => s.slot === firstSlot)!
         const allEvents = getEventsForProfession(profession)
-        const queue = randomEvents(allEvents, firstSlot, slotConfig.eventCount, [])
+        const queue = randomEvents(allEvents, firstSlot, slotConfig.eventCount, [], {}, stats, {}, firstDay)
 
         initSlotTime(firstSlot)
+
+        const counts: Record<string, number> = {}
+        queue.forEach(e => { counts[e.id] = (counts[e.id] ?? 0) + 1 })
 
         set({
           screen: 'game',
@@ -130,6 +137,8 @@ export const useGameStore = create<GameStore>()(
           lunchBuffsBought: 0,
           dailySalaryEarned: 0,
           usedEventIds: queue.map(e => e.id),
+          weeklyEventCounts: counts,
+          flags: {},
           consecutiveTimeouts: 0,
           dailyEventsHandled: 0,
           actionsChosen: [],
@@ -156,6 +165,8 @@ export const useGameStore = create<GameStore>()(
           lunchBuffsBought: 0,
           dailySalaryEarned: 0,
           usedEventIds: [],
+          weeklyEventCounts: {},
+          flags: {},
           consecutiveTimeouts: 0,
           dailyEventsHandled: 0,
           actionsChosen: [],
@@ -169,11 +180,22 @@ export const useGameStore = create<GameStore>()(
         if (eventQueue.length === 0) return
         if (activeEvents.length >= MAX_ACTIVE_EVENTS) return
 
-        const [next, ...rest] = eventQueue
-        set({
-          activeEvents: [...activeEvents, next],
-          eventQueue: rest,
-        })
+        // 30% chance to push 2 events at once if queue has enough and there is room
+        const doubleSpawn = Math.random() < 0.3 && eventQueue.length >= 2 && activeEvents.length + 2 <= MAX_ACTIVE_EVENTS
+
+        if (doubleSpawn) {
+          const [first, second, ...rest] = eventQueue
+          set({
+            activeEvents: [...activeEvents, first, second],
+            eventQueue: rest,
+          })
+        } else {
+          const [next, ...rest] = eventQueue
+          set({
+            activeEvents: [...activeEvents, next],
+            eventQueue: rest,
+          })
+        }
       },
 
       handleTimeout: (eventId) => {
@@ -203,10 +225,15 @@ export const useGameStore = create<GameStore>()(
         )
 
         // Chain event nếu timeout 2 lần liên tiếp
+        let nextWeeklyCounts = get().weeklyEventCounts;
         if (consecutiveTimeouts >= 1) {
           const allEvents = getEventsForProfession(get().profession!)
           const escalateEvent = allEvents.find(e => e.id === 'it_boss_message' || e.id === 'seo_boss_pressure' || e.id === 'kt_q4_report')
           if (escalateEvent) {
+            nextWeeklyCounts = {
+              ...nextWeeklyCounts,
+              [escalateEvent.id]: (nextWeeklyCounts[escalateEvent.id] ?? 0) + 1
+            }
             set({ eventQueue: [escalateEvent, ...get().eventQueue] })
           }
         }
@@ -216,6 +243,7 @@ export const useGameStore = create<GameStore>()(
           activeEvents: remaining,
           consecutiveTimeouts: consecutiveTimeouts + 1,
           dailyEventsHandled: get().dailyEventsHandled + 1,
+          weeklyEventCounts: nextWeeklyCounts,
         })
 
         if (remaining.length === 0) get().nextEvent()
@@ -237,6 +265,7 @@ export const useGameStore = create<GameStore>()(
         get().addFeedEntry(action.feedMessage, 'info')
 
         const nextActionsChosen = [...actionsChosen, actionId]
+        const nextFlags = action.setFlags ? { ...get().flags, ...action.setFlags } : get().flags
 
         // Reset consecutive timeouts khi chọn action
         set({
@@ -244,6 +273,7 @@ export const useGameStore = create<GameStore>()(
           consecutiveTimeouts: 0,
           dailyEventsHandled: get().dailyEventsHandled + 1,
           actionsChosen: nextActionsChosen,
+          flags: nextFlags,
         })
 
         // Check achievements
@@ -255,10 +285,21 @@ export const useGameStore = create<GameStore>()(
           set({ achievements: [...get().achievements, ...newUnlocked] })
           newUnlocked.forEach(id => {
             const found = ACHIEVEMENTS.find(a => a.id === id)
-            if (found) get().addFeedEntry(
-              `🏅 Achievement mới: ${found.emoji} ${found.label}`,
-              'success'
-            )
+            if (found) {
+              get().addFeedEntry(
+                `🏅 Achievement mới: ${found.emoji} ${found.label}`,
+                'success'
+              )
+              if (found.rewards) {
+                get().applyStatEffects(found.rewards)
+                const rewardsText = found.rewards.map(r => {
+                  const name = r.stat === 'salary' ? 'Lương' : r.stat === 'stress' ? 'Stress' : 'Energy';
+                  const val = r.stat === 'salary' ? `${r.value > 0 ? '+' : ''}${(r.value / 1000).toFixed(0)}k` : `${r.value > 0 ? '+' : ''}${r.value}%`;
+                  return `${val} ${name}`;
+                }).join(', ');
+                get().addFeedEntry(`🎁 Nhận thưởng: ${rewardsText}`, 'success');
+              }
+            }
           })
         }
 
@@ -270,8 +311,14 @@ export const useGameStore = create<GameStore>()(
             .filter(Boolean) as GameEvent[]
 
           if (chained.length > 0) {
+            const counts = { ...get().weeklyEventCounts }
+            chained.forEach(e => { counts[e.id] = (counts[e.id] ?? 0) + 1 })
+
             setTimeout(() => {
-              set({ eventQueue: [...chained, ...get().eventQueue] })
+              set({
+                eventQueue: [...chained, ...get().eventQueue],
+                weeklyEventCounts: counts,
+              })
               if (get().activeEvents.length === 0) get().nextEvent()
             }, action.chainEvents[0].delay ?? 1500)
             return
@@ -351,8 +398,10 @@ export const useGameStore = create<GameStore>()(
         const allEvents = getEventsForProfession(profession)
 
         // Dùng usedEventIds để tránh lặp event trong ngày
-        const newQueue = randomEvents(allEvents, nextSlot, slotConfig.eventCount, usedEventIds)
+        const newQueue = randomEvents(allEvents, nextSlot, slotConfig.eventCount, usedEventIds, get().weeklyEventCounts, stats, get().flags, currentDay)
         const newUsedIds = [...usedEventIds, ...newQueue.map(e => e.id)]
+        const nextWeeklyCounts = { ...get().weeklyEventCounts }
+        newQueue.forEach(e => { nextWeeklyCounts[e.id] = (nextWeeklyCounts[e.id] ?? 0) + 1 })
 
         let newStats = {
           ...stats,
@@ -396,6 +445,7 @@ export const useGameStore = create<GameStore>()(
           slotEventsRemaining: newQueue.length,
           lunchBuffsBought,
           usedEventIds: newUsedIds,
+          weeklyEventCounts: nextWeeklyCounts,
           consecutiveTimeouts: 0,
         })
       },
@@ -430,9 +480,9 @@ export const useGameStore = create<GameStore>()(
         if (!currentDay || !profession) return
 
         const restEffects = {
-          sleep:    { energy: +40, stress: -20, salary: -300000 },
-          beer:     { energy: +20, stress: +5,  salary: +200000 },
-          overtime: { energy: +10, stress: +20, salary: +800000 },
+          sleep:    { energy: +45, stress: -25, salary: 0 },
+          beer:     { energy: +10, stress: -20, salary: -150000 },
+          overtime: { energy: -15, stress: +25, salary: +250000 },
         }
 
         const effect = restEffects[restChoice]
@@ -469,10 +519,13 @@ export const useGameStore = create<GameStore>()(
         const dayConfig = DAYS_CONFIG.find(d => d.day === nextDay)!
         const slotConfig = dayConfig.timeSlots.find(s => s.slot === firstSlot)!
         const allEvents = getEventsForProfession(profession)
-        const queue = randomEvents(allEvents, firstSlot, slotConfig.eventCount, [])
+        const queue = randomEvents(allEvents, firstSlot, slotConfig.eventCount, [], get().weeklyEventCounts, newStats, get().flags, nextDay)
 
         initSlotTime(firstSlot)
         get().addFeedEntry(`${dayConfig.title} bắt đầu. Tiếp tục thôi. 💪`, 'info')
+
+        const nextWeeklyCounts = { ...get().weeklyEventCounts }
+        queue.forEach(e => { nextWeeklyCounts[e.id] = (nextWeeklyCounts[e.id] ?? 0) + 1 })
 
         set({
           screen: 'day_transition',
@@ -486,6 +539,7 @@ export const useGameStore = create<GameStore>()(
           lunchBuffsBought: 0,
           dailySalaryEarned: 0,
           usedEventIds: queue.map(e => e.id),
+          weeklyEventCounts: nextWeeklyCounts,
           consecutiveTimeouts: 0,
           dailyEventsHandled: 0,
         })
@@ -499,7 +553,18 @@ export const useGameStore = create<GameStore>()(
           set({ achievements: [...get().achievements, ...newAchievements] })
           newAchievements.forEach(id => {
             const found = ACHIEVEMENTS.find(a => a.id === id)
-            if (found) get().addFeedEntry(`🏅 Achievement mới: ${found.emoji} ${found.label}`, 'success')
+            if (found) {
+              get().addFeedEntry(`🏅 Achievement mới: ${found.emoji} ${found.label}`, 'success')
+              if (found.rewards) {
+                get().applyStatEffects(found.rewards)
+                const rewardsText = found.rewards.map(r => {
+                  const name = r.stat === 'salary' ? 'Lương' : r.stat === 'stress' ? 'Stress' : 'Energy';
+                  const val = r.stat === 'salary' ? `${r.value > 0 ? '+' : ''}${(r.value / 1000).toFixed(0)}k` : `${r.value > 0 ? '+' : ''}${r.value}%`;
+                  return `${val} ${name}`;
+                }).join(', ');
+                get().addFeedEntry(`🎁 Nhận thưởng: ${rewardsText}`, 'success');
+              }
+            }
           })
         }
       },
@@ -613,6 +678,8 @@ export const useGameStore = create<GameStore>()(
         lunchBuffsBought: state.lunchBuffsBought,
         dailySalaryEarned: state.dailySalaryEarned,
         usedEventIds: state.usedEventIds,
+        weeklyEventCounts: state.weeklyEventCounts,
+        flags: state.flags,
         consecutiveTimeouts: state.consecutiveTimeouts,
         dailyEventsHandled: state.dailyEventsHandled,
         actionsChosen: state.actionsChosen,
