@@ -137,8 +137,7 @@ export default function StartScreen() {
 
           {/* Footer */}
           <div className="mt-8 flex items-center justify-between text-[10px] sm:text-xs text-zinc-500 border-t border-white/5 pt-4">
-            <p>Phiên bản 0.3 - cảm ơn Antigravity và Claude Code</p>
-            <p>by @dan666q</p>
+            <p>Phiên bản 0.3 - Cảm ơn Antigravity và Claude Code</p>
           </div>
         </motion.div>
       </div>
@@ -150,184 +149,86 @@ export default function StartScreen() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4"
-            onClick={() => { soundManager.playClick(); setShowGuide(false); }}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
           >
             <motion.div
-              initial={{ scale: 0.92, y: 24, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.92, y: 24, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              className="w-full max-w-lg bg-[#13161f] border border-white/10 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="w-full max-w-lg bg-[#171b26] border border-white/15 rounded-3xl p-5 sm:p-7 shadow-2xl relative max-h-[85vh] overflow-y-auto"
             >
-              {/* Header */}
-              <div className="sticky top-0 z-10 bg-[#13161f]/95 backdrop-blur-sm border-b border-white/5 px-5 sm:px-7 pt-5 sm:pt-7 pb-4 flex items-center justify-between">
-                <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
-                  📖 <span className="text-cyan-400">Hướng dẫn</span> sống sót
-                </h2>
-                <button
-                  onClick={() => { soundManager.playClick(); setShowGuide(false); }}
-                  className="text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full w-8 h-8 flex items-center justify-center text-sm transition-colors shrink-0"
-                >
-                  ✕
-                </button>
-              </div>
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  soundManager.playClick();
+                  setShowGuide(false);
+                }}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full w-8 h-8 flex items-center justify-center text-sm transition-colors"
+              >
+                ✕
+              </button>
 
-              <div className="px-5 sm:px-7 py-5 space-y-5 text-xs sm:text-sm">
+              <h2 className="text-xl sm:text-2xl font-black text-cyan-400 mb-4 sm:mb-5">
+                📖 Hướng dẫn sống sót công sở
+              </h2>
 
-                {/* Goal */}
-                <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-2xl p-4">
-                  <h3 className="font-extrabold text-cyan-300 mb-2 flex items-center gap-1.5">
-                    🎯 Mục tiêu
+              <div className="space-y-4 text-zinc-300 text-xs sm:text-sm leading-relaxed">
+                <div>
+                  <h3 className="font-extrabold text-white text-sm sm:text-base mb-1.5">
+                    🎯 Mục tiêu sống sót
                   </h3>
-                  <p className="text-zinc-300 leading-relaxed">
-                    Sống sót qua <strong className="text-white">6 ngày làm việc</strong> (Thứ Hai → Thứ Bảy) mà không bị <span className="text-red-400 font-bold">burnout</span> hay <span className="text-yellow-400 font-bold">kiệt sức</span>.
-                    Mỗi ngày sẽ có nhiều sự kiện bất ngờ ập đến — bạn phải ra quyết định nhanh trước khi hết giờ!
+                  <p>
+                    Vượt qua tuần làm việc đầy khắc nghiệt từ **Thứ Hai đến Thứ Bảy**. Quản lý sát sao các chỉ số tinh thần và thể chất để không bị sa thải hoặc ngã gục.
                   </p>
                 </div>
 
-                {/* Stats */}
                 <div>
-                  <h3 className="font-extrabold text-white mb-3 flex items-center gap-1.5">
-                    📊 Ba chỉ số cần theo dõi
+                  <h3 className="font-extrabold text-white text-sm sm:text-base mb-1.5">
+                    📊 Hệ thống chỉ số
                   </h3>
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-3">
-                      <span className="text-lg shrink-0">😤</span>
-                      <div>
-                        <p className="font-bold text-red-400">Stress (Căng thẳng)</p>
-                        <p className="text-zinc-400 mt-0.5">Tăng khi gặp sự cố, áp lực, deadline, hoặc chọn phương án rủi ro. Nếu chạm <strong className="text-red-300">100%</strong> → bạn burnout và thua cuộc ngay.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3">
-                      <span className="text-lg shrink-0">⚡</span>
-                      <div>
-                        <p className="font-bold text-yellow-300">Energy (Thể lực)</p>
-                        <p className="text-zinc-400 mt-0.5">Hao dần theo thời gian và sự kiện. Nếu về <strong className="text-yellow-200">0%</strong> → bạn gục ngã và thua cuộc. Phải ngủ đủ giấc mỗi đêm để hồi phục.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3">
-                      <span className="text-lg shrink-0">💰</span>
-                      <div>
-                        <p className="font-bold text-emerald-400">Salary (Lương)</p>
-                        <p className="text-zinc-400 mt-0.5">Cộng dồn mỗi ngày, dùng mua đồ hồi phục trong <strong className="text-white">Shop giờ trưa</strong>. Các lựa chọn tốt hoặc làm thêm OT sẽ tăng lương.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Daily Flow */}
-                <div>
-                  <h3 className="font-extrabold text-white mb-3 flex items-center gap-1.5">
-                    🕐 Một ngày diễn ra thế nào?
-                  </h3>
-                  <div className="space-y-2">
-                    {[
-                      { icon: "🌅", time: "Sáng", color: "orange", desc: "Sự kiện bắt đầu xuất hiện. Mỗi sự kiện có đồng hồ đếm ngược — chọn nhanh trước khi hết giờ! Nếu hết giờ mà không chọn, game tự chọn phương án mặc định (thường không tốt lắm)." },
-                      { icon: "☀️", time: "Trưa", color: "yellow", desc: "Sự kiện dồn dập hơn và khó hơn. Bạn sẽ có giờ nghỉ trưa để vào Shop mua đồ hồi phục bằng lương tích lũy." },
-                      { icon: "🌆", time: "Chiều", color: "purple", desc: "Giai đoạn căng thẳng nhất. Sự kiện có thể xuất hiện 2 cái cùng lúc! Giữ bình tĩnh, ưu tiên xử lý sự kiện nào có timer ngắn hơn trước." },
-                      { icon: "🌙", time: "Tối", color: "blue", desc: "Kết thúc ngày — bạn chọn cách nghỉ ngơi để chuẩn bị cho ngày mai." },
-                    ].map((item) => (
-                      <div key={item.time} className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl p-3">
-                        <span className="text-base shrink-0">{item.icon}</span>
-                        <div>
-                          <p className="font-bold text-white">{item.time}</p>
-                          <p className="text-zinc-400 mt-0.5 leading-relaxed">{item.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Events */}
-                <div>
-                  <h3 className="font-extrabold text-white mb-3 flex items-center gap-1.5">
-                    ⚡ Sự kiện hoạt động thế nào?
-                  </h3>
-                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2 text-zinc-300 leading-relaxed">
-                    <p>🃏 Mỗi sự kiện có <strong className="text-white">2–3 lựa chọn</strong>, mỗi lựa chọn ảnh hưởng khác nhau đến Stress, Energy và Salary.</p>
-                    <p>⏱️ Mỗi sự kiện có <strong className="text-white">đồng hồ đếm ngược</strong>. Không chọn kịp → game tự xử lý (thường ảnh hưởng xấu).</p>
-                    <p>🎭 Sự kiện có 3 mức độ ưu tiên: <span className="text-zinc-300">Thường</span>, <span className="text-yellow-400">Quan trọng</span>, <span className="text-red-400">Khẩn cấp</span>. Sự kiện khẩn cấp xuất hiện nhiều hơn ở cuối tuần.</p>
-                    <p>🔗 Một số quyết định sẽ để lại <strong className="text-purple-300">cờ trạng thái</strong> — ảnh hưởng đến các sự kiện sau trong ngày hoặc những ngày tới.</p>
-                  </div>
-                </div>
-
-                {/* Night choices */}
-                <div>
-                  <h3 className="font-extrabold text-white mb-3 flex items-center gap-1.5">
-                    🌙 Lựa chọn cuối ngày
-                  </h3>
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-3 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
-                      <span className="text-base shrink-0">😴</span>
-                      <div>
-                        <p className="font-bold text-blue-300">Ngủ sớm <span className="text-zinc-500 font-normal">(Miễn phí)</span></p>
-                        <p className="text-zinc-400 mt-0.5">Hồi phục <strong>+45 Energy</strong>, giảm <strong>-25 Stress</strong>. Lựa chọn an toàn nhất, luôn luôn khả dụng.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 bg-orange-500/10 border border-orange-500/20 rounded-xl p-3">
-                      <span className="text-base shrink-0">🍻</span>
-                      <div>
-                        <p className="font-bold text-orange-300">Đi nhậu <span className="text-zinc-500 font-normal">(-150,000₫)</span></p>
-                        <p className="text-zinc-400 mt-0.5">+10 Energy, giảm -20 Stress. Tốn tiền nhưng giải stress tốt. <strong className="text-orange-200">Bị khóa</strong> nếu ví không đủ 150k hoặc stress ≥ 85.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3">
-                      <span className="text-base shrink-0">💼</span>
-                      <div>
-                        <p className="font-bold text-emerald-300">Làm thêm OT <span className="text-zinc-500 font-normal">(+250,000₫)</span></p>
-                        <p className="text-zinc-400 mt-0.5">Kiếm thêm tiền nhưng <strong>-15 Energy</strong> và <strong>+25 Stress</strong>. <strong className="text-red-300">Bị khóa</strong> nếu energy ≤ 25 hoặc stress ≥ 80.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Win / Lose */}
-                <div>
-                  <h3 className="font-extrabold text-white mb-3 flex items-center gap-1.5">
-                    🏆 Thắng & Thua
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-emerald-500/8 border border-emerald-500/20 rounded-xl p-3">
-                      <p className="font-bold text-emerald-400 mb-1">🎉 Thắng khi:</p>
-                      <p className="text-zinc-400">Hoàn thành cả 6 ngày mà Stress &lt; 100% và Energy &gt; 0%</p>
-                    </div>
-                    <div className="bg-red-500/8 border border-red-500/20 rounded-xl p-3">
-                      <p className="font-bold text-red-400 mb-1">💀 Thua khi:</p>
-                      <p className="text-zinc-400">Stress đạt 100% <em>hoặc</em> Energy về 0% bất kỳ lúc nào</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tips */}
-                <div className="bg-yellow-500/5 border border-yellow-500/15 rounded-2xl p-4">
-                  <h3 className="font-extrabold text-yellow-300 mb-2 flex items-center gap-1.5">
-                    💡 Mẹo sinh tồn
-                  </h3>
-                  <ul className="space-y-1.5 text-zinc-300">
-                    <li>🎯 Ưu tiên xử lý sự kiện <span className="text-red-400 font-bold">Khẩn cấp</span> trước — bỏ qua có thể mất nhiều điểm chỉ số.</li>
-                    <li>💊 Ghé Shop trưa thường xuyên nếu Stress hoặc Energy đang nguy hiểm.</li>
-                    <li>😴 Nếu cả 2 chỉ số đều thấp, hãy <strong>ngủ sớm</strong> thay vì cố OT.</li>
-                    <li>🔮 Đọc kỹ mô tả sự kiện — một số lựa chọn nghe hay nhưng hậu quả về sau rất nặng.</li>
-                    <li>📅 Cuối tuần (Thứ 5–7) khó hơn nhiều, hãy tích trữ Energy từ đầu tuần.</li>
+                  <ul className="list-disc pl-4 space-y-1 text-zinc-400">
+                    <li>
+                      <strong className="text-red-400">Stress (Căng thẳng):</strong> Tăng khi gặp sự cố, deadline hoặc áp lực. Đạt **100%** ➔ <span className="text-red-300">Burnout & Thua cuộc</span>.
+                    </li>
+                    <li>
+                      <strong className="text-yellow-400">Energy (Thể lực):</strong> Tiêu hao theo thời gian làm việc. Giảm về **0%** ➔ <span className="text-yellow-300">Kiệt sức & Thua cuộc</span>.
+                    </li>
+                    <li>
+                      <strong className="text-emerald-400">Salary (Lương tích lũy):</strong> Cộng dồn mỗi cuối ngày. Dùng để chi tiêu trong giờ nghỉ trưa.
+                    </li>
                   </ul>
                 </div>
 
+                <div>
+                  <h3 className="font-extrabold text-white text-sm sm:text-base mb-1.5">
+                    💡 Hậu quả quyết định (Cờ cốt truyện)
+                  </h3>
+                  <p>
+                    Các hành động bạn chọn sẽ ghi dấu vĩnh viễn (ví dụ: *làm khóc intern*, *xào nấu số liệu*, *hóng drama*). Quyết định lười biếng lúc sáng có thể **khóa chặt** con đường an toàn của bạn vào buổi chiều, đòi hỏi bạn phải trả giá cực đắt!
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-extrabold text-white text-sm sm:text-base mb-1.5">
+                    🏪 Shop trưa & Lựa chọn đêm
+                  </h3>
+                  <p>
+                    - **Nghỉ trưa (Lunch):** Hãy dùng Lương mua các vật phẩm xịn (Buffs) ở Shop để hồi phục chỉ số và nâng cấp kỹ năng.
+                    <br />
+                    - **Lựa chọn tối (Night):** Cân đối giữa *Ngủ sớm* (hồi phục an toàn), *Đi nhậu* (tăng tiền nhưng tăng stress), và *Làm thêm OT* (nhận cực nhiều tiền nhưng tốn sức và stress lớn). **OT và Nhậu sẽ bị khóa nếu thể lực quá yếu hoặc stress quá sát ngưỡng chết!**
+                  </p>
+                </div>
               </div>
 
-              {/* Footer */}
-              <div className="sticky bottom-0 bg-[#13161f]/95 backdrop-blur-sm border-t border-white/5 px-5 sm:px-7 py-4">
-                <button
-                  onClick={() => {
-                    soundManager.playClick();
-                    setShowGuide(false);
-                  }}
-                  className="w-full h-11 rounded-xl bg-cyan-400 text-black font-bold text-sm sm:text-base hover:bg-cyan-300 active:scale-95 transition-all"
-                >
-                  Đã hiểu rồi, chiến thôi! 🎮
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  soundManager.playClick();
+                  setShowGuide(false);
+                }}
+                className="mt-6 w-full h-12 rounded-xl bg-cyan-400 text-black font-bold text-sm sm:text-base hover:bg-cyan-300 transition-colors"
+              >
+                Đã rõ, chiến game ngay 🎮
+              </button>
             </motion.div>
           </motion.div>
         )}
