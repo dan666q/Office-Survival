@@ -19,8 +19,8 @@ export const designerPack: ProfessionPack = {
   buffs: [
     {
       id: 'figma_pro',
-      name: 'Figma Pro',
-      description: 'Auto layout xịn sò, không lo méo giao diện, kho component phong phú.',
+      name: 'Adobe Creative Cloud',
+      description: 'Gói Adobe bản quyền xịn nhất. Tha hồ vẽ Illustrator, Photoshop mượt mà không lo bị khóa, lỗi hay crash.',
       cost: 450000,
       icon: '🎨',
       duration: 'permanent',
@@ -31,10 +31,10 @@ export const designerPack: ProfessionPack = {
     },
     {
       id: 'pinterest_premium',
-      name: 'Pinterest Premium',
-      description: 'Kho ý tưởng không giới hạn, cạn kiệt cảm hứng là chuyện quá khứ.',
+      name: 'Freepik Premium',
+      description: 'Tải vector, stock ảnh chất lượng cao không giới hạn. Ý tưởng dồi dào, tha hồ xào nấu thiết kế siêu tốc.',
       cost: 250000,
-      icon: '📌',
+      icon: '📸',
       duration: 'permanent',
       effects: [
         { stat: 'energy', value: 15 },
@@ -43,8 +43,8 @@ export const designerPack: ProfessionPack = {
     },
     {
       id: 'drawing_tablet',
-      name: 'Bảng vẽ Wacom',
-      description: 'Vẽ tay mượt mà, tăng tốc độ vẽ storyboard và minh họa gấp 3 lần.',
+      name: 'Wacom Intuos Pro',
+      description: 'Bút vẽ siêu nhạy, nét vẽ tay mượt mà. Tăng tốc độ phác thảo storyboard và minh họa nhân vật lên gấp 3.',
       cost: 600000,
       icon: '✍️',
       duration: 'permanent',
@@ -55,10 +55,10 @@ export const designerPack: ProfessionPack = {
     },
     {
       id: 'color_wheel',
-      name: 'Bánh xe màu phong thủy',
-      description: 'Tự động gợi ý phối màu hợp mệnh sếp và đối tác, nhìn phát duyệt ngay.',
+      name: 'Thuốc nhỏ mắt nhỏ gáy',
+      description: 'Combo xoa dịu đôi mắt cận lồi và cái gáy đơ cứng sau 16 tiếng cày Figma liên tục. Nhỏ giọt tỉnh cả người.',
       cost: 150000,
-      icon: '🎡',
+      icon: '👁️',
       duration: 'day',
       effects: [
         { stat: 'stress', value: -15 },

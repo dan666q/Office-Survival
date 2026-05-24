@@ -8,7 +8,7 @@ const formatMoney = (value: number) => {
 };
 
 export default function VictoryScreen() {
-  const { profession, stats, achievements, restartGame, goToScreen } =
+  const { profession, stats, achievements, restartGame, goToScreen, startGame } =
     useGameStore();
 
   const profConfig = PROFESSIONS_CONFIG.find((p) => p.id === profession);
@@ -175,11 +175,17 @@ export default function VictoryScreen() {
             </div>
 
             <div className="mt-6 space-y-4">
-              <ActionButton title="🔄 Chơi lại" onClick={restartGame} />
+              <ActionButton
+                title="🔄 Chơi lại nghề này"
+                onClick={() => startGame(profession!)}
+              />
 
               <ActionButton
                 title="💼 Đổi nghề"
-                onClick={() => goToScreen("profession")}
+                onClick={() => {
+                  restartGame();
+                  goToScreen("profession");
+                }}
               />
             </div>
           </div>

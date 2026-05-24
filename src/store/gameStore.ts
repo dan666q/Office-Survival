@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware'
 import type { Profession, DayOfWeek, TimeSlot, GameStats, FeedEntry, DaySummary } from '../types/game.types'
 import type { GameEvent } from '../types/event.types'
 import { DAYS_CONFIG } from '../data'
-import { BUFFS } from '../data/buffs.data'
 import { checkNewAchievements, ACHIEVEMENTS } from '../utils/achievementChecker'
 import { soundManager } from '../utils/soundManager'
 import {
@@ -22,7 +21,8 @@ import {
   getNextTimeSlot,
   generateId,
   clampStat,
-  PROFESSIONS_CONFIG
+  PROFESSIONS_CONFIG,
+  getBuffsForProfession
 } from './gameHelpers'
 
 // ==================== STORE INTERFACE ====================
@@ -50,6 +50,7 @@ interface GameStore {
   consecutiveTimeouts: number
   dailyEventsHandled: number
   actionsChosen: string[]
+  flashEffect: 'success' | 'danger' | null
 
   goToScreen: (screen: GameStore['screen']) => void
   startGame: (profession: Profession) => void
@@ -95,6 +96,7 @@ export const useGameStore = create<GameStore>()(
       consecutiveTimeouts: 0,
       dailyEventsHandled: 0,
       actionsChosen: [],
+      flashEffect: null,
 
       // ==================== NAVIGATION ====================
 
@@ -260,8 +262,25 @@ export const useGameStore = create<GameStore>()(
         const dayConfig = DAYS_CONFIG.find(d => d.day === currentDay)
         const stressRate = dayConfig?.statModifiers.stressRate ?? 1
 
+        const isRisky = action.effects.some(e => e.stat === 'salary' && e.value < 0) ||
+          (action.setFlags && Object.entries(action.setFlags).some(([flag, val]) =>
+            val === true && ['has_hidden_error', 'team_hates_you', 'betrayer_tag', 'audit_discrepancy', 'intern_cried', 'intern_hates_you', 'tax_audit_triggered', 'crack_installed'].includes(flag)
+          ))
+
         get().applyStatEffects(action.effects, stressRate)
-        soundManager.playSuccess();
+        
+        if (isRisky) {
+          soundManager.playDanger()
+          set({ flashEffect: 'danger' })
+        } else {
+          soundManager.playSuccess()
+          set({ flashEffect: 'success' })
+        }
+
+        setTimeout(() => {
+          set({ flashEffect: null })
+        }, 400)
+
         get().addFeedEntry(action.feedMessage, 'info')
 
         const nextActionsChosen = [...actionsChosen, actionId]
@@ -380,8 +399,9 @@ export const useGameStore = create<GameStore>()(
 
         // Apply buff passives
         const buffEffects: { stat: keyof GameStats; value: number }[] = []
+        const currentBuffList = getBuffsForProfession(profession)
         activeBuffs.forEach(buffId => {
-          const buff = BUFFS.find(b => b.id === buffId)
+          const buff = currentBuffList.find(b => b.id === buffId)
           if (!buff) return
           if (buff.duration === 'permanent' || buff.duration === 'day') {
             buff.effects.forEach(e => {
@@ -427,7 +447,7 @@ export const useGameStore = create<GameStore>()(
         }
 
         const remainingBuffs = activeBuffs.filter(buffId => {
-          const buff = BUFFS.find(b => b.id === buffId)
+          const buff = currentBuffList.find(b => b.id === buffId)
           return buff?.duration !== 'timeslot'
         })
 
@@ -510,8 +530,9 @@ export const useGameStore = create<GameStore>()(
           return
         }
 
+        const currentBuffList = getBuffsForProfession(profession)
         const remainingBuffs = activeBuffs.filter(buffId => {
-          const buff = BUFFS.find(b => b.id === buffId)
+          const buff = currentBuffList.find(b => b.id === buffId)
           return buff?.duration === 'permanent'
         })
 
@@ -624,8 +645,9 @@ export const useGameStore = create<GameStore>()(
       // ==================== BUFFS ====================
 
       buyBuff: (buffId) => {
-        const { stats, activeBuffs, currentTimeSlot, lunchBuffsBought } = get()
-        const buff = BUFFS.find(b => b.id === buffId)
+        const { stats, activeBuffs, currentTimeSlot, lunchBuffsBought, profession } = get()
+        const currentBuffList = getBuffsForProfession(profession)
+        const buff = currentBuffList.find(b => b.id === buffId)
         if (!buff) return
 
         if (currentTimeSlot !== 'lunch') {
@@ -650,14 +672,14 @@ export const useGameStore = create<GameStore>()(
           }
         })
 
+        const nextBought = lunchBuffsBought + 1;
         set({
           stats: newStats,
           activeBuffs: [...activeBuffs, buffId],
-          lunchBuffsBought: lunchBuffsBought + 1,
+          lunchBuffsBought: nextBought,
         })
 
         soundManager.playSuccess();
-
         get().addFeedEntry(`Đã mua ${buff.icon} ${buff.name}!`, 'success')
       },
     }),

@@ -19,8 +19,8 @@ export const boyPhoPack: ProfessionPack = {
   buffs: [
     {
       id: 'sh_mode',
-      name: 'SH Mode xám xi măng',
-      description: 'Lượn phố cực ngầu, thu hút mọi ánh nhìn, sếp thấy cũng phải né đường.',
+      name: 'Wave Alpha kiểng độ pô',
+      description: 'Pô giòn giã nẹt vang phố. Lạng lách vượt mọi kẹt xe để đến công ty chấm công lúc... 11h trưa.',
       cost: 500000,
       icon: '🛵',
       duration: 'permanent',
@@ -31,10 +31,10 @@ export const boyPhoPack: ProfessionPack = {
     },
     {
       id: 'neon_cap',
-      name: 'Mũ lưỡi trai neon',
-      description: 'Đội ngược phong cách boy phố, tăng 200% độ tự tin khi họp báo cáo.',
+      name: 'Quần rách gối & Xích bạc',
+      description: 'Thời trang đường phố cực ngầu, xích bạc đeo hông leng keng tăng 200% tự tin khi họp báo cáo.',
       cost: 150000,
-      icon: '🧢',
+      icon: '👖',
       duration: 'permanent',
       effects: [
         { stat: 'stress', value: -20 },
@@ -43,10 +43,10 @@ export const boyPhoPack: ProfessionPack = {
     },
     {
       id: 'golden_card',
-      name: 'Thẻ đen vô hạn',
-      description: 'Bố mẹ chu cấp không giới hạn, tiền chỉ là con số, lo lắng tiêu biến.',
+      name: 'Xích vàng 9999 bản to',
+      description: 'Bố mẹ sắm cho sợi dây chuyền to bản. Thể hiện đẳng cấp trâm anh thế phiệt, sếp thấy phải nể 3 phần.',
       cost: 1000000,
-      icon: '💳',
+      icon: '⛓️',
       duration: 'permanent',
       effects: [
         { stat: 'stress', value: -50 },
@@ -55,10 +55,10 @@ export const boyPhoPack: ProfessionPack = {
     },
     {
       id: 'boba_unlimited',
-      name: 'Trà sữa full topping',
-      description: 'Gọi liền lúc 10 ly chia cả văn phòng, ai cũng cung phụng bạn.',
+      name: 'Loa kéo JBL cực trầm',
+      description: 'Mang loa kéo vào pantry bật Vinahouse xập xình, biến văn phòng thành sàn diễn xả stress cực mạnh.',
       cost: 200000,
-      icon: '🧋',
+      icon: '🔊',
       duration: 'day',
       effects: [
         { stat: 'stress', value: -15 },

@@ -31,8 +31,8 @@ export function getBuffsForProfession(profession: string | null): Buff[] {
   const uniqueBuffs = pack ? pack.buffs : []
   
   return [
-    ...COMMON_BUFFS,
-    ...uniqueBuffs.map(b => ({ ...b, professions: [profession] }))
+    ...uniqueBuffs.map(b => ({ ...b, professions: [profession] })),
+    ...COMMON_BUFFS
   ]
 }
 

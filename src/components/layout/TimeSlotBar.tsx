@@ -31,16 +31,16 @@ export default function TimeSlotBar() {
                 key={slot.key}
                 className={`
                   relative flex flex-col items-center justify-center
-                  px-3 py-2 min-w-[60px] flex-1
+                  px-1.5 py-0.5 sm:px-3 sm:py-2 min-w-[36px] sm:min-w-[60px] flex-1
                   text-center transition-all duration-300
                   border-b-2
                   ${isActive ? "border-cyan-400" : "border-transparent"}
                 `}
               >
-                {/* Dot indicator */}
+                {/* Dot indicator — hidden on mobile */}
                 <div
                   className={`
-                  w-1.5 h-1.5 rounded-full mb-1 transition-all duration-300
+                  hidden sm:block w-1.5 h-1.5 rounded-full mb-1 transition-all duration-300
                   ${isDone ? "bg-emerald-400" : ""}
                   ${
                     isActive
@@ -54,11 +54,11 @@ export default function TimeSlotBar() {
                 {/* Label — short trên mobile, đầy đủ trên desktop */}
                 <span
                   className={`
-                  text-[10px] font-medium whitespace-nowrap transition-colors duration-300
+                  text-[9px] sm:text-[10px] font-bold whitespace-nowrap transition-colors duration-300
                   sm:hidden
                   ${isDone ? "text-emerald-400" : ""}
                   ${isActive ? "text-cyan-300" : ""}
-                  ${isFuture ? "text-zinc-600" : ""}
+                  ${isFuture ? "text-zinc-650" : ""}
                 `}
                 >
                   {slot.short}
@@ -80,7 +80,7 @@ export default function TimeSlotBar() {
                   <div
                     className={`
                     absolute right-0 top-1/2 -translate-y-1/2
-                    w-px h-3
+                    w-px h-2 sm:h-3
                     ${isDone ? "bg-emerald-800" : "bg-zinc-800"}
                   `}
                   />

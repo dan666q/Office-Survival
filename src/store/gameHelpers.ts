@@ -5,10 +5,11 @@ import type { GameEvent, StatRequirement } from '../types/event.types'
 import {
   PROFESSIONS_CONFIG,
   getEventsForProfession,
-  getStartingStats
+  getStartingStats,
+  getBuffsForProfession
 } from './professionRegistry'
 
-export { PROFESSIONS_CONFIG, getEventsForProfession, getStartingStats }
+export { PROFESSIONS_CONFIG, getEventsForProfession, getStartingStats, getBuffsForProfession }
 
 export const DAY_ORDER: DayOfWeek[] = [
   'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'

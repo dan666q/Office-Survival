@@ -19,19 +19,6 @@ const priorityStyles = {
   critical: "border-red-500/50 bg-red-500/10 animate-pulse",
 };
 
-const priorityBadgeStyles = {
-  low: "bg-zinc-700/80 text-zinc-300",
-  medium: "bg-yellow-500/20 text-yellow-300",
-  high: "bg-orange-500/20 text-orange-300",
-  critical: "bg-red-500/30 text-red-200",
-};
-
-const priorityLabel: Record<string, string> = {
-  low: "⚪ Thường",
-  medium: "🟡 Quan trọng",
-  high: "🟠 Khẩn",
-  critical: "🔴 CRITICAL",
-};
 
 const FLAG_LABELS: Record<string, string> = {
   gossip_spread: "Đã hóng drama",
@@ -110,6 +97,23 @@ function formatRequirements(requirements: any): string {
   return parts.join(", ");
 }
 
+function getEmailSender(title: string, priority: string) {
+  const lowercase = title.toLowerCase();
+  if (lowercase.includes("sếp") || lowercase.includes("giám đốc") || priority === "critical") {
+    return { name: "Sếp Tổng 👔", email: "sep.tong@officeos.com" };
+  }
+  if (lowercase.includes("khách") || lowercase.includes("deal") || lowercase.includes("bds") || lowercase.includes("client")) {
+    return { name: "Khách Hàng VIP 👑", email: "khach.vip@corporation.com" };
+  }
+  if (lowercase.includes("hr") || lowercase.includes("linh chi") || lowercase.includes("hợp đồng")) {
+    return { name: "HR Linh Chi 🎀", email: "hr.linhchi@officeos.com" };
+  }
+  if (lowercase.includes("intern") || lowercase.includes("bảo")) {
+    return { name: "Thực tập sinh Bảo 👶", email: "intern.bao@officeos.com" };
+  }
+  return { name: "Đồng nghiệp Hùng 💼", email: "hung.pm@officeos.com" };
+}
+
 export default function EventCard({
   event,
   timeLeft,
@@ -119,29 +123,30 @@ export default function EventCard({
   const stats = useGameStore((s) => s.stats);
   const flags = useGameStore((s) => s.flags || {});
 
+  const sender = getEmailSender(event.title, event.priority);
+
   return (
     <div
       className={`
-        flex flex-col gap-4 rounded-2xl border p-4 shadow-lg backdrop-blur-sm
-        transition-all duration-300
+        flex flex-col gap-3 rounded-2xl border p-4 shadow-lg backdrop-blur-sm
+        transition-all duration-300 font-sans bg-zinc-950/20
         ${priorityStyles[event.priority]}
       `}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3">
+      {/* Sender & Deadline Header */}
+      <div className="flex items-start justify-between gap-3 border-b border-zinc-800 pb-2.5">
         <div className="flex-1 min-w-0">
-          {/* Priority badge */}
-          <div
-            className={`
-              mb-2 inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide
-              ${priorityBadgeStyles[event.priority]}
-            `}
-          >
-            {priorityLabel[event.priority]}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs font-bold text-zinc-300">
+              From: {sender.name}
+            </span>
+            <span className="text-[9px] text-zinc-500 font-mono">
+              &lt;{sender.email}&gt;
+            </span>
           </div>
 
-          <h2 className="text-base font-bold text-white leading-snug">
-            {event.title}
+          <h2 className="text-sm font-extrabold text-white leading-snug mt-1 select-text">
+            Subject: {event.title}
           </h2>
         </div>
 
@@ -150,45 +155,53 @@ export default function EventCard({
         </div>
       </div>
 
-      {/* Description */}
-      <p className="text-sm leading-relaxed text-zinc-300">
-        {event.description}
-      </p>
+      {/* Email Body Message Container */}
+      <div className="bg-zinc-900/60 border border-zinc-800 p-3 rounded-xl text-zinc-300 text-xs leading-relaxed select-text shadow-inner font-sans">
+        <p className="whitespace-pre-wrap">{event.description}</p>
+      </div>
 
-      {/* Actions */}
-      <div className="grid gap-2">
-        {event.actions.map((action) => {
-          const isUnlocked =
-            !action.requirements ||
-            checkRequirement(action.requirements, stats, flags);
+      {/* Choice actions as Email Replies */}
+      <div className="mt-1 space-y-2">
+        <div className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold mb-1 flex items-center gap-1">
+          <span>↩️ Trả lời nhanh:</span>
+        </div>
 
-          return (
-            <button
-              key={action.id}
-              disabled={!isUnlocked}
-              onClick={() => isUnlocked && onSelectAction(event.id, action.id)}
-              className={`
-                group relative rounded-xl border px-4 py-3 text-left text-sm font-medium
-                transition-all duration-200
-                ${
-                  isUnlocked
-                    ? "border-zinc-700 bg-zinc-800/80 text-zinc-100 hover:scale-[1.02] hover:border-zinc-500 hover:bg-zinc-700 active:scale-[0.98]"
-                    : "border-zinc-800/50 bg-zinc-900/30 text-zinc-500 opacity-60 cursor-not-allowed"
-                }
-              `}
-            >
-              <div className="flex items-center justify-between gap-4">
-                <span>{action.label}</span>
-                {!isUnlocked && (
-                  <span className="text-[10px] font-extrabold text-red-500/80 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
-                    <span>🔒</span>
-                    <span>Khóa ({formatRequirements(action.requirements)})</span>
+        <div className="grid gap-2">
+          {event.actions.map((action) => {
+            const isUnlocked =
+              !action.requirements ||
+              checkRequirement(action.requirements, stats, flags);
+
+            return (
+              <button
+                key={action.id}
+                disabled={!isUnlocked}
+                onClick={() => isUnlocked && onSelectAction(event.id, action.id)}
+                className={`
+                  group relative rounded-xl border px-3.5 py-2.5 text-left text-xs font-semibold
+                  transition-all duration-200 font-sans
+                  ${
+                    isUnlocked
+                      ? "border-zinc-700 bg-zinc-900/80 text-zinc-200 hover:scale-[1.01] hover:border-cyan-500/50 hover:bg-cyan-950/25 active:scale-[0.99] cursor-pointer"
+                      : "border-zinc-800 bg-zinc-950/30 text-zinc-650 opacity-60 cursor-not-allowed"
+                  }
+                `}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-zinc-500 group-hover:text-cyan-400 transition-colors">↩️</span>
+                    <span className="text-zinc-300 font-medium group-hover:text-zinc-100 transition-colors">{action.label}</span>
                   </span>
-                )}
-              </div>
-            </button>
-          );
-        })}
+                  {!isUnlocked && (
+                    <span className="text-[8px] font-extrabold text-red-500/80 bg-red-500/10 border border-red-500/20 px-1.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                      <span>🔒 Yêu cầu: {formatRequirements(action.requirements)}</span>
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -18,6 +18,14 @@ interface StatIndicator {
   value: number;
 }
 
+function getAvatarEmoji(stress: number, energy: number) {
+  if (stress >= 80) return "🤯";
+  if (energy <= 20) return "💀";
+  if (stress >= 50) return "😰";
+  if (energy <= 50) return "🥱";
+  return "👨‍💻";
+}
+
 export default function TopBar() {
   const { stats, currentDay } = useGameStore();
   const mood = getMood(stats);
@@ -67,145 +75,146 @@ export default function TopBar() {
   }, [stats]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-900/95 backdrop-blur">
-      <div className="mx-auto max-w-7xl px-3 py-2">
-        {/* Row 1 */}
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="text-base font-black tracking-tight whitespace-nowrap">
-              🏢 SỐNG SÓT
-            </span>
-            {currentDay && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400 whitespace-nowrap">
-                {DAY_LABELS[currentDay]}
-              </span>
-            )}
-          </div>
-          <span className={`hidden sm:block text-xs font-medium ${mood.color}`}>
-            {mood.label}
+    <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur select-none font-sans">
+
+      {/* ── Desktop layout ── */}
+      <div className="hidden sm:flex mx-auto max-w-7xl px-3 py-1.5 items-center justify-between">
+        {/* Left: Title + Day */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-black tracking-wider text-zinc-100 flex items-center gap-1">
+            🏢 SỐNG SÓT CÔNG SỞ
           </span>
+          {currentDay && (
+            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-cyan-950/40 border border-cyan-500/20 text-cyan-300 font-extrabold whitespace-nowrap font-mono">
+              {DAY_LABELS[currentDay]}
+            </span>
+          )}
         </div>
 
-        {/* Row 2 — stats */}
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Stress */}
-          <div className="flex items-center gap-1.5 flex-1 min-w-[120px] relative">
-            <span className="text-[10px] text-zinc-500 uppercase tracking-wide whitespace-nowrap">
-              Stress
-            </span>
-            <div className="flex-1 h-2 rounded-full bg-zinc-800 overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${
-                  stressDanger ? "bg-red-500 animate-pulse" : "bg-red-400"
-                }`}
-                style={{ width: `${stats.stress}%` }}
-              />
-            </div>
-            <span
-              className={`text-[10px] font-bold w-7 text-right ${
-                stressDanger ? "text-red-400" : "text-zinc-400"
-              }`}
-            >
-              {stats.stress}%
-            </span>
+        {/* Center: Avatar */}
+        <div className="flex items-center gap-2 bg-zinc-900/60 border border-zinc-800 rounded-full px-3 py-0.5 shadow-inner">
+          <span className="text-sm animate-[bounce_2s_infinite]">{getAvatarEmoji(stats.stress, stats.energy)}</span>
+          <span className={`text-[10px] font-extrabold tracking-wide ${mood.color} uppercase`}>{mood.label}</span>
+        </div>
 
-            {/* Floating Indicators */}
+        {/* Right: Stats */}
+        <div className="flex items-center gap-4">
+          {/* Stress */}
+          <div className="flex items-center gap-1.5 relative">
+            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">😤 Stress:</span>
+            <span className={`text-xs font-bold ${stressDanger ? "text-red-400 animate-pulse" : "text-zinc-300"}`}>{stats.stress}%</span>
+            <div className="w-12 h-2 rounded bg-zinc-900 overflow-hidden border border-zinc-800">
+              <div className={`h-full transition-all duration-500 ${stressDanger ? "bg-red-500 animate-pulse" : "bg-red-400"}`} style={{ width: `${stats.stress}%` }} />
+            </div>
             <AnimatePresence>
-              {indicators
-                .filter((ind) => ind.stat === "stress")
-                .map((ind) => (
-                  <motion.span
-                    key={ind.id}
-                    initial={{ opacity: 0, y: 5, scale: 0.8 }}
-                    animate={{ opacity: 1, y: -22, scale: 1.15 }}
-                    exit={{ opacity: 0, y: -35 }}
-                    transition={{ duration: 0.9, ease: "easeOut" }}
-                    className={`absolute right-8 text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] z-30 pointer-events-none ${
-                      ind.value > 0 ? "text-red-400" : "text-emerald-400"
-                    }`}
-                  >
-                    {ind.value > 0 ? `+${ind.value}%` : `${ind.value}%`}
-                  </motion.span>
-                ))}
+              {indicators.filter((i) => i.stat === "stress").map((ind) => (
+                <motion.span key={ind.id} initial={{ opacity: 0, y: 5, scale: 0.8 }} animate={{ opacity: 1, y: -20, scale: 1.15 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.9, ease: "easeOut" }} className={`absolute right-0 text-[10px] font-black z-30 pointer-events-none ${ind.value > 0 ? "text-red-400" : "text-emerald-400"}`}>
+                  {ind.value > 0 ? `+${ind.value}%` : `${ind.value}%`}
+                </motion.span>
+              ))}
             </AnimatePresence>
           </div>
 
           {/* Energy */}
-          <div className="flex items-center gap-1.5 flex-1 min-w-[120px] relative">
-            <span className="text-[10px] text-zinc-500 uppercase tracking-wide whitespace-nowrap">
-              Energy
-            </span>
-            <div className="flex-1 h-2 rounded-full bg-zinc-800 overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${
-                  energyDanger ? "bg-blue-500 animate-pulse" : "bg-emerald-400"
-                }`}
-                style={{ width: `${stats.energy}%` }}
-              />
+          <div className="flex items-center gap-1.5 relative">
+            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">⚡ Thể lực:</span>
+            <span className={`text-xs font-bold ${energyDanger ? "text-red-400 animate-pulse" : "text-zinc-300"}`}>{stats.energy}%</span>
+            <div className="w-12 h-2 rounded bg-zinc-900 overflow-hidden border border-zinc-800">
+              <div className={`h-full transition-all duration-500 ${energyDanger ? "bg-red-500 animate-pulse" : "bg-emerald-400"}`} style={{ width: `${stats.energy}%` }} />
             </div>
-            <span
-              className={`text-[10px] font-bold w-7 text-right ${
-                energyDanger ? "text-blue-400" : "text-zinc-400"
-              }`}
-            >
-              {stats.energy}%
-            </span>
-
-            {/* Floating Indicators */}
             <AnimatePresence>
-              {indicators
-                .filter((ind) => ind.stat === "energy")
-                .map((ind) => (
-                  <motion.span
-                    key={ind.id}
-                    initial={{ opacity: 0, y: 5, scale: 0.8 }}
-                    animate={{ opacity: 1, y: -22, scale: 1.15 }}
-                    exit={{ opacity: 0, y: -35 }}
-                    transition={{ duration: 0.9, ease: "easeOut" }}
-                    className={`absolute right-8 text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] z-30 pointer-events-none ${
-                      ind.value > 0 ? "text-emerald-400" : "text-red-400"
-                    }`}
-                  >
-                    {ind.value > 0 ? `+${ind.value}%` : `${ind.value}%`}
-                  </motion.span>
-                ))}
+              {indicators.filter((i) => i.stat === "energy").map((ind) => (
+                <motion.span key={ind.id} initial={{ opacity: 0, y: 5, scale: 0.8 }} animate={{ opacity: 1, y: -20, scale: 1.15 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.9, ease: "easeOut" }} className={`absolute right-0 text-[10px] font-black z-30 pointer-events-none ${ind.value > 0 ? "text-emerald-400" : "text-red-400"}`}>
+                  {ind.value > 0 ? `+${ind.value}%` : `${ind.value}%`}
+                </motion.span>
+              ))}
             </AnimatePresence>
           </div>
 
-          {/* Divider */}
-          <div className="hidden sm:block w-px h-4 bg-zinc-700" />
-
           {/* Salary */}
-          <div className="flex items-center gap-1.5 relative">
-            <span className="text-[10px] text-zinc-500 uppercase tracking-wide">
-              Lương
-            </span>
-            <span className="text-sm font-bold text-yellow-300">
-              {formatSalary(stats.salary)}
-            </span>
-
-            {/* Floating Indicators */}
+          <div className="flex items-center gap-1.5 relative bg-zinc-900/50 border border-zinc-800 rounded px-2 py-0.5">
+            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">💰 Lương:</span>
+            <span className="text-xs font-black text-yellow-300">{formatSalary(stats.salary)}</span>
             <AnimatePresence>
-              {indicators
-                .filter((ind) => ind.stat === "salary")
-                .map((ind) => (
-                  <motion.span
-                    key={ind.id}
-                    initial={{ opacity: 0, y: 5, scale: 0.8 }}
-                    animate={{ opacity: 1, y: -22, scale: 1.15 }}
-                    exit={{ opacity: 0, y: -35 }}
-                    transition={{ duration: 0.9, ease: "easeOut" }}
-                    className={`absolute right-0 text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] z-30 pointer-events-none ${
-                      ind.value > 0 ? "text-emerald-400" : "text-red-400"
-                    }`}
-                  >
-                    {ind.value > 0 ? `+${(ind.value / 1000).toFixed(0)}k` : `${(ind.value / 1000).toFixed(0)}k`}
-                  </motion.span>
-                ))}
+              {indicators.filter((i) => i.stat === "salary").map((ind) => (
+                <motion.span key={ind.id} initial={{ opacity: 0, y: 5, scale: 0.8 }} animate={{ opacity: 1, y: -20, scale: 1.15 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.9, ease: "easeOut" }} className={`absolute right-0 text-[10px] font-black z-30 pointer-events-none ${ind.value > 0 ? "text-emerald-400" : "text-red-400"}`}>
+                  {ind.value > 0 ? `+${(ind.value / 1000).toFixed(0)}k` : `${(ind.value / 1000).toFixed(0)}k`}
+                </motion.span>
+              ))}
             </AnimatePresence>
           </div>
         </div>
       </div>
+
+      {/* ── Mobile layout ── */}
+      <div className="flex sm:hidden flex-col px-3 pt-1.5 pb-1 gap-1">
+        {/* Row 1: Day badge | Avatar mood | Salary */}
+        <div className="flex items-center justify-between">
+          {/* Day */}
+          {currentDay ? (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950/40 border border-cyan-500/20 text-cyan-300 font-extrabold font-mono">
+              {DAY_LABELS[currentDay]}
+            </span>
+          ) : <span />}
+
+          {/* Avatar mood */}
+          <div className="flex items-center gap-1.5 bg-zinc-900/60 border border-zinc-800 rounded-full px-2.5 py-0.5">
+            <span className="text-xs animate-[bounce_2s_infinite]">{getAvatarEmoji(stats.stress, stats.energy)}</span>
+            <span className={`text-[9px] font-extrabold tracking-wide ${mood.color} uppercase`}>{mood.label}</span>
+          </div>
+
+          {/* Salary */}
+          <div className="flex items-center gap-1 relative bg-zinc-900/50 border border-zinc-800 rounded px-2 py-0.5">
+            <span className="text-[9px] text-zinc-500 font-bold">💰</span>
+            <span className="text-[10px] font-black text-yellow-300">{formatSalary(stats.salary)}</span>
+            <AnimatePresence>
+              {indicators.filter((i) => i.stat === "salary").map((ind) => (
+                <motion.span key={ind.id} initial={{ opacity: 0, y: 5, scale: 0.8 }} animate={{ opacity: 1, y: -20, scale: 1.15 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.9, ease: "easeOut" }} className={`absolute right-0 text-[9px] font-black z-30 pointer-events-none ${ind.value > 0 ? "text-emerald-400" : "text-red-400"}`}>
+                  {ind.value > 0 ? `+${(ind.value / 1000).toFixed(0)}k` : `${(ind.value / 1000).toFixed(0)}k`}
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Row 2: Stress bar | Energy bar */}
+        <div className="flex items-center gap-3">
+          {/* Stress */}
+          <div className="flex-1 flex items-center gap-1.5 relative">
+            <span className="text-[9px] text-zinc-500 font-bold shrink-0">😤</span>
+            <div className="flex-1 h-2 rounded bg-zinc-900 overflow-hidden border border-zinc-800">
+              <div className={`h-full transition-all duration-500 ${stressDanger ? "bg-red-500 animate-pulse" : "bg-red-400"}`} style={{ width: `${stats.stress}%` }} />
+            </div>
+            <span className={`text-[9px] font-bold shrink-0 w-6 text-right ${stressDanger ? "text-red-400 animate-pulse" : "text-zinc-400"}`}>{stats.stress}%</span>
+            <AnimatePresence>
+              {indicators.filter((i) => i.stat === "stress").map((ind) => (
+                <motion.span key={ind.id} initial={{ opacity: 0, y: 5, scale: 0.8 }} animate={{ opacity: 1, y: -16, scale: 1.1 }} exit={{ opacity: 0, y: -24 }} transition={{ duration: 0.9, ease: "easeOut" }} className={`absolute right-0 text-[9px] font-black z-30 pointer-events-none ${ind.value > 0 ? "text-red-400" : "text-emerald-400"}`}>
+                  {ind.value > 0 ? `+${ind.value}%` : `${ind.value}%`}
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          <div className="w-px h-3 bg-zinc-700 shrink-0" />
+
+          {/* Energy */}
+          <div className="flex-1 flex items-center gap-1.5 relative">
+            <span className="text-[9px] text-zinc-500 font-bold shrink-0">⚡</span>
+            <div className="flex-1 h-2 rounded bg-zinc-900 overflow-hidden border border-zinc-800">
+              <div className={`h-full transition-all duration-500 ${energyDanger ? "bg-red-500 animate-pulse" : "bg-emerald-400"}`} style={{ width: `${stats.energy}%` }} />
+            </div>
+            <span className={`text-[9px] font-bold shrink-0 w-6 text-right ${energyDanger ? "text-red-400 animate-pulse" : "text-zinc-400"}`}>{stats.energy}%</span>
+            <AnimatePresence>
+              {indicators.filter((i) => i.stat === "energy").map((ind) => (
+                <motion.span key={ind.id} initial={{ opacity: 0, y: 5, scale: 0.8 }} animate={{ opacity: 1, y: -16, scale: 1.1 }} exit={{ opacity: 0, y: -24 }} transition={{ duration: 0.9, ease: "easeOut" }} className={`absolute right-0 text-[9px] font-black z-30 pointer-events-none ${ind.value > 0 ? "text-emerald-400" : "text-red-400"}`}>
+                  {ind.value > 0 ? `+${ind.value}%` : `${ind.value}%`}
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+
     </header>
   );
 }
