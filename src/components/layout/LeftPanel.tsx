@@ -74,14 +74,14 @@ export default function LeftPanel() {
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-800 flex-shrink-0">
-        <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">
-          {isBreakSlot ? "Nghỉ trưa" : "Sự kiện"}
+      {/* Title Bar */}
+      <div className="flex items-center justify-between px-3 py-2 bg-zinc-900 border-b border-zinc-800 flex-shrink-0">
+        <span className="text-[10px] text-zinc-400 font-mono font-bold uppercase tracking-wide">
+          {isBreakSlot ? "🍱 Căn-tin" : `📧 Gmail - Inbox (${activeEvents.length})`}
         </span>
         {!isBreakSlot && (
-          <span className="text-[10px] text-zinc-600">
-            {activeEvents.length} đang hiển thị • {eventQueue.length} chờ
+          <span className="text-[9px] text-zinc-600 font-mono">
+            {activeEvents.length} unread • {eventQueue.length} queued
           </span>
         )}
       </div>

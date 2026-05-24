@@ -16,6 +16,7 @@ export default function GameOverScreen() {
     gameOverReason,
     restartGame,
     goToScreen,
+    startGame,
   } = useGameStore();
 
   const profConfig = PROFESSIONS_CONFIG.find((p) => p.id === profession);
@@ -133,15 +134,18 @@ export default function GameOverScreen() {
 
             <div className="space-y-4 flex-1">
               <ActionCard
-                title="🔄 Chơi lại từ đầu"
-                description="Quay lại Thứ Hai Kinh Hoàng."
-                onClick={restartGame}
+                title="🔄 Chơi lại nghề này"
+                description="Chơi lại ngay lập tức với nghề hiện tại."
+                onClick={() => startGame(profession!)}
               />
 
               <ActionCard
                 title="💼 Đổi nghề nghiệp"
-                description="Biết đâu nghề khác còn tệ hơn."
-                onClick={() => goToScreen("profession")}
+                description="Trở lại màn hình chọn nghề để đổi gió."
+                onClick={() => {
+                  restartGame();
+                  goToScreen("profession");
+                }}
               />
             </div>
 

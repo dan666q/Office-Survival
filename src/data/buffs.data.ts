@@ -4,8 +4,8 @@ export const BUFFS: Buff[] = [
   // ===== CHUNG =====
   {
     id: 'ca_phe_sua_da',
-    name: 'Cà phê sữa đá',
-    description: 'Nhiên liệu quốc dân. Không có cà phê không làm được gì.',
+    name: 'Highlands Phin Sữa Đá',
+    description: 'Cà phê phin sữa đá size L quốc dân. Làm ngụm để giật tưng tưng suốt cả ca làm việc.',
     cost: 150000,
     icon: '☕',
     duration: 'timeslot',
@@ -16,8 +16,8 @@ export const BUFFS: Buff[] = [
   },
   {
     id: 'com_trua_xin',
-    name: 'Cơm trưa xịn',
-    description: 'Bữa trưa đàng hoàng thay vì cơm hộp 30k. Não hoạt động tốt hơn hẳn.',
+    name: 'Cơm tấm sườn bì chả',
+    description: 'Dĩa cơm tấm full-option thơm lừng mỡ hành. Đủ năng lượng để chiến drama chiều nay.',
     cost: 300000,
     icon: '🍱',
     duration: 'timeslot',
@@ -28,10 +28,10 @@ export const BUFFS: Buff[] = [
   },
   {
     id: 'tai_nghe_chong_on',
-    name: 'Tai nghe chống ồn',
-    description: 'Thế giới bên ngoài không tồn tại. Chỉ có bạn và công việc.',
+    name: 'Dầu gió xanh Thiên Thảo',
+    description: 'Huyền thoại dầu gió xanh. Hít một hơi ấm lòng mát phổi, xoa vào thái dương quét sạch stress.',
     cost: 500000,
-    icon: '🎧',
+    icon: '🧴',
     duration: 'day',
     effects: [
       { stat: 'stress', value: -20 },
@@ -40,10 +40,10 @@ export const BUFFS: Buff[] = [
   },
   {
     id: 'sep_di_cong_tac',
-    name: 'Sếp đi công tác',
-    description: 'Phép màu hiếm gặp. Văn phòng thở phào tập thể.',
+    name: 'Cả hộp Salonpas dán lưng',
+    description: 'Cứu cánh của chiếc cột sống thoái hóa. Dán từ vai gáy xuống thắt lưng, nóng ran cực sướng.',
     cost: 1000000,
-    icon: '✈️',
+    icon: '🩹',
     duration: 'day',
     effects: [
       { stat: 'stress', value: -25 },
@@ -52,10 +52,10 @@ export const BUFFS: Buff[] = [
   },
   {
     id: 'friday_mode',
-    name: 'Friday Mode',
-    description: 'Tâm lý cuối tuần kích hoạt. Mọi thứ đều dễ chịu hơn 20%.',
+    name: 'Trà sữa KOI Thé',
+    description: 'Lục trà sữa trân châu hoàng kim 100% đường 100% đá. Ngọt ngào xoa dịu tâm hồn.',
     cost: 800000,
-    icon: '🕶️',
+    icon: '🥤',
     duration: 'day',
     effects: [
       { stat: 'stress', value: -20 },
@@ -64,10 +64,10 @@ export const BUFFS: Buff[] = [
   },
   {
     id: 'nuoc_tang_luc',
-    name: 'Nước tăng lực',
-    description: 'Vị khủng khiếp. Hiệu quả không thể phủ nhận. Dùng lúc desperate.',
+    name: 'Bò Húc Thái',
+    description: 'Nước tăng lực lon vàng huyền thoại. Nốc một hơi tim đập thình thịch gánh deadline.',
     cost: 100000,
-    icon: '⚡',
+    icon: '🐂',
     duration: 'timeslot',
     effects: [
       { stat: 'energy', value: +30 },

@@ -3,12 +3,13 @@ import { useGameStore } from "../store/gameStore";
 import TopBar from "../components/layout/TopBar";
 import TimeSlotBar from "../components/layout/TimeSlotBar";
 import LeftPanel from "../components/layout/LeftPanel";
+import MobileEventSlot from "../components/layout/MobileEventSlot";
 import CenterPanel from "../components/layout/CenterPanel";
 import RightPanel from "../components/layout/RightPanel";
 import { ACHIEVEMENTS } from "../utils/achievementChecker";
 import { soundManager } from "../utils/soundManager";
-import { BUFFS } from "../data/buffs.data";
 import { formatSalary } from "../utils/statCalculator";
+import { getBuffsForProfession } from "../store/gameHelpers";
 
 // Achievement toast hiển thị trong 3 giây
 interface AchievementToast {
@@ -26,12 +27,12 @@ export default function GameScreen() {
   const currentTimeSlot = useGameStore((s) => s.currentTimeSlot);
   const lunchBuffsBought = useGameStore((s) => s.lunchBuffsBought);
   const buyBuff = useGameStore((s) => s.buyBuff);
+  const nextTimeSlot = useGameStore((s) => s.nextTimeSlot);
   const profession = useGameStore((s) => s.profession);
+  const flashEffect = useGameStore((s) => s.flashEffect);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const availableBuffs = BUFFS.filter(
-    (b) => !b.professions || (profession && b.professions.includes(profession))
-  );
+  const availableBuffs = getBuffsForProfession(profession);
 
   const activeBuffData = availableBuffs.filter((b) =>
     activeBuffs.includes(b.id)
@@ -92,6 +93,17 @@ export default function GameScreen() {
     }
   }, [activeEvents]);
 
+  // Shake khi chọn phương án nguy hiểm/phạt
+  useEffect(() => {
+    if (flashEffect === "danger" && wrapperRef.current) {
+      wrapperRef.current.classList.add("animate-shake");
+      const timer = setTimeout(() => {
+        wrapperRef.current?.classList.remove("animate-shake");
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [flashEffect]);
+
   // Detect new achievements → show toast
   useEffect(() => {
     const newIds = achievements.filter(
@@ -149,6 +161,18 @@ export default function GameScreen() {
       ref={wrapperRef}
       className="relative flex flex-col h-screen bg-zinc-950 text-zinc-100 overflow-hidden transition-colors duration-700"
     >
+      {/* ⚡ Choice feedback screen border glow */}
+      {flashEffect && (
+        <div
+          className="pointer-events-none fixed inset-0 z-50 animate-[pulse_0.4s_ease-out]"
+          style={{
+            boxShadow: flashEffect === "danger"
+              ? "inset 0 0 35px rgba(239, 68, 68, 0.85), inset 0 0 12px rgba(239, 68, 68, 0.95)"
+              : "inset 0 0 35px rgba(34, 211, 238, 0.85), inset 0 0 12px rgba(34, 211, 238, 0.95)",
+          }}
+        />
+      )}
+
       {/* 🔴 Stress overlay — nháy đỏ toàn màn hình */}
       {stressOverlayOpacity > 0 && (
         <div
@@ -186,22 +210,21 @@ export default function GameScreen() {
           </div>
         </div>
       )}
-
       {/* Top bar */}
       <TopBar />
 
       {/* Timeslot bar */}
       <TimeSlotBar />
 
-      {/* Desktop — 3 cột */}
-      <div className="hidden lg:grid lg:grid-cols-[320px_1fr_240px] flex-1 min-h-0 divide-x divide-zinc-800 overflow-hidden">
-        <LeftPanel />
+      {/* Desktop — 3 cột (Sự kiện ở giữa, Live Feed ở trái, Căn-tin ở phải) */}
+      <div className="hidden lg:grid lg:grid-cols-[330px_1fr_290px] flex-1 min-h-0 divide-x divide-zinc-800 overflow-hidden">
         <CenterPanel />
+        <LeftPanel />
         <RightPanel />
       </div>
 
-      {/* Mobile / Responsive layout (below lg) */}
-      <div className="lg:hidden flex flex-col flex-1 min-h-0 overflow-y-auto divide-y divide-zinc-800">
+      {/* Mobile / Responsive layout (below lg) - Tách 2 vùng cố định, không có xung đột cuộn */}
+      <div className="lg:hidden flex flex-col flex-1 min-h-0 overflow-x-hidden">
         
         {/* Active buffs row on mobile (quick glance) */}
         {activeBuffData.length > 0 && (
@@ -219,80 +242,90 @@ export default function GameScreen() {
           </div>
         )}
 
-        {/* Gameplay Area (LeftPanel) */}
-        <div className="flex-shrink-0 min-h-0 flex flex-col">
-          <LeftPanel />
-        </div>
-
-        {/* Dynamic Buff Shop during Lunch Slot on Mobile */}
-        {currentTimeSlot === "lunch" && (
-          <div className="flex-shrink-0 bg-zinc-900/50 p-3 border-t border-b border-zinc-800">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] uppercase tracking-widest text-yellow-400 font-bold">
-                🍱 Buff Shop Trưa (Mua đồ ăn)
-              </span>
-              <span className="text-[10px] text-zinc-400 font-medium">
-                Còn mua được: {2 - lunchBuffsBought} món
-              </span>
-            </div>
-            {/* Buff Shop grid inside play area */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {availableBuffs.filter(b => !activeBuffs.includes(b.id)).slice(0, 6).map((buff) => {
-                const canAfford = stats.salary >= buff.cost;
-                const disabled = !canAfford || lunchBuffsBought >= 2;
-                return (
-                  <div
-                    key={buff.id}
-                    onClick={() => {
-                      if (!disabled) {
-                        soundManager.playClick();
-                        buyBuff(buff.id);
-                      }
-                    }}
-                    className={`
-                      rounded-xl border p-2.5 transition-all duration-200
-                      ${
-                        disabled
-                          ? "border-zinc-800 bg-zinc-950/40 opacity-40 cursor-not-allowed"
-                          : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 cursor-pointer active:scale-95"
-                      }
-                    `}
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-sm">{buff.icon}</span>
-                        <span className="text-[11px] font-bold text-zinc-200 truncate">
-                          {buff.name}
+        {/* EVENT SLOT — 1 event tại một lúc, slide down từ top */}
+        {currentTimeSlot === "lunch" ? (
+          /* Giờ ăn trưa hiển thị Căn-tin Cứu Mạng */
+          <div className="flex-shrink-0 max-h-[55%] overflow-y-auto bg-zinc-900/30 p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] uppercase tracking-widest text-yellow-400 font-bold">
+                  🍱 Căn-tin Cứu Mạng (Trưa)
+                </span>
+                <span className="text-[10px] text-zinc-400 font-medium">
+                  Còn mua được: {2 - lunchBuffsBought} món
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {availableBuffs.filter(b => !activeBuffs.includes(b.id)).slice(0, 6).map((buff) => {
+                  const canAfford = stats.salary >= buff.cost;
+                  const disabled = !canAfford || lunchBuffsBought >= 2;
+                  return (
+                    <div
+                      key={buff.id}
+                      onClick={() => {
+                        if (!disabled) {
+                          soundManager.playClick();
+                          buyBuff(buff.id);
+                        }
+                      }}
+                      className={`
+                        rounded-xl border p-2.5 transition-all duration-200
+                        ${
+                          disabled
+                            ? "border-zinc-800 bg-zinc-950/40 opacity-40 cursor-not-allowed"
+                            : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 cursor-pointer active:scale-95"
+                        }
+                      `}
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm">{buff.icon}</span>
+                          <span className="text-[11px] font-bold text-zinc-200 truncate">
+                            {buff.name}
+                          </span>
+                        </div>
+                        <span className={`text-[10px] font-extrabold ${canAfford ? "text-yellow-400" : "text-red-400"}`}>
+                          {formatSalary(buff.cost)}
                         </span>
                       </div>
-                      <span className={`text-[10px] font-extrabold ${canAfford ? "text-yellow-400" : "text-red-400"}`}>
-                        {formatSalary(buff.cost)}
-                      </span>
+                      <p className="text-[10px] text-zinc-500 leading-relaxed line-clamp-1">{buff.description}</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {buff.effects.map((e, idx) => (
+                          <span
+                            key={idx}
+                            className={`text-[8px] px-1.5 py-0.5 rounded-full border ${
+                              e.value > 0
+                                ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                                : "border-red-500/20 bg-red-500/10 text-red-400"
+                            }`}
+                          >
+                            {e.value > 0 ? "+" : ""}{e.value} {e.stat}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <p className="text-[10px] text-zinc-500 leading-relaxed line-clamp-1">{buff.description}</p>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {buff.effects.map((e, idx) => (
-                        <span
-                          key={idx}
-                          className={`text-[8px] px-1.5 py-0.5 rounded-full border ${
-                            e.value > 0
-                              ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                              : "border-red-500/20 bg-red-500/10 text-red-400"
-                          }`}
-                        >
-                          {e.value > 0 ? "+" : ""}{e.value} {e.stat}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+
+              {/* Nút thoát shop — luôn hiển thị để tránh bị kẹt */}
+              <button
+                onClick={() => {
+                  soundManager.playClick();
+                  nextTimeSlot();
+                }}
+                className="mt-4 w-full rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-5 py-3 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 active:scale-95 transition-all"
+              >
+                ✅ Xong, vào buổi chiều →
+              </button>
             </div>
-          </div>
+        ) : (
+          /* Các khung giờ làm việc — 1 event card + slide-down animation */
+          <MobileEventSlot />
         )}
 
-        {/* Live Feed Section docked at the bottom */}
-        <div className="flex-1 min-h-[160px] h-[220px] overflow-hidden flex flex-col bg-zinc-950/40">
+        {/* CHAT PANEL — flex-1 lấy toàn bộ phần còn lại */}
+        <div className="flex-1 min-h-0 border-t border-zinc-800 bg-zinc-950/20 flex flex-col overflow-hidden">
           <CenterPanel />
         </div>
       </div>

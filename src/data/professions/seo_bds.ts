@@ -19,10 +19,10 @@ export const seoBdsPack: ProfessionPack = {
   buffs: [
     {
       id: 'chot_deal',
-      name: 'Kịch bản chốt deal',
-      description: '47 câu trả lời cho mọi phản bác của khách hàng.',
+      name: 'Data VIP Quận 2',
+      description: 'Danh sách số điện thoại của giới tài phiệt quan tâm biệt thự ven sông và penthouse 20 tỷ.',
       cost: 500000,
-      icon: '📋',
+      icon: '📞',
       duration: 'day',
       effects: [
         { stat: 'stress', value: -15 },
@@ -31,10 +31,10 @@ export const seoBdsPack: ProfessionPack = {
     },
     {
       id: 'crm_pro',
-      name: 'CRM xịn',
-      description: 'Quản lý lead bài bản. Không còn quên lịch follow up.',
+      name: 'Vòng phong thủy đắc lộc',
+      description: 'Vòng chuỗi trầm hương tự nhiên xua đuổi leads rác, thu hút vận may và tăng tỷ lệ chốt hợp đồng.',
       cost: 600000,
-      icon: '📊',
+      icon: '🔮',
       duration: 'day',
       effects: [
         { stat: 'energy', value: 15 },
@@ -43,10 +43,10 @@ export const seoBdsPack: ProfessionPack = {
     },
     {
       id: 'sales_script',
-      name: 'Sales script pro',
-      description: 'Mỗi cuộc gọi đều có kịch bản mẫu. Không còn ấp úng khi khách hỏi khó.',
+      name: 'Khóa học chốt deal thần tốc',
+      description: 'Bí kíp thao túng tâm lý khách hàng từ các diễn giả triệu đô. Nói câu nào thấm câu đó.',
       cost: 350000,
-      icon: '📝',
+      icon: '🎓',
       duration: 'day',
       effects: [
         { stat: 'stress', value: -15 },
@@ -55,10 +55,10 @@ export const seoBdsPack: ProfessionPack = {
     },
     {
       id: 'hot_listing',
-      name: 'Listing hot tay',
-      description: 'Căn nhà đẹp, giá cực tốt, pháp lý sạch. Khách hàng xếp hàng chờ mua.',
+      name: 'Liên minh Cò đất địa phương',
+      description: 'Mạng lưới cộng tác viên thân thiết tuồn nguồn hàng ngộp giá rẻ bất ngờ trước khi lên sàn.',
       cost: 1000000,
-      icon: '🏠',
+      icon: '🤝',
       duration: 'day',
       effects: [
         { stat: 'stress', value: -20 },

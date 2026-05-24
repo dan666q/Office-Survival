@@ -46,6 +46,14 @@ export default function RightPanel() {
 
   return (
     <div className="flex flex-col h-full min-h-0 divide-y divide-zinc-800">
+      {/* Title Bar */}
+      <div className="flex items-center justify-between px-3 py-2 bg-zinc-900 border-b border-zinc-800 flex-shrink-0">
+        <span className="text-[10px] text-zinc-400 font-mono font-bold uppercase tracking-wide">
+          🍱 GrabFood - Căn-tin
+        </span>
+        <span className="text-[9px] text-zinc-600 font-mono">GrabFood.app</span>
+      </div>
+
       {/* Mood */}
       <div className="px-3 py-3 flex-shrink-0">
         <p className="text-[10px] uppercase tracking-widest text-zinc-600 mb-2">
@@ -101,7 +109,7 @@ export default function RightPanel() {
       <div className="px-3 py-3 flex-1 overflow-y-auto">
         <div className="flex items-center justify-between mb-2">
           <p className="text-[10px] uppercase tracking-widest text-zinc-600">
-            Buff shop
+            Căn-tin Cứu Mạng 🍱
           </p>
           {isLunchTime ? (
             <span className="text-[10px] text-yellow-400 font-medium">
