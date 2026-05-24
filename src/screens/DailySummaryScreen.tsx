@@ -17,24 +17,24 @@ const REST_OPTIONS = [
   {
     id: "sleep",
     title: "😴 Ngủ sớm",
-    description: "An toàn, hồi phục ổn định. Mất thu nhập OT.",
-    effects: ["+40 Energy", "-20 Stress", "-300k"],
+    description: "An toàn, hồi phục tốt và hoàn toàn miễn phí.",
+    effects: ["+45% Energy", "-25% Stress", "Miễn phí"],
     color: "from-emerald-500/20 to-green-500/10",
     border: "border-emerald-500/40",
   },
   {
     id: "beer",
-    title: "🍻 Uống bia với đồng nghiệp",
-    description: "Vui lúc đó, mệt hôm sau. 30% chance drama sáng mai.",
-    effects: ["+20 Energy", "+5 Stress", "+200k"],
+    title: "🍻 Uống bia giải sầu",
+    description: "Giải tỏa stress cực tốt nhưng tốn kém. 30% cơ hội xảy ra drama sáng mai.",
+    effects: ["+10% Energy", "-20% Stress", "-150k"],
     color: "from-amber-500/20 to-orange-500/10",
     border: "border-amber-500/40",
   },
   {
     id: "overtime",
-    title: "💻 Làm thêm ở nhà",
-    description: "Có tiền nhưng đánh đổi sức khỏe. Stress cao sẽ càng tệ hơn.",
-    effects: ["+10 Energy", "+20 Stress", "+800k"],
+    title: "💻 Làm thêm ban đêm",
+    description: "Tăng thêm thu nhập (+250k) nhưng bào mòn sức khỏe và tăng stress.",
+    effects: ["-15% Energy", "+25% Stress", "+250k"],
     color: "from-red-500/20 to-rose-500/10",
     border: "border-red-500/40",
   },
@@ -159,42 +159,87 @@ export default function DailySummaryScreen() {
             <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-5">🌙 Tối nay làm gì?</h2>
 
             <div className="space-y-4">
-              {REST_OPTIONS.map((option) => (
-                <motion.button
-                  key={option.id}
-                  whileHover={{ scale: 1.015 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    soundManager.playClick();
-                    nextDay(option.id as "sleep" | "beer" | "overtime");
-                  }}
-                  className={`
-                    w-full rounded-2xl border p-5 text-left
-                    bg-gradient-to-br ${option.color} ${option.border}
-                    hover:border-white/30 transition-all duration-200
-                  `}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="text-lg font-bold mb-1">{option.title}</h3>
-                      <p className="text-sm text-white/65 mb-3">
-                        {option.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {option.effects.map((effect) => (
-                          <span
-                            key={effect}
-                            className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs"
-                          >
-                            {effect}
-                          </span>
-                        ))}
+              {REST_OPTIONS.map((option) => {
+                let disabled = false;
+                let disabledReason = "";
+
+                if (option.id === "beer") {
+                  if (stats.energy < 15) {
+                    disabled = true;
+                    disabledReason = "Cần ≥ 15% Energy";
+                  } else if (stats.stress >= 95) {
+                    disabled = true;
+                    disabledReason = "Stress quá cao (≥ 95%)";
+                  } else if (stats.salary < 150000) {
+                    disabled = true;
+                    disabledReason = "Không đủ tiền (Cần ≥ 150k)";
+                  }
+                } else if (option.id === "overtime") {
+                  if (stats.energy < 30) {
+                    disabled = true;
+                    disabledReason = "Cần ≥ 30% Energy";
+                  } else if (stats.stress >= 80) {
+                    disabled = true;
+                    disabledReason = "Stress quá cao (≥ 80%)";
+                  }
+                }
+
+                return (
+                  <motion.button
+                    key={option.id}
+                    disabled={disabled}
+                    whileHover={disabled ? {} : { scale: 1.015 }}
+                    whileTap={disabled ? {} : { scale: 0.98 }}
+                    onClick={() => {
+                      if (disabled) return;
+                      soundManager.playClick();
+                      nextDay(option.id as "sleep" | "beer" | "overtime");
+                    }}
+                    className={`
+                      w-full rounded-2xl border p-5 text-left transition-all duration-200
+                      ${
+                        disabled
+                          ? "border-zinc-800 bg-zinc-900/30 text-zinc-500 opacity-50 cursor-not-allowed"
+                          : `bg-gradient-to-br ${option.color} ${option.border} hover:border-white/30`
+                      }
+                    `}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className={`text-lg font-bold mb-1 ${disabled ? "text-zinc-500" : ""}`}>
+                          {option.title}
+                        </h3>
+                        <p className={`text-sm mb-3 ${disabled ? "text-zinc-600" : "text-white/65"}`}>
+                          {option.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {option.effects.map((effect) => (
+                            <span
+                              key={effect}
+                              className={`rounded-full border px-3 py-1 text-xs ${
+                                disabled
+                                  ? "border-zinc-800 bg-zinc-900/50 text-zinc-600"
+                                  : "border-white/10 bg-white/10 text-white"
+                              }`}
+                            >
+                              {effect}
+                            </span>
+                          ))}
+                        </div>
                       </div>
+                      
+                      {disabled ? (
+                        <span className="text-[10px] font-extrabold text-red-400 bg-red-950/40 border border-red-500/20 px-2 py-1 rounded-full flex items-center gap-1 shrink-0 self-center">
+                          <span>🔒</span>
+                          <span>{disabledReason}</span>
+                        </span>
+                      ) : (
+                        <div className="text-white/40 text-xl">→</div>
+                      )}
                     </div>
-                    <div className="text-white/40 text-xl">→</div>
-                  </div>
-                </motion.button>
-              ))}
+                  </motion.button>
+                );
+              })}
             </div>
           </div>
         </div>

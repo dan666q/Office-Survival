@@ -14,12 +14,27 @@ export interface ChainEvent {
   delay?: number
 }
 
+export interface StatRequirement {
+  stat: StatKey
+  op: 'gt' | 'lt' | 'gte' | 'lte'
+  value: number
+}
+
+export interface Requirements {
+  stats?: StatRequirement[]
+  flags?: Record<string, boolean>
+  days?: import('./game.types').DayOfWeek[]
+}
+
 export interface Action {
   id: string
   label: string
   effects: StatEffect[]
   chainEvents?: ChainEvent[]
   feedMessage: string
+  // Dynamic RPG coupling features:
+  requirements?: Omit<Requirements, 'days'>
+  setFlags?: Record<string, boolean>
 }
 
 export interface GameEvent {
@@ -30,4 +45,6 @@ export interface GameEvent {
   professions: Profession[]
   timeSlots?: TimeSlot[]
   actions: Action[]
+  // Dynamic event requirements:
+  requirements?: Requirements
 }
