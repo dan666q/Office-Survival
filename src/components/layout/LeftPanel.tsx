@@ -71,7 +71,7 @@ export function formatSelfMessage(rawMessage: string, id: string): string {
   return msg;
 }
 
-export function parseFeedEntry(entry: { id: string; message: string; timestamp: string; type: "success" | "danger" | "warning" | "info" }): MockMessage[] {
+export function parseFeedEntry(entry: { id: string; message: string; timestamp: string; type: "success" | "danger" | "warning" | "info"; chatReplies?: any[] }): MockMessage[] {
   const lowercase = entry.message.toLowerCase();
   const messages: MockMessage[] = [];
 
@@ -97,39 +97,53 @@ export function parseFeedEntry(entry: { id: string; message: string; timestamp: 
 
     // Bổ sung phản hồi ngộ nghĩnh sau khi mua hàng thành công
     if (isCanteenPurchase) {
-      const charCodeSum = entry.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      if (lowercase.includes("trà sữa") || lowercase.includes("highlands") || lowercase.includes("nước ngọt")) {
-        const foodReplies = [
-          { sender: CONTACTS.intern, message: "SIUUUUU! Highlands uống vào chạy deadline nhanh vcl sếp ơi! ⚡⚽" },
-          { sender: CONTACTS.admin, message: "Trà sữa ngon quá cưng ơi! Quả này tui chấm 10/10 điểm reaction luôn hihi! 🖥️🥤" },
-          { sender: CONTACTS.it_dev, message: "Đm lại nạp đường rồi, lát nữa có bug đéo fix đc là do sugar crash nha! 😂💻" }
-        ];
-        const rep = foodReplies[charCodeSum % foodReplies.length];
-        messages.push({
-          id: `${entry.id}-r1`,
-          sender: rep.sender,
-          message: rep.message,
-          timestamp: entry.timestamp,
-          isSelf: false,
-          isInfo: false,
-          type: "info"
+      if (entry.chatReplies && entry.chatReplies.length > 0) {
+        entry.chatReplies.forEach((reply, idx) => {
+          messages.push({
+            id: `${entry.id}-reply-${idx}`,
+            sender: CONTACTS[reply.senderId] || CONTACTS.pm,
+            message: reply.message,
+            timestamp: entry.timestamp,
+            isSelf: reply.senderId === 'self',
+            isInfo: false,
+            type: "info"
+          });
         });
       } else {
-        const foodReplies = [
-          { sender: CONTACTS.hr, message: "Đớp đẫy bụng rồi lát hát tặng cả phòng một bài giải sầu nhé bạn ơi! 🎶🍱" },
-          { sender: CONTACTS.ba, message: "Một ngụm trà sữa xoa dịu tâm hồn, giàu sang thế này tiêu vài trăm k GrabFood nhầm nhò gì e ơi! 💍🥤" },
-          { sender: CONTACTS.sales, message: "Ăn trưa GrabFood ngon thế! Tiện thể chiều đi chốt khách khứa hộ tui luôn đi! 🌹🍱" }
-        ];
-        const rep = foodReplies[charCodeSum % foodReplies.length];
-        messages.push({
-          id: `${entry.id}-r1`,
-          sender: rep.sender,
-          message: rep.message,
-          timestamp: entry.timestamp,
-          isSelf: false,
-          isInfo: false,
-          type: "info"
-        });
+        const charCodeSum = entry.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        if (lowercase.includes("trà sữa") || lowercase.includes("highlands") || lowercase.includes("nước ngọt")) {
+          const foodReplies = [
+            { sender: CONTACTS.intern, message: "SIUUUUU! Highlands uống vào chạy deadline nhanh vcl sếp ơi! ⚡⚽" },
+            { sender: CONTACTS.admin, message: "Trà sữa ngon quá cưng ơi! Quả này tui chấm 10/10 điểm reaction luôn hihi! 🖥️🥤" },
+            { sender: CONTACTS.it_dev, message: "Đm lại nạp đường rồi, lát nữa có bug đéo fix đc là do sugar crash nha! 😂💻" }
+          ];
+          const rep = foodReplies[charCodeSum % foodReplies.length];
+          messages.push({
+            id: `${entry.id}-r1`,
+            sender: rep.sender,
+            message: rep.message,
+            timestamp: entry.timestamp,
+            isSelf: false,
+            isInfo: false,
+            type: "info"
+          });
+        } else {
+          const foodReplies = [
+            { sender: CONTACTS.hr, message: "Đớp đẫy bụng rồi lát hát tặng cả phòng một bài giải sầu nhé bạn ơi! 🎶🍱" },
+            { sender: CONTACTS.ba, message: "Một ngụm trà sữa xoa dịu tâm hồn, giàu sang thế này tiêu vài trăm k GrabFood nhầm nhò gì e ơi! 💍🥤" },
+            { sender: CONTACTS.sales, message: "Ăn trưa GrabFood ngon thế! Tiện thể chiều đi chốt khách khứa hộ tui luôn đi! 🌹🍱" }
+          ];
+          const rep = foodReplies[charCodeSum % foodReplies.length];
+          messages.push({
+            id: `${entry.id}-r1`,
+            sender: rep.sender,
+            message: rep.message,
+            timestamp: entry.timestamp,
+            isSelf: false,
+            isInfo: false,
+            type: "info"
+          });
+        }
       }
     }
     return messages;
@@ -249,6 +263,22 @@ export function parseFeedEntry(entry: { id: string; message: string; timestamp: 
     isInfo: false,
     type: entry.type
   });
+
+  // Nếu có kịch bản chat Zép Lào được đính kèm từ action choice:
+  if (entry.chatReplies && entry.chatReplies.length > 0) {
+    entry.chatReplies.forEach((reply, idx) => {
+      messages.push({
+        id: `${entry.id}-reply-${idx}`,
+        sender: CONTACTS[reply.senderId] || CONTACTS.pm,
+        message: reply.message,
+        timestamp: entry.timestamp,
+        isSelf: reply.senderId === 'self',
+        isInfo: false,
+        type: "info"
+      });
+    });
+    return messages; // Bỏ qua phần phân tích từ khóa ngẫu nhiên
+  }
 
   // Đồng nghiệp phản hồi siêu hài hước dựa trên từ khóa sự kiện
   const charCodeSum = entry.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);

@@ -65,7 +65,7 @@ interface GameStore {
   skipOvertime: () => void
 
   applyStatEffects: (effects: { stat: keyof GameStats; value: number }[], stressRate?: number) => void
-  addFeedEntry: (message: string, type?: FeedEntry['type']) => void
+  addFeedEntry: (message: string, type?: FeedEntry['type'], chatReplies?: import('../types/event.types').ChatReply[]) => void
   buyBuff: (buffId: string) => void
 }
 
@@ -281,7 +281,7 @@ export const useGameStore = create<GameStore>()(
           set({ flashEffect: null })
         }, 400)
 
-        get().addFeedEntry(action.feedMessage, 'info')
+        get().addFeedEntry(action.feedMessage, 'info', action.chatReplies)
 
         const nextActionsChosen = [...actionsChosen, actionId]
         const nextFlags = action.setFlags ? { ...get().flags, ...action.setFlags } : get().flags
@@ -631,13 +631,14 @@ export const useGameStore = create<GameStore>()(
 
       // ==================== FEED ====================
 
-      addFeedEntry: (message, type = 'info') => {
+      addFeedEntry: (message, type = 'info', chatReplies) => {
         const { feedLog, currentTimeSlot } = get()
         const entry: FeedEntry = {
           id: generateId(),
           message,
           timestamp: getNextTime(currentTimeSlot),
           type,
+          chatReplies,
         }
         set({ feedLog: [...feedLog, entry].slice(-50) })
       },
@@ -680,7 +681,7 @@ export const useGameStore = create<GameStore>()(
         })
 
         soundManager.playSuccess();
-        get().addFeedEntry(`Đã mua ${buff.icon} ${buff.name}!`, 'success')
+        get().addFeedEntry(`Đã mua ${buff.icon} ${buff.name}!`, 'success', buff.chatReplies)
       },
     }),
 

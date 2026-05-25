@@ -71,7 +71,7 @@ export default function EventCard({
       `}
     >
       {/* Sender & Deadline Header */}
-      <div className="order-1 flex items-start justify-between gap-3 border-b border-zinc-800 pb-2.5">
+      <div className="flex items-start justify-between gap-3 border-b border-zinc-800 pb-2.5">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-xs font-bold text-zinc-300">
@@ -93,12 +93,12 @@ export default function EventCard({
       </div>
  
       {/* Email Body Message Container */}
-      <div className="order-3 sm:order-2 bg-zinc-900/60 border border-zinc-800 p-3 rounded-xl text-zinc-300 text-xs leading-relaxed select-text shadow-inner font-sans">
+      <div className="bg-zinc-900/60 border border-zinc-800 p-3 rounded-xl text-zinc-300 text-xs leading-relaxed select-text shadow-inner font-sans">
         <p className="whitespace-pre-wrap">{event.description}</p>
       </div>
  
       {/* Choice actions as Email Replies */}
-      <div className="order-2 sm:order-3 mt-1 space-y-2">
+      <div className="mt-1 space-y-2">
         <div className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold mb-1 flex items-center gap-1">
           <span>↩️ Trả lời nhanh:</span>
         </div>

@@ -386,38 +386,10 @@ export default function DailySummaryScreen() {
           </div>
         </div>
 
-        {/* ── MOBILE CONTENT VIEW (Tab Switcher) ── */}
-        <div className="lg:hidden flex border border-white/10 bg-white/5 rounded-2xl mb-6 select-none overflow-hidden">
-          <button
-            onClick={() => {
-              soundManager.playClick();
-              setActiveMobileTab("plan");
-            }}
-            className={`flex-1 py-3 text-center text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
-              activeMobileTab === "plan" ? "text-cyan-400 bg-cyan-950/40" : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            <span>🌙</span>
-            <span>Kế Hoạch & Kết Quả</span>
-          </button>
-          <button
-            onClick={() => {
-              soundManager.playClick();
-              setActiveMobileTab("zalo");
-            }}
-            className={`flex-1 py-3 text-center text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
-              activeMobileTab === "zalo" ? "text-cyan-400 bg-cyan-950/40" : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            <span>💬</span>
-            <span>Thị Phi Zalo</span>
-          </button>
-        </div>
-
         {/* Mobile Content Area */}
-        <div className="lg:hidden mb-8">
+        <div className="lg:hidden">
           {activeMobileTab === "plan" ? (
-            <div className="space-y-6">
+            <div className="space-y-6 pb-20">
               
               {/* KẾ HOẠCH TỐI NAY (PHẢI) - PRIORITIZED AT THE TOP */}
               <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-5 flex flex-col justify-between h-auto">
@@ -560,8 +532,8 @@ export default function DailySummaryScreen() {
             </div>
           ) : (
             
-            /* CỘT 1: XEM LẠI LIVE CHAT ZALO (TRÁI) */
-            <div className="rounded-3xl border border-white/10 bg-[#161a23]/90 backdrop-blur-xl flex flex-col h-[520px] overflow-hidden shadow-2xl">
+            /* CỘT 1: XEM LẠI LIVE CHAT ZALO (TRÁI) - FULLSCREEN ON MOBILE SUMMARY */
+            <div className="fixed inset-0 z-40 bg-[#161a23] flex flex-col pb-16 select-text">
               {/* 🔵 Zalo Header */}
               <div className="flex items-center justify-between px-3.5 py-3.5 bg-[#0068ff] text-white flex-shrink-0 shadow-md">
                 <div className="flex flex-col min-w-0">
@@ -652,6 +624,47 @@ export default function DailySummaryScreen() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* ── MOBILE BOTTOM NAVIGATION (DAILY SUMMARY) ── */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-800 bg-zinc-950/95 backdrop-blur-md flex items-center justify-between safe-bottom pb-safe select-none">
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              setActiveMobileTab("plan");
+            }}
+            className={`flex-1 py-3.5 text-center text-xs font-black transition-all relative flex flex-col items-center justify-center gap-1 ${
+              activeMobileTab === "plan" ? "text-cyan-400" : "text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            <span className="text-lg">🌙</span>
+            <span className="text-[10px] font-bold">Kế Hoạch</span>
+            {activeMobileTab === "plan" && (
+              <motion.div
+                layoutId="activeDailyTabIndicator"
+                className="absolute top-0 left-4 right-4 h-0.5 bg-cyan-400 rounded-full"
+              />
+            )}
+          </button>
+          
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              setActiveMobileTab("zalo");
+            }}
+            className={`flex-1 py-3.5 text-center text-xs font-black transition-all relative flex flex-col items-center justify-center gap-1 ${
+              activeMobileTab === "zalo" ? "text-cyan-400" : "text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            <span className="text-lg">💬</span>
+            <span className="text-[10px] font-bold">Thị Phi Zép Lào</span>
+            {activeMobileTab === "zalo" && (
+              <motion.div
+                layoutId="activeDailyTabIndicator"
+                className="absolute top-0 left-4 right-4 h-0.5 bg-cyan-400 rounded-full"
+              />
+            )}
+          </button>
         </div>
 
       </motion.div>
