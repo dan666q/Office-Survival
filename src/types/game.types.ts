@@ -12,6 +12,7 @@ export interface Buff {
   }[]
   duration: 'permanent' | 'day' | 'timeslot'
   icon: string
+  chatReplies?: import('./event.types').ChatReply[]
 }
 
 export interface ProfessionConfig {
@@ -67,4 +68,5 @@ export interface FeedEntry {
   message: string
   timestamp: string
   type: 'info' | 'warning' | 'danger' | 'success'
+  chatReplies?: import('./event.types').ChatReply[]
 }

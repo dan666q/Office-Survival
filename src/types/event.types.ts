@@ -26,6 +26,11 @@ export interface Requirements {
   days?: import('./game.types').DayOfWeek[]
 }
 
+export interface ChatReply {
+  senderId: 'sep' | 'pm' | 'hr' | 'intern' | 'cto' | 'mkt' | 'design' | 'ba' | 'sales' | 'it_dev' | 'accounting' | 'seo' | 'legal' | 'admin' | 'self'
+  message: string
+}
+
 export interface Action {
   id: string
   label: string
@@ -35,6 +40,7 @@ export interface Action {
   // Dynamic RPG coupling features:
   requirements?: Omit<Requirements, 'days'>
   setFlags?: Record<string, boolean>
+  chatReplies?: ChatReply[]
 }
 
 export interface GameEvent {
