@@ -59,21 +59,31 @@ export default function VictoryScreen() {
         </div>
 
         {/* Sleek Topbar-style Status Bar */}
-        <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl px-4 py-3 sm:px-6 flex items-center gap-4 flex-wrap justify-between">
-          <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+        <div className="mb-3 sm:mb-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl px-3 py-2.5 sm:px-6 flex flex-col md:flex-row md:items-center gap-2.5 md:gap-4 justify-between">
+          {/* Title and Mobile Salary Row */}
+          <div className="flex items-center justify-between w-full md:w-auto md:justify-start gap-3 shrink-0">
             <span className="text-[10px] sm:text-xs text-zinc-400 uppercase tracking-widest font-black shrink-0">
               📊 Chỉ số cuối cùng:
             </span>
-            <div className="w-px h-4 bg-zinc-700 hidden sm:block" />
+            <div className="w-px h-4 bg-zinc-700 hidden md:block" />
+            
+            {/* Inline Salary on Mobile */}
+            <div className="flex items-center gap-1.5 md:hidden">
+              <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">💰 Lương:</span>
+              <span className="text-xs font-black text-yellow-300">
+                {formatMoney(stats.salary)}đ
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-6 sm:gap-8 flex-wrap flex-[2]">
+          {/* Stats Indicators Grid on Mobile */}
+          <div className="grid grid-cols-2 md:flex items-center gap-3 md:gap-8 w-full md:w-auto md:flex-[2]">
             {/* Stress Indicator */}
-            <div className="flex items-center gap-2 flex-1 min-w-[140px]">
-              <span className="text-[10px] text-zinc-400 uppercase tracking-wide shrink-0 font-bold">
-                Stress
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-wide shrink-0 font-bold">
+                😤 Stress
               </span>
-              <div className="flex-1 h-2 sm:h-2.5 rounded-full bg-zinc-900 overflow-hidden">
+              <div className="flex-1 h-1.5 sm:h-2 rounded-full bg-zinc-900 overflow-hidden border border-zinc-800">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${
                     stats.stress >= 80 ? "bg-red-500 animate-pulse" : "bg-red-400"
@@ -81,17 +91,17 @@ export default function VictoryScreen() {
                   style={{ width: `${stats.stress}%` }}
                 />
               </div>
-              <span className={`text-xs font-black shrink-0 w-8 text-right ${stats.stress >= 80 ? "text-red-400 animate-pulse" : "text-zinc-300"}`}>
+              <span className={`text-[10px] font-black shrink-0 w-6 text-right ${stats.stress >= 80 ? "text-red-400 animate-pulse" : "text-zinc-300"}`}>
                 {stats.stress}%
               </span>
             </div>
 
             {/* Energy Indicator */}
-            <div className="flex items-center gap-2 flex-1 min-w-[140px]">
-              <span className="text-[10px] text-zinc-400 uppercase tracking-wide shrink-0 font-bold">
-                Energy
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-wide shrink-0 font-bold">
+                ⚡ Energy
               </span>
-              <div className="flex-1 h-2 sm:h-2.5 rounded-full bg-zinc-900 overflow-hidden">
+              <div className="flex-1 h-1.5 sm:h-2 rounded-full bg-zinc-900 overflow-hidden border border-zinc-800">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${
                     stats.energy <= 20 ? "bg-blue-500 animate-pulse" : "bg-emerald-400"
@@ -99,13 +109,13 @@ export default function VictoryScreen() {
                   style={{ width: `${stats.energy}%` }}
                 />
               </div>
-              <span className={`text-xs font-black shrink-0 w-8 text-right ${stats.energy <= 20 ? "text-blue-400 animate-pulse" : "text-zinc-300"}`}>
+              <span className={`text-[10px] font-black shrink-0 w-6 text-right ${stats.energy <= 20 ? "text-blue-400 animate-pulse" : "text-zinc-300"}`}>
                 {stats.energy}%
               </span>
             </div>
 
-            {/* Salary Indicator */}
-            <div className="flex items-center gap-2 shrink-0">
+            {/* Desktop Salary Indicator */}
+            <div className="hidden md:flex items-center gap-2 shrink-0">
               <span className="text-[10px] text-zinc-400 uppercase tracking-wide font-bold">
                 Tổng lương
               </span>
