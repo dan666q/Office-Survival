@@ -5,13 +5,13 @@ import { soundManager } from "../../utils/soundManager";
 
 const LUNCH_BUFF_LIMIT = 2;
 
-// Thông báo nghèo ngẫu nhiên 😭
+// Cảnh báo hết tiền ngẫu nhiên 😭
 const BROKE_MESSAGES = [
-  "💸 Tài khoản âm tinh thần. Ví rỗng, buff khóa.",
-  "🤑 Không đủ tiền mua một ly trà sữa, nói gì buff.",
-  "😭 Lương chưa về mà shop đã muốn tiền.",
-  "💀 Broke tier. Mở shop ra chỉ để xem thôi.",
-  "🥲 Nhìn buff mà không mua được. Đau lòng.",
+  "💸 Tài khoản âm tinh thần. Ví rỗng, đồ ngon khóa sạch rồi cưng.",
+  "🤑 Không đủ tiền mua ly trà sữa lẻ loi, nói gì đồ ăn cứu mạng.",
+  "😭 Lương chưa về mà shop đã đòi tiền rồi đm.",
+  "💀 Nghèo rách túi. Mở canteen ra ngắm cho đỡ đói thôi.",
+  "🥲 Nhìn đồ ăn ngon xỉu mà đéo mua được. Đau lòng vcl.",
 ];
 
 export default function RightPanel() {
@@ -46,14 +46,6 @@ export default function RightPanel() {
 
   return (
     <div className="flex flex-col h-full min-h-0 divide-y divide-zinc-800">
-      {/* Title Bar */}
-      <div className="flex items-center justify-between px-3 py-2 bg-zinc-900 border-b border-zinc-800 flex-shrink-0">
-        <span className="text-[10px] text-zinc-400 font-mono font-bold uppercase tracking-wide">
-          🍱 GrabFood - Căn-tin
-        </span>
-        <span className="text-[9px] text-zinc-600 font-mono">GrabFood.app</span>
-      </div>
-
       {/* Mood */}
       <div className="px-3 py-3 flex-shrink-0">
         <p className="text-[10px] uppercase tracking-widest text-zinc-600 mb-2">
@@ -84,7 +76,7 @@ export default function RightPanel() {
       {activeBuffData.length > 0 && (
         <div className="px-3 py-3 flex-shrink-0">
           <p className="text-[10px] uppercase tracking-widest text-zinc-600 mb-2">
-            Buffs đang active
+            Món cứu sinh đang dùng
           </p>
           <div className="space-y-1.5">
             {activeBuffData.map((buff) => (
@@ -105,11 +97,11 @@ export default function RightPanel() {
         </div>
       )}
 
-      {/* Buff shop */}
+      {/* GrabFood Canteen */}
       <div className="px-3 py-3 flex-1 overflow-y-auto">
         <div className="flex items-center justify-between mb-2">
           <p className="text-[10px] uppercase tracking-widest text-zinc-600">
-            Căn-tin Cứu Mạng 🍱
+            GrabFood Cứu Mạng 🍱
           </p>
           {isLunchTime ? (
             <span className="text-[10px] text-yellow-400 font-medium">
@@ -147,7 +139,7 @@ export default function RightPanel() {
           <div className="space-y-2">
             {shopBuffs.length === 0 && (
               <p className="text-[11px] text-zinc-600 text-center py-4">
-                Đã mua hết buff rồi 😎
+                Đã mua sạch đồ ăn ngon rồi 😎
               </p>
             )}
             {shopBuffs.map((buff) => {

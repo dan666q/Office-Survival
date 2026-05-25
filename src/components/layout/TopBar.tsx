@@ -4,12 +4,12 @@ import { useGameStore } from "../../store/gameStore";
 import { getMood, formatSalary } from "../../utils/statCalculator";
 
 const DAY_LABELS: Record<string, string> = {
-  monday: "Thứ Hai",
-  tuesday: "Thứ Ba",
-  wednesday: "Thứ Tư",
-  thursday: "Thứ Năm",
-  friday: "Thứ Sáu",
-  saturday: "Thứ Bảy",
+  monday: "Thứ Hai Kinh Hoàng 💀",
+  tuesday: "Thứ Ba Vật Vờ 🥱",
+  wednesday: "Thứ Tư Hơi Ảo 🌀",
+  thursday: "Thứ Năm Sắp Trôi 🍻",
+  friday: "Thứ Sáu Quẩy Lên 🎉",
+  saturday: "Thứ Bảy OT Báo Thủ 😭",
 };
 
 interface StatIndicator {
@@ -103,7 +103,7 @@ export default function TopBar() {
           <div className="flex items-center gap-1.5 relative">
             <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">😤 Stress:</span>
             <span className={`text-xs font-bold ${stressDanger ? "text-red-400 animate-pulse" : "text-zinc-300"}`}>{stats.stress}%</span>
-            <div className="w-12 h-2 rounded bg-zinc-900 overflow-hidden border border-zinc-800">
+            <div className="w-24 h-2 rounded bg-zinc-900 overflow-hidden border border-zinc-800">
               <div className={`h-full transition-all duration-500 ${stressDanger ? "bg-red-500 animate-pulse" : "bg-red-400"}`} style={{ width: `${stats.stress}%` }} />
             </div>
             <AnimatePresence>
@@ -119,7 +119,7 @@ export default function TopBar() {
           <div className="flex items-center gap-1.5 relative">
             <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">⚡ Thể lực:</span>
             <span className={`text-xs font-bold ${energyDanger ? "text-red-400 animate-pulse" : "text-zinc-300"}`}>{stats.energy}%</span>
-            <div className="w-12 h-2 rounded bg-zinc-900 overflow-hidden border border-zinc-800">
+            <div className="w-24 h-2 rounded bg-zinc-900 overflow-hidden border border-zinc-800">
               <div className={`h-full transition-all duration-500 ${energyDanger ? "bg-red-500 animate-pulse" : "bg-emerald-400"}`} style={{ width: `${stats.energy}%` }} />
             </div>
             <AnimatePresence>

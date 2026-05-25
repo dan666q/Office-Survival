@@ -120,7 +120,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: 'shopaholic',
     label: 'Người tiêu dùng thông thái',
     emoji: '🛒',
-    description: 'Đã mua sắm đồ dùng/buff phục hồi tại Shop nghỉ trưa.',
+    description: 'Đã order đồ ăn uống ngon lành tại GrabFood Cứu Mạng.',
     rewards: [
       { stat: 'stress', value: -15 },
       { stat: 'energy', value: +10 }

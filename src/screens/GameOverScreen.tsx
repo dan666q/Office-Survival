@@ -74,13 +74,62 @@ export default function GameOverScreen() {
           </div>
         </div>
 
-        {/* STATS */}
-        <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mb-6">
-          <StatCard label="Stress" value={`${stats.stress}%`} />
+        {/* Sleek Topbar-style Status Bar */}
+        <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl px-4 py-3 sm:px-6 flex items-center gap-4 flex-wrap justify-between">
+          <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+            <span className="text-[10px] sm:text-xs text-zinc-400 uppercase tracking-widest font-black shrink-0">
+              📊 Chỉ số cuối cùng:
+            </span>
+            <div className="w-px h-4 bg-zinc-700 hidden sm:block" />
+          </div>
 
-          <StatCard label="Energy" value={`${stats.energy}%`} />
+          <div className="flex items-center gap-6 sm:gap-8 flex-wrap flex-[2]">
+            {/* Stress Indicator */}
+            <div className="flex items-center gap-2 flex-1 min-w-[140px]">
+              <span className="text-[10px] text-zinc-400 uppercase tracking-wide shrink-0 font-bold">
+                Stress
+              </span>
+              <div className="flex-1 h-2 sm:h-2.5 rounded-full bg-zinc-900 overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    stats.stress >= 80 ? "bg-red-500 animate-pulse" : "bg-red-400"
+                  }`}
+                  style={{ width: `${stats.stress}%` }}
+                />
+              </div>
+              <span className={`text-xs font-black shrink-0 w-8 text-right ${stats.stress >= 80 ? "text-red-400 animate-pulse" : "text-zinc-300"}`}>
+                {stats.stress}%
+              </span>
+            </div>
 
-          <StatCard label="Salary" value={`${formatMoney(stats.salary)}đ`} />
+            {/* Energy Indicator */}
+            <div className="flex items-center gap-2 flex-1 min-w-[140px]">
+              <span className="text-[10px] text-zinc-400 uppercase tracking-wide shrink-0 font-bold">
+                Energy
+              </span>
+              <div className="flex-1 h-2 sm:h-2.5 rounded-full bg-zinc-900 overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    stats.energy <= 20 ? "bg-blue-500 animate-pulse" : "bg-emerald-400"
+                  }`}
+                  style={{ width: `${stats.energy}%` }}
+                />
+              </div>
+              <span className={`text-xs font-black shrink-0 w-8 text-right ${stats.energy <= 20 ? "text-blue-400 animate-pulse" : "text-zinc-300"}`}>
+                {stats.energy}%
+              </span>
+            </div>
+
+            {/* Salary Indicator */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-[10px] text-zinc-400 uppercase tracking-wide font-bold">
+                Tổng lương
+              </span>
+              <span className={`text-sm sm:text-base font-black ${stats.salary <= 0 ? "text-red-400" : "text-yellow-300"}`}>
+                {formatMoney(stats.salary)}đ
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* SUMMARY */}
@@ -159,20 +208,7 @@ export default function GameOverScreen() {
   );
 }
 
-interface StatCardProps {
-  label: string;
-  value: string;
-}
 
-function StatCard({ label, value }: StatCardProps) {
-  return (
-    <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-5">
-      <p className="text-xs sm:text-sm text-white/55 mb-1 sm:mb-2">{label}</p>
-
-      <h3 className="text-base sm:text-2xl font-black break-words">{value}</h3>
-    </div>
-  );
-}
 
 interface SummaryRowProps {
   label: string;

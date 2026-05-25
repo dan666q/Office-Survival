@@ -43,12 +43,13 @@ export function getMood(stats: GameStats): {
   sub: string
   color: string
 } {
-  if (stats.stress >= 90) return { label: '💀 Sắp xong rồi', sub: 'Burnout gần kề', color: 'text-red-400' }
-  if (stats.stress >= 75) return { label: '🔥 Căng lắm rồi', sub: 'Stress nguy hiểm', color: 'text-orange-400' }
-  if (stats.stress >= 50) return { label: '⚡ Căng thẳng', sub: 'Cần cẩn thận', color: 'text-yellow-400' }
-  if (stats.energy <= 20) return { label: '😴 Kiệt sức', sub: 'Energy thấp nguy hiểm', color: 'text-blue-400' }
-  if (stats.energy >= 80 && stats.stress <= 30) return { label: '😎 Đang ngon', sub: 'Tiếp tục phát huy', color: 'text-emerald-400' }
-  return { label: '😐 Bình thường', sub: 'Tạm ổn, cẩn thận nha', color: 'text-zinc-300' }
+  if (stats.stress >= 90) return { label: '💀 Sụp hầm vcl', sub: 'Burnout đỉnh điểm, cứu tui!', color: 'text-red-400 animate-pulse' }
+  if (stats.stress >= 75) return { label: '🔥 Cọc điên lên á', sub: 'Stress nguy hiểm, sếp sắp ăn diss', color: 'text-orange-400 font-bold' }
+  if (stats.stress >= 50) return { label: '⚡ Căng thẳng nhẹ', sub: 'Deadline dí, đéo thấy bình yên', color: 'text-yellow-400' }
+  if (stats.energy <= 20) return { label: '🥱 Lờ đờ cmnr', sub: 'Pin cạn kiệt, thèm boba/highlands gấp', color: 'text-blue-400 animate-pulse' }
+  if (stats.energy >= 80 && stats.stress <= 30) return { label: '😎 Slay vcl', sub: 'Out trình công sở, gánh team!', color: 'text-emerald-400 font-black' }
+  if (stats.energy >= 50 && stats.stress <= 30) return { label: '😌 Chill phết nhe', sub: 'Mọi thứ trong tầm tay hihi', color: 'text-emerald-300' }
+  return { label: '😐 Vô cảm', sub: 'Tâm bất biến giữa dòng đời vạn biến', color: 'text-zinc-300' }
 }
 
 export function formatSalary(salary: number): string {
