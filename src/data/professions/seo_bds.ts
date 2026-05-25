@@ -7,21 +7,21 @@ export const seoBdsPack: ProfessionPack = {
     name: 'Sales BĐS',
     emoji: '🏠',
     tagline: 'Khách hàng là thượng đế. Cho đến khi họ seen tin nhắn và block bạn.',
-    difficulty: 'Dễ',
+    difficulty: 'Trung bình',
     enemy: 'Khách ảo, leads rác, cướp khách từ đồng nghiệp, áp lực chốt số cuối tháng',
     startingStats: {
       stress: 20,
-      energy: 100,
+      energy: 85,
       salary: 500000,
     },
-    dailySalary: 380000,
+    dailySalary: 420000,
   },
   buffs: [
     {
       id: 'chot_deal',
       name: 'Data VIP Quận 2',
       description: 'Danh sách số điện thoại của giới tài phiệt quan tâm biệt thự ven sông và penthouse 20 tỷ.',
-      cost: 500000,
+      cost: 300000,
       icon: '📞',
       chatReplies: [
         {
@@ -43,7 +43,7 @@ export const seoBdsPack: ProfessionPack = {
       id: 'crm_pro',
       name: 'Vòng phong thủy đắc lộc',
       description: 'Vòng chuỗi trầm hương tự nhiên xua đuổi leads rác, thu hút vận may và tăng tỷ lệ chốt hợp đồng.',
-      cost: 600000,
+      cost: 550000,
       icon: '🔮',
       chatReplies: [
         {
@@ -55,7 +55,7 @@ export const seoBdsPack: ProfessionPack = {
           "message": "Đeo vòng phong thủy trầm hương tâm linh đắc lộc chốt hợp đồng nhanh như chớp hihi 💍"
         }
       ],
-      duration: 'day',
+      duration: 'permanent',
       effects: [
         { stat: 'energy', value: 15 },
         { stat: 'stress', value: -15 },
@@ -77,7 +77,7 @@ export const seoBdsPack: ProfessionPack = {
           "message": "Học chốt deal siêu tốc xong đi oanh tạc khách hàng mang doanh thu về nâng cúp cùng anh nhé! 🐐🏆"
         }
       ],
-      duration: 'day',
+      duration: 'permanent',
       effects: [
         { stat: 'stress', value: -15 },
         { stat: 'energy', value: 10 },
@@ -87,7 +87,7 @@ export const seoBdsPack: ProfessionPack = {
       id: 'hot_listing',
       name: 'Liên minh Cò đất địa phương',
       description: 'Mạng lưới cộng tác viên thân thiết tuồn nguồn hàng ngộp giá rẻ bất ngờ trước khi lên sàn.',
-      cost: 1000000,
+      cost: 850000,
       icon: '🤝',
       chatReplies: [
         {
@@ -99,7 +99,7 @@ export const seoBdsPack: ProfessionPack = {
           "message": "Logic gom nguồn hàng ngộp này bá đạo vcl, giàu sang phú quý tới cản đéo kịp m ơi 🚀👽"
         }
       ],
-      duration: 'day',
+      duration: 'permanent',
       effects: [
         { stat: 'stress', value: -20 },
         { stat: 'energy', value: 20 },

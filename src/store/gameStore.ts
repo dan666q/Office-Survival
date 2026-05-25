@@ -501,7 +501,7 @@ export const useGameStore = create<GameStore>()(
 
         const restEffects = {
           sleep:    { energy: +45, stress: -25, salary: 0 },
-          beer:     { energy: +10, stress: -20, salary: -150000 },
+          beer:     { energy: +5, stress: -45, salary: -150000 },
           overtime: { energy: -15, stress: +25, salary: +250000 },
         }
 
