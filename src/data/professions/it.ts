@@ -10,18 +10,18 @@ export const itPack: ProfessionPack = {
     difficulty: 'Khó',
     enemy: 'Bug production, PM hối thúc, sếp gọi lúc 10pm, intern nguy hiểm',
     startingStats: {
-      stress: 40,
-      energy: 80,
+      stress: 45,
+      energy: 70,
       salary: 500000,
     },
-    dailySalary: 682000,
+    dailySalary: 580000,
   },
   buffs: [
     {
       id: 'stackoverflow',
       name: 'Claude Code Premium',
       description: 'Đăng ký gói Claude Code xịn nhất. Gõ một dòng prompt tự viết, tự debug, tự deploy. Dev ngồi lướt Shopee cả ngày.',
-      cost: 500000,
+      cost: 350000,
       icon: '🤖',
       chatReplies: [
         {
@@ -55,7 +55,7 @@ export const itPack: ProfessionPack = {
           "message": "Gõ phím cơ kêu to điếc cả tai cưng ơi, cơ mà âm thanh nghe bánh cuốn ghê 🌸"
         }
       ],
-      duration: 'day',
+      duration: 'permanent',
       effects: [
         { stat: 'stress', value: -10 },
         { stat: 'energy', value: 10 },
@@ -65,7 +65,7 @@ export const itPack: ProfessionPack = {
       id: 'dual_monitor',
       name: 'Màn hình cong UltraWide 34"',
       description: 'Độ phân giải 2K siêu rộng. Vừa cày phim, vừa lướt mạng, vừa để một góc code nhỏ không sợ ai dòm ngó.',
-      cost: 600000,
+      cost: 550000,
       icon: '🖥️',
       chatReplies: [
         {
@@ -77,7 +77,7 @@ export const itPack: ProfessionPack = {
           "message": "Màn hình to đùng thế kia nhìn sướng con mắt vcl, sòng phẳng giàu sang! 💍"
         }
       ],
-      duration: 'day',
+      duration: 'permanent',
       effects: [
         { stat: 'energy', value: 20 },
         { stat: 'stress', value: -10 },
@@ -99,7 +99,7 @@ export const itPack: ProfessionPack = {
           "message": "Ghế Herman Miller 40 củ ngồi 12 tiếng không đau lưng, phòng IT chịu chơi xỉu 🎸"
         }
       ],
-      duration: 'day',
+      duration: 'permanent',
       effects: [
         { stat: 'energy', value: 15 },
         { stat: 'stress', value: -20 },

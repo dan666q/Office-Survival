@@ -7,14 +7,14 @@ export const keToanPack: ProfessionPack = {
     name: 'Kế Toán',
     emoji: '📊',
     tagline: 'Số liệu không bao giờ sai. Chỉ có sếp hoặc Excel bắt nó phải sai.',
-    difficulty: 'Trung bình',
+    difficulty: 'Khó',
     enemy: 'Lỗi #REF!, kiểm toán thuế đột xuất, sếp muốn xào nấu số liệu',
     startingStats: {
-      stress: 30,
-      energy: 90,
+      stress: 40,
+      energy: 70,
       salary: 500000,
     },
-    dailySalary: 480000,
+    dailySalary: 450000,
   },
   buffs: [
     {
@@ -33,7 +33,7 @@ export const keToanPack: ProfessionPack = {
           "message": "Macro auto-fill nhanh gọn lẹ thế này sếp Messi duyệt báo cáo mỏi tay luôn em ơi 🐐"
         }
       ],
-      duration: 'day',
+      duration: 'permanent',
       effects: [
         { stat: 'energy', value: 20 },
         { stat: 'stress', value: -15 },
@@ -43,7 +43,7 @@ export const keToanPack: ProfessionPack = {
       id: 'may_tinh_bo_tui',
       name: 'Máy tính Casio FX-580',
       description: 'Huyền thoại máy tính cầm tay. Bấm phím giòn giã siêu tốc độ, tính toán chi phí chuẩn xác đến từng đồng xu lẻ.',
-      cost: 200000,
+      cost: 250000,
       icon: '🔢',
       chatReplies: [
         {
@@ -65,7 +65,7 @@ export const keToanPack: ProfessionPack = {
       id: 'ca_phe_den',
       name: 'Bảng cân đối kế toán cân bằng',
       description: 'Nợ và Có cân bằng hoàn hảo đến từng số lẻ mà không cần ép số. Cảm giác thỏa mãn quét sạch stress.',
-      cost: 300000,
+      cost: 250000,
       icon: '⚖️',
       chatReplies: [
         {
@@ -109,47 +109,47 @@ export const keToanPack: ProfessionPack = {
   events: [
     {
       id: 'kt_excel_crash',
-      title: 'Báo cáo tài chính bị lỗi #REF! hàng loạt 💀',
-      description: 'Đang mở file Excel báo cáo năm nặng 50MB thì máy báo "Not Responding" rồi tự crash. Khi mở lại, toàn bộ cột tổng doanh thu hiện chữ #REF! đỏ lòm.',
+      title: 'Huyền thoại Excel 50MB crash xanh màn hình 💀',
+      description: 'Đang mở file Excel báo cáo hợp nhất 50MB chứa 28 vạn dòng công thức VLOOKUP và lồng Pivot Table thì máy đứng im, quạt tản nhiệt rú lên như động cơ phản lực rồi báo "Not Responding" xanh cỏ. Khi mở lại, toàn bộ cột tổng doanh thu chuyển thành chữ #REF! đỏ lòm do mất link nội bộ.',
       priority: 'critical',
       professions: ['ke_toan'],
-            actions: [
+      actions: [
         {
           id: 'rebuild_formulas',
-          label: '🔍 Tự gõ và dựng lại công thức từng ô',
+          label: '🔍 Dùng phím tắt thần chưởng rà từng hàm VLOOKUP',
           effects: [
             { stat: 'energy', value: -25 },
             { stat: 'stress', value: +10 },
           ],
-          feedMessage: 'Bạn kiên nhẫn rà soát và dựng lại công thức. Đau mắt, mỏi vai nhưng số liệu đã chuẩn xác trở lại. 📈',
+          feedMessage: 'Bạn kiên nhẫn bấm Ctrl+Z, Ctrl+H và dựng lại đống công thức. Đau mắt mỏi vai rã rời nhưng bảng cân đối kế toán cuối cùng cũng khớp từng số lẻ. 📈',
           chatReplies: [
             {
               "senderId": "accounting",
-              "message": "Kiên nhẫn gõ dựng lại công thức Excel khớp từng số lẻ, nể độ chịu khó nha! ⚖️"
+              "message": "Nể phục chiến thần Excel! Rà VLOOKUP gõ lại công thức khớp từng số lẻ luôn, đỉnh chóp! ⚖️"
             },
             {
               "senderId": "sep",
-              "message": "Báo cáo tài chính chuẩn xác trở lại, sếp Messi duyệt ngay không lăn tăn 🐐"
+              "message": "Số liệu khớp hoàn hảo rồi, sếp Messi duyệt báo cáo mỏi tay luôn em ơi 🐐🏆"
             }
           ]
         },
         {
           id: 'use_old_estimate',
-          label: '🩹 Copy đè số ước tính từ file cũ (Nhanh gọn)',
+          label: '🩹 Bốc thuốc: Điền bừa số cho cân đối rồi nộp (Lấp liếm)',
           effects: [
             { stat: 'energy', value: -5 },
             { stat: 'stress', value: -10 },
           ],
           setFlags: { has_hidden_error: true },
-          feedMessage: 'Bạn copy đè số ước tính của tháng trước vào cho nhanh để kịp gửi. File chạy trơn tru, nhưng chứa một lỗ hổng số liệu lớn. 🤫',
+          feedMessage: 'Bạn copy đại số dư ước tính tháng trước đè vào cho nhanh để kịp giờ về đi nhậu. File chạy trơn tru mượt mà, nhưng chứa một quả bom nổ chậm về số liệu thuế. 🤫',
           chatReplies: [
             {
               "senderId": "accounting",
-              "message": "Copy đè số cũ cho nhanh kịp gửi, file chạy trơn tru cơ mà chứa lỗ hổng lớn nha m 🤫"
+              "message": "Điền đại số cũ lấp liếm cho nhanh kịp giờ đi nhậu, quả bom nổ chậm treo lơ lửng rồi m ơi 🤫"
             },
             {
               "senderId": "ba",
-              "message": "Nhanh gọn lẹ đối phó sếp là giỏi, cơ mà sau kiểm toán bới ra là mệt mỏi hihi 💍"
+              "message": "Bốc thuốc đỉnh cao đối phó sếp nhanh gọn lẹ, cơ mà sau kiểm toán bới ra là ăn cám nha hihi 💍"
             }
           ]
         },
@@ -157,47 +157,47 @@ export const keToanPack: ProfessionPack = {
     },
     {
       id: 'kt_boss_pressure',
-      title: 'Sếp tổng yêu cầu "tối ưu hóa" số liệu chi phí 💸',
-      description: 'Sếp gọi bạn vào phòng, nhỏ nhẹ: "Em xem thế nào gạt bớt doanh thu quý này sang quý sau, với chế thêm ít hóa đơn tiếp khách để giảm thuế thu nhập doanh nghiệp nhé."',
+      title: 'Mật lệnh phòng VIP: Sếp yêu cầu "xào nấu" né thuế 💸',
+      description: 'Sếp tổng gọi bạn vào phòng họp bí mật, rỉ tai: "Em xem thế nào gạt bớt 3 tỷ doanh thu quý này sang năm sau, rồi kiếm đống hóa đơn tiếp khách karaoke, massage khống nhét vào chi phí để né bớt thuế thu nhập doanh nghiệp nhé. Anh Messi tin tưởng em mới giao việc này đấy!"',
       priority: 'high',
       professions: ['ke_toan'],
-            actions: [
+      actions: [
         {
           id: 'agree_optimize',
-          label: '🤝 "Dạ để em xào nấu lại" (Chiều lòng sếp)',
+          label: '🤝 "Dạ để em bốc thuốc xào nấu lại" (Làm đệ tử sếp Messi)',
           effects: [
             { stat: 'stress', value: +15 },
             { stat: 'salary', value: +150000 },
           ],
           setFlags: { has_hidden_error: true, boss_pleased: true },
-          feedMessage: 'Bạn đồng ý làm theo ý sếp. Sếp cười tươi rút ví khao bạn bữa trưa và hứa tăng thưởng. Nhưng bạn biết mình vừa dấn thân vào con đường mạo hiểm. 💀',
+          feedMessage: 'Bạn đồng ý làm ảo thuật số liệu theo ý sếp. Sếp cười tươi roi rói rút ví ting ting nóng khao bạn lẩu và hứa tăng thưởng quý. Nhưng bạn biết mình vừa dấn thân vào con đường mạo hiểm "ăn cơm nhà nước". 💀',
           chatReplies: [
             {
               "senderId": "sep",
-              "message": "Đã khao bữa trưa vui vẻ và hứa tăng thưởng vì độ linh hoạt xử lý số liệu nhé! 🐐🏆"
+              "message": "Khao ngay nồi lẩu ngập ngụa vì độ linh hoạt xử lý số liệu né thuế đỉnh cao nha em! 🐐🏆"
             },
             {
               "senderId": "accounting",
-              "message": "Xào nấu số liệu chiều lòng sếp Messi, sướng trước mắt cơ mà run sau lưng cmnl 💀"
+              "message": "Bốc thuốc số liệu chiều lòng sếp Messi, sướng trước mắt cơ mà run bần bật sau lưng cmnl 💀"
             }
           ]
         },
         {
           id: 'refuse_optimize',
-          label: '🙅 Từ chối khéo vì rủi ro kiểm toán rất cao',
+          label: '🙅 Giảng đạo lý pháp luật và từ chối thẳng thừng',
           effects: [
             { stat: 'stress', value: +20 },
             { stat: 'salary', value: -100000 },
           ],
-          feedMessage: 'Bạn kiên quyết từ chối và cảnh báo rủi ro pháp lý. Sếp sa sầm nét mặt, hủy đề xuất và đánh giá bạn "thiếu linh hoạt trong xử lý công việc". 😭',
+          feedMessage: 'Bạn lôi Luật Kế toán ra giảng giải rủi ro đi tù cho sếp nghe. Sếp sa sầm nét mặt như bánh bao chiều, hủy đề xuất và đánh giá bạn "thiếu linh hoạt, không có tư duy cống hiến cho công ty". 😭',
           chatReplies: [
             {
               "senderId": "accounting",
-              "message": "Từ chối vì rủi ro kiểm toán là chuẩn bài, giữ vững đạo đức nghề nghiệp, slay! 💅"
+              "message": "Giảng đạo lý đi tù cho sếp nghe là chuẩn bài, giữ vững đạo đức nghề nghiệp, slay! 💅"
             },
             {
               "senderId": "sep",
-              "message": "Từ chối thẳng mặt sếp làm sếp sa sầm mặt đánh giá thiếu linh hoạt rồi kìa 🐐"
+              "message": "Bị đánh giá thiếu tư duy cống hiến cmnl, sếp ghi thù cọc cằn cả tuần luôn rồi 🐐"
             }
           ]
         },
@@ -205,47 +205,47 @@ export const keToanPack: ProfessionPack = {
     },
     {
       id: 'kt_double_payment',
-      title: 'Chuyển khoản nhầm hai lần tiền cho nhà cung cấp 😱',
-      description: 'Lúc duyệt lệnh chuyển tiền cuối ngày, do hệ thống ngân hàng bị lag, bạn vô tình click đúp khiến công ty chuyển khoản 2 lần số tiền 200 triệu cho bên đối tác.',
+      title: 'Cú đúp huyền thoại: Chuyển nhầm 2 lần tiền cho đối tác 😱',
+      description: 'Cuối ngày mắt nhắm mắt mở duyệt lệnh Internet Banking, hệ thống báo lag bạn vô tình click đúp khiến công ty chuyển khoản 2 lần số tiền 200 triệu cho bên đối tác. Bạn gọi điện đòi thì kế toán bên kia bảo: "Dạ sếp em đi du lịch Thái Lan 2 tuần nữa mới về ký lệnh trả lại được anh ơi!"',
       priority: 'critical',
       professions: ['ke_toan'],
-            actions: [
+      actions: [
         {
           id: 'report_immediately',
-          label: '📞 Gọi điện thương lượng đòi tiền ngay lập tức',
+          label: '📞 Gọi điện năn nỉ đối tác chuyển trả gấp',
           effects: [
             { stat: 'energy', value: -20 },
             { stat: 'stress', value: +10 },
           ],
-          feedMessage: 'Bạn lập tức gọi đối tác xin hoàn tiền. Đối tác đồng ý trả lại nhưng quy trình kế toán của họ mất 3 ngày. Bạn phải viết giải trình gửi sếp kế toán trưởng. 😮‍💨',
+          feedMessage: 'Bạn gọi điện năn nỉ, thậm chí dọa báo công an phong tỏa tài khoản. Kế toán đối tác sợ quá phải trích quỹ tiền mặt chuyển trả lại luôn. Bạn thoát chết trong gang tấc nhưng phải viết bản giải trình ê chề. 😮‍💨',
           chatReplies: [
             {
               "senderId": "accounting",
-              "message": "Gọi đòi tiền đối tác ngay lập tức, viết giải trình mệt mỏi tí cơ mà an toàn sổ sách 😮‍💨"
+              "message": "Năn nỉ dọa báo công an đòi tiền thành công, viết giải trình mệt mỏi tí mà an toàn sổ sách 😮‍💨"
             },
             {
               "senderId": "pm",
-              "message": "Hic chuyển nhầm 200 triệu hú vía chèn ơi, may thương lượng đòi lại được 🌸"
+              "message": "Chuyển nhầm 200 triệu đòi lại được là may xỉu chèn ơi, hú vía thực sự 🌸"
             }
           ]
         },
         {
           id: 'hide_double_payment',
-          label: '🤐 Im lặng, tự làm bút toán cấn trừ công nợ sau',
+          label: '🤐 Im lặng treo công nợ, âm thầm "cấn trừ" đợt sau',
           effects: [
             { stat: 'stress', value: +25 },
             { stat: 'energy', value: -10 },
           ],
           setFlags: { audit_discrepancy: true },
-          feedMessage: 'Bạn quyết định giữ im lặng, định cấn trừ vào đợt thanh toán sau của họ. Một khoản chênh lệch lớn phát sinh trên sổ quỹ chưa được giải quyết. 🤫',
+          feedMessage: 'Bạn im lặng giấu nhẹm lỗi, định bụng âm thầm cấn trừ vào các hóa đơn mua hàng sau của họ. Một khoản chênh lệch 200 triệu to đùng bị treo lơ lửng trên sổ sách chờ ngày kiểm toán sờ gáy. 🤫',
           chatReplies: [
             {
               "senderId": "accounting",
-              "message": "Im lặng tự cấn trừ công nợ sau, khoản chênh lệch to đùng treo lơ lửng lo vcl 🤫"
+              "message": "Tự cấn trừ công nợ giấu sếp, khoản chênh lệch to đùng treo lơ lửng lo sốt vó cmnl 🤫"
             },
             {
               "senderId": "legal",
-              "message": "Giấu lỗi chuyển nhầm 200 triệu kiểm toán sờ gáy là ăn biên bản phạt nặng lắm á nha ⚖️"
+              "message": "Giấu lỗi 200 triệu kiểm toán nội bộ khui ra là ăn biên bản phạt nặng lắm á nha cưng ⚖️"
             }
           ]
         },
@@ -300,50 +300,50 @@ export const keToanPack: ProfessionPack = {
     },
     {
       id: 'kt_tax_inspector_visit',
-      title: 'Thanh tra thuế phát hiện sai phạm hóa đơn 👮‍♂️',
-      description: 'Thanh tra gõ thước lên bàn: "Tại sao công ty có một loạt hóa đơn ăn uống, tiếp khách khống trị giá hàng chục triệu không có chứng từ đính kèm?"',
+      title: 'Thanh tra thuế dọa truy tố đi tù trốn thuế hình sự 👮‍♂️🚨',
+      description: 'Thanh tra đập bàn gằn giọng cực căng: "Một loạt hóa đơn tiếp khách massage khống trị giá hàng trăm triệu này là hành vi TRỐN THUẾ hình sự. Tôi sẽ chuyển thẳng hồ sơ sang cơ quan Cảnh sát điều tra tội phạm kinh tế (C03) khởi tố vụ án. Các anh chuẩn bị tinh thần đi tù đi!"',
       priority: 'critical',
       professions: ['ke_toan'],
-            requirements: {
+      requirements: {
         flags: { has_hidden_error: true, tax_audit_triggered: true },
       },
       actions: [
         {
           id: 'bribe_inspector',
-          label: '💸 "Lót tay" phong bì giải quyết êm thấm (Tốn rất nhiều tiền)',
+          label: '💸 "Lót tay" phong bì khủng giải quyết êm thấm (Tốn rất nhiều tiền)',
           effects: [
-            { stat: 'salary', value: -400000 },
+            { stat: 'salary', value: -450000 },
             { stat: 'stress', value: -15 },
           ],
           setFlags: { has_hidden_error: false, tax_audit_triggered: false },
-          feedMessage: 'Bạn cắn răng trích ngân quỹ/tiền túi 400k bỏ phong bì gửi riêng đoàn thanh tra. Họ gật gù bỏ qua lỗi và kết luận hồ sơ sạch sẽ. 🤫',
+          feedMessage: 'Bạn cắn răng trích ngân quỹ/tiền túi 400k bỏ phong bì gửi riêng trưởng đoàn thanh tra. Họ gật gù bỏ qua lỗi và kết luận hồ sơ sạch sẽ, né được án tù trong gang tấc. 🤫',
           chatReplies: [
             {
               "senderId": "accounting",
-              "message": "Trích 400k lót tay phong bì giải quyết êm thấm hồ sơ sạch đẹp, tiền đi trước là tiền khôn 🤫"
+              "message": "Trích 400k lót tay phong bì giải quyết êm thấm hồ sơ sạch đẹp, tiền đi trước là tiền khôn né tù tội 🤫"
             },
             {
               "senderId": "sales",
-              "message": "Đỉnh quá bạn ơi, xử lý khủng hoảng nhanh gọn lẹ, sòng phẳng giàu sang! 🍻"
+              "message": "Đỉnh quá bạn ơi, xử lý khủng hoảng né còng tay nhanh gọn lẹ, sòng phẳng giàu sang! 🍻"
             }
           ]
         },
         {
           id: 'accept_tax_penalty',
-          label: '😔 Chấp nhận biên bản phạt hành chính thuế',
+          label: '😔 Nhận lỗi trốn thuế, chuẩn bị tinh thần hầu tòa',
           effects: [
-            { stat: 'salary', value: -300000 },
+            { stat: 'salary', value: -500000 },
             { stat: 'stress', value: +25 },
           ],
-          feedMessage: 'Công ty bị lập biên bản phạt 300k điểm lương. Sếp tổng cực kỳ nổi giận, lôi bạn ra khiển trách nặng nề trước cuộc họp ban giám đốc. 💀',
+          feedMessage: 'Đoàn thanh tra lập biên bản chuyển thẳng sang công an điều tra C03. Công ty bị phạt hành chính 300k điểm lương, bạn bị còng tay dắt lên đồn công an lấy lời khai vì tội ký khống hóa đơn. Cả tuần ngồi run rẩy lo sợ án tù treo lơ lửng. 💀👮‍♂️',
           chatReplies: [
             {
               "senderId": "sep",
-              "message": "Bị phạt 300k điểm lương làm sếp Messi nổi giận khiển trách nặng nề trước ban giám đốc kìa! 🐐🚨"
+              "message": "Bị công an kinh tế C03 sờ gáy tội trốn thuế làm sếp Messi nổi điên đòi đuổi việc cả lò kế toán! 🐐🚨"
             },
             {
               "senderId": "hr",
-              "message": "Huhu bị phạt thuế nặng quá làm sếp cọc điên luôn, chia buồn nha em 🎸"
+              "message": "Huhu nghe tin cưng bị còng tay dắt lên đồn viết bản tường trình trốn thuế mà hoảng hồn giùm luôn á 😭"
             }
           ]
         },
@@ -355,7 +355,7 @@ export const keToanPack: ProfessionPack = {
       description: 'Kiểm toán phát hiện khoản chênh lệch 200 triệu chuyển khoản nhầm hôm trước chưa được ghi nhận vào sổ sách đúng quy trình kế toán.',
       priority: 'critical',
       professions: ['ke_toan'],
-            requirements: {
+      requirements: {
         flags: { audit_discrepancy: true },
       },
       actions: [
@@ -368,7 +368,7 @@ export const keToanPack: ProfessionPack = {
             { stat: 'salary', value: -150000 },
           ],
           setFlags: { audit_discrepancy: false },
-          feedMessage: 'Bạn nhận lỗi, giải thích rõ phương án cấn trừ công nợ. Sếp kế toán phạt bạn 150k vì không báo cáo kịp thời nhưng vụ việc được khép lại. 😮‍',
+          feedMessage: 'Bạn nhận lỗi, giải thích rõ phương án cấn trừ công nợ. Sếp kế toán phạt bạn 150k vì không báo cáo kịp thời nhưng vụ việc được khép lại.',
           chatReplies: [
             {
               "senderId": "accounting",
@@ -382,20 +382,20 @@ export const keToanPack: ProfessionPack = {
         },
         {
           id: 'shift_blame_bank',
-          label: '💻 Đổ lỗi hoàn toàn do hệ thống Internet Banking của ngân hàng',
+          label: '💻 Đổ lỗi hoàn toàn do hệ thống bảo mật của ngân hàng',
           effects: [
             { stat: 'stress', value: +20 },
             { stat: 'salary', value: -250000 },
           ],
-          feedMessage: 'Bạn đổ lỗi cho ngân hàng. Tuy nhiên kiểm toán yêu cầu đối chiếu log giao dịch và phát hiện bạn nói dối. Bạn bị phạt nặng vì thiếu trung thực. 💀',
+          feedMessage: 'Bạn đổ lỗi do lỗi bảo mật ngân hàng. Tuy nhiên, ngân hàng lập tức báo công an phòng chống tội phạm công nghệ cao (A05) vào cuộc kiểm tra. Công an phát hiện bạn khai man và làm giả file log. Bạn bị công an bế thẳng lên đồn viết bản tự kiểm điểm vì hành vi vu khống ngân hàng và trốn tránh trách nhiệm. Phạt trừ 250k lương. 💀👮‍♂️',
           chatReplies: [
             {
               "senderId": "accounting",
-              "message": "Đổ lỗi ngân hàng bị kiểm toán vạch trần nói dối phạt 250k, nhục vcl m ơi 💀"
+              "message": "Đổ lỗi ngân hàng bị công an mạng A05 bế lên đồn vạch trần nói dối phạt 250k, nhục nhã vcl m ơi 👮‍♂️💀"
             },
             {
               "senderId": "sep",
-              "message": "Thiếu trung thực trong kế toán là sếp Messi ghét nhất đó nha, phạt nặng răn đe! 🐐"
+              "message": "Thiếu trung thực trong kế toán lại còn dính dáng đến công an điều tra là sếp Messi ghét nhất nhé! 🐐🚨"
             }
           ]
         },

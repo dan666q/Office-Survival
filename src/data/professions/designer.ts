@@ -10,11 +10,11 @@ export const designerPack: ProfessionPack = {
     difficulty: 'Trung bình',
     enemy: 'Figma crash, feedback vô tận, logo đổi màu phong thủy, lỗi bản quyền font',
     startingStats: {
-      stress: 30,
-      energy: 90,
+      stress: 25,
+      energy: 85,
       salary: 500000,
     },
-    dailySalary: 520000,
+    dailySalary: 480000,
   },
   buffs: [
     {

@@ -27,7 +27,7 @@ const REST_OPTIONS = [
     id: "beer",
     title: "🍻 Uống bia giải sầu",
     description: "Giải tỏa stress cực tốt nhưng tốn kém. 30% cơ hội xảy ra drama sáng mai.",
-    effects: ["+10% Energy", "-20% Stress", "-150k"],
+    effects: ["+5% Energy", "-45% Stress", "-150k"],
     color: "from-amber-500/20 to-orange-500/10",
     border: "border-amber-500/40",
   },
