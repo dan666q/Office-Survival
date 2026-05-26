@@ -17,6 +17,73 @@ class SoundManager {
   private seqCounter = 0;
   private isMuted = localStorage.getItem("song-sot-cong-so-mute") === "true";
 
+  constructor() {
+    if (typeof window !== "undefined") {
+      document.addEventListener("visibilitychange", () => {
+        this.handleVisibilityChange();
+      });
+      window.addEventListener("focus", () => {
+        this.handleVisibilityChange();
+      });
+      
+      const wakeUp = () => {
+        this.wakeUpContext();
+      };
+      document.addEventListener("click", wakeUp);
+      document.addEventListener("touchstart", wakeUp);
+      document.addEventListener("keydown", wakeUp);
+    }
+  }
+
+  private wakeUpContext() {
+    if (this.isMuted) return;
+    if (this.ctx && this.ctx.state === "suspended") {
+      this.ctx.resume().then(() => {
+        if (this.bgmPlaying) {
+          this.restartBGM();
+        }
+      }).catch(err => {
+        console.warn("Failed to resume AudioContext on user interaction:", err);
+      });
+    }
+  }
+
+  private handleVisibilityChange() {
+    if (typeof document === "undefined") return;
+    if (document.visibilityState === "visible") {
+      if (this.isMuted) return;
+      if (this.ctx) {
+        if (this.ctx.state === "suspended") {
+          this.ctx.resume().then(() => {
+            if (this.bgmPlaying) {
+              this.restartBGM();
+            }
+          }).catch(err => {
+            console.warn("Failed to resume AudioContext on visibility change:", err);
+          });
+        } else if (this.bgmPlaying) {
+          this.restartBGM();
+        }
+      }
+    } else {
+      if (this.ctx && this.ctx.state === "running") {
+        this.ctx.suspend().catch(err => console.warn(err));
+      }
+    }
+  }
+
+  private restartBGM() {
+    const currentGenre = this.bgmGenre;
+    const currentTense = this.isTense;
+    const currentEventCount = this.eventCount;
+    
+    this.stopBGM();
+    this.bgmGenre = currentGenre;
+    this.isTense = currentTense;
+    this.eventCount = currentEventCount;
+    this.startBGM();
+  }
+
   toggleMute() {
     this.isMuted = !this.isMuted;
     localStorage.setItem("song-sot-cong-so-mute", String(this.isMuted));
