@@ -4,6 +4,7 @@ import { useGameStore } from "../store/gameStore";
 import { formatSalary } from "../utils/statCalculator";
 import { soundManager } from "../utils/soundManager";
 import { CONTACTS, parseFeedEntry } from "../components/layout/LeftPanel";
+import SystemSettingsPanel from "../components/layout/SystemSettingsPanel";
 
 const DAY_LABELS: Record<string, string> = {
   monday: "Thứ Hai Kinh Hoàng 💀",
@@ -47,7 +48,7 @@ export default function DailySummaryScreen() {
   const feedLog = useGameStore((s) => s.feedLog);
   const displayMessages = feedLog.flatMap((entry) => parseFeedEntry(entry));
 
-  const [activeMobileTab, setActiveMobileTab] = useState<"plan" | "zalo">("plan");
+  const [activeMobileTab, setActiveMobileTab] = useState<"plan" | "zalo" | "settings">("plan");
 
   useEffect(() => {
     soundManager.playDayPass();
@@ -634,6 +635,15 @@ export default function DailySummaryScreen() {
               </div>
             </div>
           )}
+
+          {/* Settings Tab in Mobile Summary view */}
+          {activeMobileTab === "settings" && (
+            <div className="fixed inset-0 z-40 bg-[#161a23] flex flex-col px-5 pt-4 pb-20 select-none overflow-hidden">
+              <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin">
+                <SystemSettingsPanel />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── MOBILE BOTTOM NAVIGATION (DAILY SUMMARY) ── */}
@@ -669,6 +679,25 @@ export default function DailySummaryScreen() {
             <span className="text-lg">💬</span>
             <span className="text-[10px] font-bold">Thị Phi Zép Lào</span>
             {activeMobileTab === "zalo" && (
+              <motion.div
+                layoutId="activeDailyTabIndicator"
+                className="absolute top-0 left-4 right-4 h-0.5 bg-cyan-400 rounded-full"
+              />
+            )}
+          </button>
+
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              setActiveMobileTab("settings");
+            }}
+            className={`flex-1 py-3.5 text-center text-xs font-black transition-all relative flex flex-col items-center justify-center gap-1 ${
+              activeMobileTab === "settings" ? "text-cyan-400" : "text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            <span className="text-lg">⚙️</span>
+            <span className="text-[10px] font-bold">Hệ Thống</span>
+            {activeMobileTab === "settings" && (
               <motion.div
                 layoutId="activeDailyTabIndicator"
                 className="absolute top-0 left-4 right-4 h-0.5 bg-cyan-400 rounded-full"

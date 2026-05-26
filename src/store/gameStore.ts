@@ -725,6 +725,7 @@ export const useGameStore = create<GameStore>()(
         achievements: state.achievements,
         dayHistory: state.dayHistory,
         isGameOver: state.isGameOver,
+        gameOverReason: state.gameOverReason,
         screen: state.screen,
         lunchBuffsBought: state.lunchBuffsBought,
         dailySalaryEarned: state.dailySalaryEarned,
@@ -734,6 +735,9 @@ export const useGameStore = create<GameStore>()(
         consecutiveTimeouts: state.consecutiveTimeouts,
         dailyEventsHandled: state.dailyEventsHandled,
         actionsChosen: state.actionsChosen,
+        activeEvents: state.activeEvents,
+        eventQueue: state.eventQueue,
+        slotEventsRemaining: state.slotEventsRemaining,
       }),
     }
   )

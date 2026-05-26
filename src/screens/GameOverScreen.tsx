@@ -1,8 +1,9 @@
-import { useEffect } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useGameStore } from "../store/gameStore";
 import { soundManager } from "../utils/soundManager";
 import { PROFESSIONS_CONFIG } from "../store/professionRegistry";
+import SystemSettingsPanel from "../components/layout/SystemSettingsPanel";
 
 const formatMoney = (value: number) => {
   return new Intl.NumberFormat("vi-VN").format(value);
@@ -20,6 +21,7 @@ export default function GameOverScreen() {
   } = useGameStore();
 
   const profConfig = PROFESSIONS_CONFIG.find((p) => p.id === profession);
+  const [isSystemMenuOpen, setIsSystemMenuOpen] = useState(false);
 
   useEffect(() => {
     soundManager.playBurnout();
@@ -31,6 +33,19 @@ export default function GameOverScreen() {
     <div className="min-h-screen bg-[#050816] text-white flex items-center justify-center px-4 py-8 overflow-hidden relative">
       {/* BACKGROUND GLOW */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,0,0,0.15),transparent_45%)]" />
+
+      {/* Floating Settings button on top-right */}
+      <button
+        onClick={() => {
+          soundManager.playClick();
+          setIsSystemMenuOpen(true);
+        }}
+        className="absolute top-4 right-4 z-40 flex items-center gap-1.5 bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 rounded-full px-3 py-1.5 text-xs text-zinc-400 hover:text-white font-bold uppercase tracking-wide cursor-pointer transition-all active:scale-95 shadow-lg backdrop-blur-md select-none"
+        title="Cài đặt hệ thống"
+      >
+        <span>⚙️</span>
+        <span>Hệ thống</span>
+      </button>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.92 }}
@@ -214,6 +229,29 @@ export default function GameOverScreen() {
           </div>
         </div>
       </motion.div>
+
+      {/* Settings Modal (Desktop & Mobile) */}
+      <AnimatePresence>
+        {isSystemMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSystemMenuOpen(false)}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 select-none"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 10 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#171b26] border border-white/10 w-full max-w-md rounded-3xl p-6 shadow-2xl backdrop-blur-xl relative text-left"
+            >
+              <SystemSettingsPanel onClose={() => setIsSystemMenuOpen(false)} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
