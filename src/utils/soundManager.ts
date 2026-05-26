@@ -15,8 +15,25 @@ class SoundManager {
   private chordIndex = 0;
   private activeNotes: number[] = [];
   private seqCounter = 0;
+  private isMuted = localStorage.getItem("song-sot-cong-so-mute") === "true";
+
+  toggleMute() {
+    this.isMuted = !this.isMuted;
+    localStorage.setItem("song-sot-cong-so-mute", String(this.isMuted));
+    if (this.isMuted) {
+      this.stopBGM();
+    } else {
+      this.startBGM();
+    }
+    return this.isMuted;
+  }
+
+  getMuteState() {
+    return this.isMuted;
+  }
 
   private init() {
+    if (this.isMuted) return;
     if (!this.ctx) {
       this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
@@ -36,13 +53,14 @@ class SoundManager {
   setBGMGenre(genre: number) {
     if (this.bgmGenre === genre) return;
     this.bgmGenre = genre;
-    if (this.bgmPlaying) {
+    if (this.bgmPlaying && !this.isMuted) {
       this.stopBGM();
       this.startBGM();
     }
   }
 
   playClick() {
+    if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
     const osc = this.ctx.createOscillator();
@@ -63,6 +81,7 @@ class SoundManager {
   }
 
   playSuccess() {
+    if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
@@ -92,6 +111,7 @@ class SoundManager {
   }
 
   playDanger() {
+    if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
@@ -120,6 +140,7 @@ class SoundManager {
   }
 
   playBurnout() {
+    if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
@@ -148,6 +169,7 @@ class SoundManager {
   }
 
   playDayPass() {
+    if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
@@ -225,6 +247,7 @@ class SoundManager {
   }
 
   startBGM() {
+    if (this.isMuted) return;
     if (this.bgmPlaying) return;
     this.init();
     if (!this.ctx) return;

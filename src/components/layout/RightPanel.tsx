@@ -2,6 +2,7 @@ import { useGameStore } from "../../store/gameStore";
 import { getMood, formatSalary } from "../../utils/statCalculator";
 import { getBuffsForProfession } from "../../store/professionRegistry";
 import { soundManager } from "../../utils/soundManager";
+import { DIFFICULTY_CONFIGS } from "../../data";
 
 const LUNCH_BUFF_LIMIT = 2;
 
@@ -22,10 +23,12 @@ export default function RightPanel() {
     currentTimeSlot,
     lunchBuffsBought,
     buyBuff,
+    difficulty,
   } = useGameStore();
   const mood = getMood(stats);
 
-
+  const diffConfig = DIFFICULTY_CONFIGS.find((d) => d.id === difficulty) ?? DIFFICULTY_CONFIGS[1];
+  const costMult = diffConfig.buffCostMultiplier;
 
   const isLunchTime = currentTimeSlot === "lunch";
   const canBuyMore = isLunchTime && lunchBuffsBought < LUNCH_BUFF_LIMIT;
@@ -40,9 +43,10 @@ export default function RightPanel() {
     .slice(0, 6);
 
   // Kiểm tra có đủ tiền mua bất kỳ buff nào không
-  const canAffordAny = isLunchTime && shopBuffs.some((b) => stats.salary >= b.cost);
+  const canAffordAny = isLunchTime && shopBuffs.some((b) => stats.salary >= Math.round(b.cost * costMult));
   const isBroke = isLunchTime && !canAffordAny && shopBuffs.length > 0 && lunchBuffsBought === 0;
   const brokeMessage = BROKE_MESSAGES[Math.floor(Date.now() / 10000) % BROKE_MESSAGES.length];
+
 
   return (
     <div className="flex flex-col h-full min-h-0 divide-y divide-zinc-800">
@@ -143,7 +147,8 @@ export default function RightPanel() {
               </p>
             )}
             {shopBuffs.map((buff) => {
-              const canAfford = stats.salary >= buff.cost;
+              const finalCost = Math.round(buff.cost * costMult);
+              const canAfford = stats.salary >= finalCost;
               const disabled = !canAfford || !canBuyMore;
               return (
                 <div
@@ -175,7 +180,7 @@ export default function RightPanel() {
                         canAfford ? "text-yellow-400" : "text-red-400"
                       }`}
                     >
-                      {formatSalary(buff.cost)}
+                      {formatSalary(finalCost)}
                     </span>
                   </div>
                   <p className="text-[10px] text-zinc-500 leading-relaxed line-clamp-2">
@@ -199,7 +204,7 @@ export default function RightPanel() {
                   {/* Không đủ tiền indicator */}
                   {!canAfford && isLunchTime && canBuyMore && (
                     <p className="text-[9px] text-red-400/70 mt-1">
-                      Thiếu {formatSalary(buff.cost - stats.salary)}
+                      Thiếu {formatSalary(finalCost - stats.salary)}
                     </p>
                   )}
                   {!canBuyMore && canAfford && (

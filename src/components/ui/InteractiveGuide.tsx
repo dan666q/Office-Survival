@@ -151,10 +151,52 @@ export default function InteractiveGuide({ onClose }: InteractiveGuideProps) {
           </div>
         </div>
 
-        {/* 🔗 PHẦN 4: NGHIỆP QUẢ CÔNG SỞ */}
+        {/* 🎭 PHẦN 4: HỆ THỐNG CẤP BẬC (CHỌN ĐỘ KHÓ) */}
+        <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-2xl p-4.5 space-y-2">
+          <h3 className="font-extrabold text-yellow-300 text-sm flex items-center gap-1.5">
+            🎭 4. Chọn Cấp Bậc Văn Phòng (Tùy Chỉnh Độ Khó)
+          </h3>
+          <p className="text-zinc-300 text-xs leading-relaxed">
+            Trước khi nhận việc, bạn có thể lựa chọn 1 trong 4 cấp bậc công sở (phù hợp với bản lĩnh gánh tạ của bạn):
+          </p>
+          <div className="space-y-2 mt-2 text-[11px]">
+            <div className="bg-zinc-950 p-2.5 rounded-lg border border-white/5">
+              <strong className="text-emerald-400">👶 Thực tập sinh (Intern - Dễ):</strong>
+              <p className="text-zinc-400 mt-0.5">Thời gian đọc sự kiện thong thả (+50%), giảm 30% Stress nhận và thể lực tiêu hao. Được gia đình trợ cấp +200k lương khởi điểm, trà sữa tại Căn-tin giảm giá 20%, hình phạt timeout cực nhẹ.</p>
+            </div>
+            <div className="bg-zinc-950 p-2.5 rounded-lg border border-white/5">
+              <strong className="text-cyan-400">👨‍💼 Nhân viên chính thức (Junior - Trung bình):</strong>
+              <p className="text-zinc-400 mt-0.5">Dễ thở hơn bản gốc với thời gian đọc tăng 20%, giảm nhẹ 10% Stress & Energy tiêu hao. Được trợ cấp +100k lương khởi điểm và Căn-tin giảm giá 10%.</p>
+            </div>
+            <div className="bg-zinc-950 p-2.5 rounded-lg border border-white/5">
+              <strong className="text-yellow-400">🔥 Lão làng gánh team (Senior - Khó):</strong>
+              <p className="text-zinc-400 mt-0.5">Trải nghiệm nguyên bản cốt lõi của trò chơi. Mọi hệ số đều mặc định x1.0, đòi hỏi sự tính toán tài chính và thể trạng sát sao.</p>
+            </div>
+            <div className="bg-zinc-950 p-2.5 rounded-lg border border-white/5">
+              <strong className="text-red-400">🤯 Kẻ hủy diệt deadline (CEO/Executive - Siêu Khó):</strong>
+              <p className="text-zinc-400 mt-0.5">Ác mộng thực sự! Thời gian đếm ngược rút ngắn 20%, stress nhận tăng 25%, kiệt sức nhanh hơn 20%. Khởi đầu nợ thẻ tín dụng (-150kđ), trà sữa lạm phát tăng 30% giá, đứng hình bị phạt gấp rưỡi!</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ⚙️ PHẦN 5: MENU CÀI ĐẶT HỆ THỐNG */}
+        <div className="bg-zinc-950/40 border border-zinc-800 rounded-2xl p-4.5 space-y-2">
+          <h3 className="font-extrabold text-cyan-400 text-sm flex items-center gap-1.5">
+            ⚙️ 5. Menu Hệ Thống (Cài Đặt Linh Hoạt)
+          </h3>
+          <p className="text-zinc-300 text-xs leading-relaxed">
+            Trong khi đang chơi, bạn có thể dễ dàng quản lý hệ thống bằng cách nhấp chọn nút <strong className="text-white">⚙️ Hệ thống</strong> (ở góc phải máy tính hoặc Tab 3 di động) để điều chỉnh nhạc nền (Bật/Tắt âm thanh) hoặc **Nộp Đơn Xin Nghỉ Việc (Hard Reset)** xóa sạch dữ liệu bắt đầu lại cuộc đời:
+          </p>
+          <div className="mt-2 space-y-1.5 text-[11px] text-zinc-400">
+            <p>🔊 <strong>Bật/Tắt âm thanh:</strong> Công tắc tắt/bật toàn bộ nhạc nền BGM và các hiệu ứng âm thanh click/danger giải nghiệp, ghi nhớ tự động vào trình duyệt.</p>
+            <p>📄 <strong>Nộp đơn xin nghỉ việc:</strong> Tính năng **Hard Reset** giúp bạn xóa sạch toàn bộ tiến trình chơi và Achievements đã đạt để bắt đầu lại cuộc đời mới hoàn toàn.</p>
+          </div>
+        </div>
+
+        {/* 🔗 PHẦN 6: NGHIỆP QUẢ CÔNG SỞ */}
         <div className="bg-purple-950/20 border border-purple-500/25 rounded-2xl p-4.5 space-y-2">
           <h3 className="font-extrabold text-purple-300 text-sm flex items-center gap-1.5">
-            🔗 4. Nghiệp Quả Công Sở (Cờ Trạng Thái)
+            🔗 6. Nghiệp Quả Công Sở (Cờ Trạng Thái)
           </h3>
           <p className="text-zinc-300 text-xs leading-relaxed">
             Các quyết định cẩu thả của bạn sẽ âm thầm để lại **Nghiệp Quả (Flag)** rình rập gây hậu quả nặng nề ở các sự kiện sau:
@@ -171,10 +213,10 @@ export default function InteractiveGuide({ onClose }: InteractiveGuideProps) {
           </div>
         </div>
 
-        {/* 💡 PHẦN 5: BÍ KÍP SỐNG DAI CỦA SENIOR */}
+        {/* 💡 PHẦN 7: BÍ KÍP SỐNG DAI CỦA SENIOR */}
         <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-2xl p-4">
           <h3 className="font-extrabold text-yellow-300 text-sm mb-2.5 flex items-center gap-1.5">
-            💡 5. Bí Kíp Sống Sót Từ Người Đi Trước
+            💡 7. Bí Kíp Sống Sót Từ Người Đi Trước
           </h3>
           <ul className="space-y-2 text-xs text-zinc-300">
             <li className="flex items-start gap-2">

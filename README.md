@@ -56,6 +56,36 @@ Hệ thống sử dụng cơ chế cờ trạng thái (`flags`) để ghi nhận
 ### F. Hệ thống Thành tựu (Achievements)
 Hệ thống tích hợp 10 thành tựu đặc trưng (Chiến thần dạ vâng sếp, Tâm bất biến giữa dòng đời vạn biến, Chiến binh làm thêm xuyên màn đêm...). Mỗi thành tựu khi mở khóa sẽ tự động kích hoạt hàm `applyStatEffects` để phát thưởng trực tiếp vào chỉ số tài chính, hồi sức hoặc giải tỏa áp lực cho người chơi.
 
+### G. Hệ thống Cấp bậc Độ khó (Difficulty Levels - Ranks) [Phiên Bản v1.1]
+Trò chơi tích hợp 4 cấp bậc công sở (phù hợp với khả năng xử lý deadline của người chơi), thay đổi trực quan các hệ số toán học của gameplay:
+*   **Thực tập sinh (Intern - Dễ)**: 
+    *   Tăng hệ số thời gian đọc timer sự kiện: **1.5x** (tăng thêm 50% thời gian phản xạ).
+    *   Giảm áp lực Stress nhận từ các quyết định: **-30%** (hệ số x0.7).
+    *   Giảm hao hụt thể lực thụ động mỗi ca làm: **-30%** (hệ số x0.7).
+    *   Thưởng thêm **+200,000đ** lương khởi điểm (được gia đình chu cấp).
+    *   Cơm nước tại Căn-tin được chiết khấu rẻ hơn: **-20%** (hệ số x0.8).
+    *   Hình phạt khi để cạn hết thời gian (timeout) giảm nhẹ một nửa (hệ số x0.5).
+*   **Nhân viên chính thức (Junior - Trung bình)**:
+    *   Tăng nhẹ thời gian phản xạ: **1.2x** (dễ thở hơn một chút so với mặc định).
+    *   Giảm 10% Stress nhận và hao hụt thể lực (hệ số x0.9).
+    *   Cộng thêm **+100,000đ** lương khởi điểm, Căn-tin giảm giá 10% (hệ số x0.9).
+    *   Hình phạt khi timeout giảm nhẹ 20% (hệ số x0.8).
+*   **Lão làng gánh team (Senior - Khó)**:
+    *   *Đây là độ khó mặc định của game.*
+    *   Tất cả các hệ số toán học nhân và phạt đều áp dụng mặc định ở mức **1.0x**.
+*   **Kẻ hủy diệt deadline (CEO/Executive - Ác mộng)**:
+    *   Rút ngắn thời gian phản xạ timer sự kiện: **-20%** (hệ số x0.8 - nhịp độ nhanh dồn dập).
+    *   Tăng Stress nhận thêm **+25%** (hệ số x1.25).
+    *   Thể lực hao hụt thụ động nhanh hơn **+20%** (hệ số x1.2).
+    *   Khởi đầu ví âm nợ thẻ tín dụng: **-150,000đ** từ ví 500k mặc định.
+    *   Lạm phát phong cách sống tăng giá vật phẩm Căn-tin: **+30%** (hệ số x1.3).
+    *   Hình phạt khi đứng hình (timeout) tăng gấp rưỡi: **1.5x** hình phạt mặc định.
+
+### H. Menu Cài Đặt Hệ Thống & Tắt Tiếng (System Settings & Audio Controls) [Phiên Bản v1.1]
+*   **Bảng Điều Khiển Responsive**: Được tích hợp dạng Pill Badge `⚙️ Hệ thống` căn dọc hoàn hảo ở thanh TopBar (giao diện Desktop) và dạng **Tab thứ 3** di động trên Bottom Navigation nằm cạnh Zalo (giao diện Mobile).
+*   **Quản lý Âm thanh**: Tích hợp công tắc bật/tắt toàn bộ hiệu ứng SFX và nhạc nền BGM, đồng bộ và ghi nhớ trực tiếp vào `localStorage` của trình duyệt.
+*   **Nộp Đơn Xin Nghỉ Việc (Hard Reset)**: Nút bấm duy nhất trong vùng an toàn Danger Zone giúp xóa sạch toàn bộ `localStorage` của game (bao gồm tiến trình tuần làm việc hiện tại và kho Achievements đã đạt được) và reload lại trang để bắt đầu cuộc đời mới từ một trang giấy trắng.
+
 ---
 
 ## 📂 3. Cấu trúc Thư mục Dự án (Project Architecture)

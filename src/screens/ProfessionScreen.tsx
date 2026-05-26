@@ -5,11 +5,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PROFESSIONS_CONFIG } from "../store/professionRegistry";
 import { useGameStore } from "../store/gameStore";
 import { soundManager } from "../utils/soundManager";
+import { DIFFICULTY_CONFIGS } from "../data";
 
 export default function ProfessionScreen() {
   const startGame = useGameStore((s) => s.startGame);
   const goToScreen = useGameStore((s) => s.goToScreen);
   const [activeJobId, setActiveJobId] = useState(PROFESSIONS_CONFIG[0]?.id || "");
+  const [selectedJob, setSelectedJob] = useState<any | null>(null);
+  const [selectedDifficultyTab, setSelectedDifficultyTab] = useState<string>("junior");
+
+  const handleSelectJob = (job: any) => {
+    setSelectedDifficultyTab("junior");
+    setSelectedJob(job);
+  };
+
 
   return (
     <div className="min-h-screen bg-[#0f1117] text-white relative overflow-hidden">
@@ -91,7 +100,7 @@ export default function ProfessionScreen() {
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.2 }}
               >
-                <ProfessionCard job={job} startGame={startGame} />
+                <ProfessionCard job={job} onSelectJob={handleSelectJob} />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -100,20 +109,271 @@ export default function ProfessionScreen() {
         {/* Desktop grid layout showing all cards */}
         <div className="hidden md:grid md:grid-cols-2 xl:grid-cols-4 gap-6">
           {PROFESSIONS_CONFIG.map((job) => (
-            <ProfessionCard key={job.id} job={job} startGame={startGame} />
+            <ProfessionCard key={job.id} job={job} onSelectJob={handleSelectJob} />
           ))}
         </div>
       </div>
+
+
+      {/* Glassmorphic Difficulty Selection Modal */}
+      <AnimatePresence>
+        {selectedJob && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
+            onClick={() => { soundManager.playClick(); setSelectedJob(null); }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 250 }}
+              onClick={(e) => e.stopPropagation()}
+              className="
+                w-full max-w-3xl
+                bg-[#171b26]
+                border border-white/10
+                rounded-3xl
+                shadow-2xl
+                p-4 sm:p-7
+                backdrop-blur-xl
+                relative
+                my-4 sm:my-8
+              "
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  soundManager.playClick();
+                  setSelectedJob(null);
+                }}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center text-sm transition-colors active:scale-90"
+              >
+                ✕
+              </button>
+
+              {/* Modal Title */}
+              <div className="text-center mb-4 sm:mb-6 pr-6 pl-6">
+                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-cyan-400">Độ Khó / Cấp Bậc</span>
+                <h2 className="text-lg sm:text-3xl font-black mt-0.5 sm:mt-1">Chọn cấp bậc của bạn</h2>
+                <p className="text-[10px] sm:text-xs text-zinc-400 mt-1 sm:mt-2 max-w-xl mx-auto leading-relaxed">
+                  Gia nhập văn phòng dưới tư cách nghề <span className="text-cyan-300 font-bold">{selectedJob.emoji} {selectedJob.name}</span> ở cấp bậc nào? Hãy chọn mức độ chịu đựng.
+                </p>
+              </div>
+
+              {/* Helper variables and helper functions */}
+              {(() => {
+                const getTimerMultiplierText = (mult: number) => {
+                  if (mult > 1.0) return `+${Math.round((mult - 1) * 100)}% thời gian`;
+                  if (mult < 1.0) return `-${Math.round((1 - mult) * 100)}% thời gian`;
+                  return "Thời gian đọc gốc";
+                };
+
+                const getStressText = (mult: number) => {
+                  if (mult < 1.0) return `Giảm ${Math.round((1 - mult) * 100)}% stress nhận`;
+                  if (mult > 1.0) return `Tăng ${Math.round((mult - 1) * 100)}% stress nhận`;
+                  return "Stress tiêu chuẩn";
+                };
+
+                const getSalaryOffset = (offset: number) => {
+                  if (offset > 0) return `+${offset / 1000}kđ lương ban đầu`;
+                  if (offset < 0) return `Nợ -${Math.abs(offset) / 1000}kđ khởi nghiệp`;
+                  return "Lương cơ bản gốc";
+                };
+
+                const getBuffCostText = (mult: number) => {
+                  if (mult < 1.0) return `Căn-tin rẻ hơn ${Math.round((1 - mult) * 100)}%`;
+                  if (mult > 1.0) return `Căn-tin đắt hơn ${Math.round((mult - 1) * 100)}%`;
+                  return "Giá Căn-tin niêm yết";
+                };
+
+                return (
+                  <>
+                    {/* Mobile View: Segmented Tab Selector + Active Detail Card (Fits Screen Perfectly, NO SCROLL) */}
+                    <div className="flex md:hidden flex-col gap-3.5">
+                      {/* Segmented Control / Tabs */}
+                      <div className="flex bg-[#0f1117]/80 p-0.5 rounded-xl border border-white/5">
+                        {DIFFICULTY_CONFIGS.map((level) => {
+                          const isActive = selectedDifficultyTab === level.id;
+                          return (
+                            <button
+                              key={level.id}
+                              onClick={() => {
+                                soundManager.playClick();
+                                setSelectedDifficultyTab(level.id);
+                              }}
+                              className={`
+                                flex-1 flex flex-col items-center justify-center py-1.5 rounded-lg transition-all duration-200
+                                ${
+                                  isActive
+                                    ? "bg-cyan-500/10 text-cyan-400 font-bold shadow-md border border-cyan-500/15"
+                                    : "text-zinc-500 hover:text-zinc-300 border border-transparent"
+                                }
+                              `}
+                            >
+                              <span className="text-base">{level.emoji}</span>
+                              <span className="text-[8px] font-bold tracking-tight whitespace-nowrap mt-0.5">{level.name.split(" ")[0]}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Active Level Detail Content Card */}
+                      <div className="min-h-[170px]">
+                        {DIFFICULTY_CONFIGS.filter((l) => l.id === selectedDifficultyTab).map((level) => (
+                          <motion.div
+                            key={level.id}
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.15 }}
+                            className="rounded-2xl border border-cyan-400/20 bg-cyan-500/5 p-4 flex flex-col justify-between h-full"
+                          >
+                            <div>
+                              {/* Emoji & Name */}
+                              <div className="flex items-center gap-2 mb-1.5">
+                                <span className="text-lg">{level.emoji}</span>
+                                <h3 className="font-extrabold text-xs text-cyan-300">
+                                  {level.title}
+                                </h3>
+                              </div>
+
+                              {/* Description */}
+                              <p className="text-[10px] text-zinc-300 leading-relaxed mb-3 font-medium">
+                                {level.description}
+                              </p>
+
+                              {/* Modifiers Badges grid */}
+                              <div className="grid grid-cols-2 gap-1.5 mb-4">
+                                <div className="flex items-center gap-1.5 p-1 rounded-lg bg-zinc-900/60 border border-white/5">
+                                  <span className="text-[10px]">⏳</span>
+                                  <span className="text-[8px] font-bold text-zinc-300 truncate">
+                                    {getTimerMultiplierText(level.timerMultiplier)}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1.5 p-1 rounded-lg bg-zinc-900/60 border border-white/5">
+                                  <span className="text-[10px]">😤</span>
+                                  <span className="text-[8px] font-bold text-zinc-300 truncate">
+                                    {getStressText(level.stressMultiplier)}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1.5 p-1 rounded-lg bg-zinc-900/60 border border-white/5">
+                                  <span className="text-[10px]">💰</span>
+                                  <span className="text-[8px] font-bold text-zinc-300 truncate">
+                                    {getSalaryOffset(level.startingSalaryOffset)}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1.5 p-1 rounded-lg bg-zinc-900/60 border border-white/5">
+                                  <span className="text-[10px]">🍱</span>
+                                  <span className="text-[8px] font-bold text-zinc-300 truncate">
+                                    {getBuffCostText(level.buffCostMultiplier)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Select Button */}
+                            <button
+                              onClick={() => {
+                                soundManager.playClick();
+                                startGame(selectedJob.id, level.id);
+                                setSelectedJob(null);
+                              }}
+                              className="
+                                w-full h-10 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-[10px] uppercase tracking-wider transition-all active:scale-95 flex items-center justify-center gap-1 shrink-0
+                              "
+                            >
+                              <span>Vào vai {level.name} ngay</span>
+                              <span>➔</span>
+                            </button>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Desktop View: Grid layout showing all cards at once (hidden on mobile) */}
+                    <div className="hidden md:grid grid-cols-2 gap-4">
+                      {DIFFICULTY_CONFIGS.map((level) => (
+                        <div
+                          key={level.id}
+                          onClick={() => {
+                            soundManager.playClick();
+                            startGame(selectedJob.id, level.id);
+                            setSelectedJob(null);
+                          }}
+                          className="
+                            group/item
+                            relative
+                            rounded-2xl
+                            border border-white/5
+                            bg-[#0f1117]/60
+                            hover:bg-cyan-500/5
+                            hover:border-cyan-400/30
+                            p-4.5 sm:p-5
+                            transition-all duration-200
+                            cursor-pointer
+                            flex flex-col justify-between
+                            h-full
+                          "
+                        >
+                          <div>
+                            {/* Emoji & Name */}
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <span className="text-xl">{level.emoji}</span>
+                              <h3 className="font-extrabold text-sm sm:text-base group-hover/item:text-cyan-300 transition-colors">
+                                {level.name}
+                              </h3>
+                            </div>
+
+                            {/* Description */}
+                            <p className="text-[11px] text-zinc-400 leading-normal mb-3 font-medium min-h-[32px]">
+                              {level.description}
+                            </p>
+
+                            {/* Badges/Modifiers list */}
+                            <div className="flex flex-wrap gap-1 mb-4">
+                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border bg-zinc-800 border-zinc-700 text-zinc-300`}>
+                                ⏳ {getTimerMultiplierText(level.timerMultiplier)}
+                              </span>
+                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border bg-zinc-800 border-zinc-700 text-zinc-300`}>
+                                😤 {getStressText(level.stressMultiplier)}
+                              </span>
+                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border bg-zinc-800 border-zinc-700 text-zinc-300`}>
+                                💰 {getSalaryOffset(level.startingSalaryOffset)}
+                              </span>
+                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border bg-zinc-800 border-zinc-700 text-zinc-300`}>
+                                🍱 {getBuffCostText(level.buffCostMultiplier)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Select Action */}
+                          <div className="w-full text-center py-2 rounded-xl bg-white/5 border border-white/5 font-extrabold text-[10px] group-hover/item:bg-cyan-400 group-hover/item:text-black group-hover/item:border-cyan-400 transition-all duration-200">
+                            Vào vai {level.name} ngay ➔
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
+
 interface ProfessionCardProps {
   job: typeof PROFESSIONS_CONFIG[number];
-  startGame: (profession: any) => void;
+  onSelectJob: (job: any) => void;
 }
 
-function ProfessionCard({ job, startGame }: ProfessionCardProps) {
+function ProfessionCard({ job, onSelectJob }: ProfessionCardProps) {
   return (
     <div
       className="
@@ -236,7 +496,7 @@ function ProfessionCard({ job, startGame }: ProfessionCardProps) {
         <button
           onClick={() => {
             soundManager.playClick();
-            startGame(job.id);
+            onSelectJob(job);
           }}
           className="
             mt-6
@@ -285,3 +545,4 @@ function StatBar({ label, value, color }: StatBarProps) {
     </div>
   );
 }
+

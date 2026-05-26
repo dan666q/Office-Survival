@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Profession, DayOfWeek, TimeSlot, GameStats, FeedEntry, DaySummary } from '../types/game.types'
+import type { Profession, DayOfWeek, TimeSlot, GameStats, FeedEntry, DaySummary, DifficultyLevel } from '../types/game.types'
 import type { GameEvent } from '../types/event.types'
-import { DAYS_CONFIG } from '../data'
+import { DAYS_CONFIG, DIFFICULTY_CONFIGS } from '../data'
 import { checkNewAchievements, ACHIEVEMENTS } from '../utils/achievementChecker'
 import { soundManager } from '../utils/soundManager'
 import {
@@ -30,6 +30,7 @@ import {
 interface GameStore {
   screen: 'start' | 'profession' | 'game' | 'daily_summary' | 'day_transition' | 'game_over' | 'victory'
   profession: Profession | null
+  difficulty: DifficultyLevel
   currentDay: DayOfWeek | null
   currentTimeSlot: TimeSlot | null
   stats: GameStats
@@ -53,7 +54,8 @@ interface GameStore {
   flashEffect: 'success' | 'danger' | null
 
   goToScreen: (screen: GameStore['screen']) => void
-  startGame: (profession: Profession) => void
+  startGame: (profession: Profession, difficulty?: DifficultyLevel) => void
+
   restartGame: () => void
 
   selectAction: (eventId: string, actionId: string) => void
@@ -76,6 +78,7 @@ export const useGameStore = create<GameStore>()(
     (set, get) => ({
       screen: 'start',
       profession: null,
+      difficulty: 'junior',
       currentDay: null,
       currentTimeSlot: null,
       stats: DEFAULT_STATS,
@@ -102,8 +105,13 @@ export const useGameStore = create<GameStore>()(
 
       goToScreen: (screen) => set({ screen }),
 
-      startGame: (profession) => {
-        const stats = getStartingStats(profession)
+      startGame: (profession, difficulty = 'junior') => {
+        const baseStats = getStartingStats(profession)
+        const diffConfig = DIFFICULTY_CONFIGS.find(d => d.id === difficulty) ?? DIFFICULTY_CONFIGS[1]
+        const stats = {
+          ...baseStats,
+          salary: Math.max(0, baseStats.salary + diffConfig.startingSalaryOffset)
+        }
         const firstDay: DayOfWeek = 'monday'
         const firstSlot: TimeSlot = 'morning_start'
         const dayConfig = DAYS_CONFIG.find(d => d.day === firstDay)!
@@ -119,6 +127,7 @@ export const useGameStore = create<GameStore>()(
         set({
           screen: 'game',
           profession,
+          difficulty,
           currentDay: firstDay,
           currentTimeSlot: firstSlot,
           stats,
@@ -131,7 +140,7 @@ export const useGameStore = create<GameStore>()(
             timestamp: '08:00',
             type: 'info',
           }],
-          achievements: [],
+          achievements: get().achievements,
           dayHistory: [],
           isGameOver: false,
           gameOverReason: undefined,
@@ -152,6 +161,7 @@ export const useGameStore = create<GameStore>()(
         set({
           screen: 'start',
           profession: null,
+          difficulty: 'junior',
           currentDay: null,
           currentTimeSlot: null,
           stats: DEFAULT_STATS,
@@ -159,7 +169,7 @@ export const useGameStore = create<GameStore>()(
           eventQueue: [],
           activeEvents: [],
           feedLog: [],
-          achievements: [],
+          achievements: get().achievements,
           dayHistory: [],
           isGameOver: false,
           gameOverReason: undefined,
@@ -174,6 +184,7 @@ export const useGameStore = create<GameStore>()(
           actionsChosen: [],
         })
       },
+
 
       // ==================== GAMEPLAY ====================
 
@@ -201,21 +212,25 @@ export const useGameStore = create<GameStore>()(
       },
 
       handleTimeout: (eventId) => {
-        const { activeEvents, currentDay, consecutiveTimeouts } = get()
+        const { activeEvents, currentDay, consecutiveTimeouts, difficulty } = get()
         const event = activeEvents.find(e => e.id === eventId)
         if (!event) return
 
         const dayConfig = DAYS_CONFIG.find(d => d.day === currentDay)
         const stressRate = dayConfig?.statModifiers.stressRate ?? 1
 
+        const diffConfig = DIFFICULTY_CONFIGS.find(d => d.id === difficulty) ?? DIFFICULTY_CONFIGS[1]
+        const penaltyMult = diffConfig.penaltyMultiplier
+
         // Penalty nặng hơn nếu timeout liên tiếp
         const penaltyMultiplier = consecutiveTimeouts >= 1 ? 1.5 : 1
 
         get().applyStatEffects([
-          { stat: 'stress', value: Math.round(TIMEOUT_STRESS * penaltyMultiplier) },
-          { stat: 'energy', value: Math.round(TIMEOUT_ENERGY * penaltyMultiplier) },
-          { stat: 'salary', value: Math.round(TIMEOUT_SALARY * penaltyMultiplier) },
+          { stat: 'stress', value: Math.round(TIMEOUT_STRESS * penaltyMultiplier * penaltyMult) },
+          { stat: 'energy', value: Math.round(TIMEOUT_ENERGY * penaltyMultiplier * penaltyMult) },
+          { stat: 'salary', value: Math.round(TIMEOUT_SALARY * penaltyMultiplier * penaltyMult) },
         ], stressRate)
+
 
         soundManager.playDanger();
 
@@ -423,10 +438,14 @@ export const useGameStore = create<GameStore>()(
         const nextWeeklyCounts = { ...get().weeklyEventCounts }
         newQueue.forEach(e => { nextWeeklyCounts[e.id] = (nextWeeklyCounts[e.id] ?? 0) + 1 })
 
+        const diffConfig = DIFFICULTY_CONFIGS.find(d => d.id === get().difficulty) ?? DIFFICULTY_CONFIGS[1]
+        const energyMult = diffConfig.energyMultiplier
+
         let newStats = {
           ...stats,
-          energy: clampStat(stats.energy - Math.round(slotConfig.energyDrain * dayConfig.statModifiers.energyDrainRate)),
+          energy: clampStat(stats.energy - Math.round(slotConfig.energyDrain * dayConfig.statModifiers.energyDrainRate * energyMult)),
         }
+
 
         buffEffects.forEach(({ stat, value }) => {
           if (stat === 'salary') {
@@ -593,15 +612,19 @@ export const useGameStore = create<GameStore>()(
       // ==================== STATS ====================
 
       applyStatEffects: (effects, stressRate = 1) => {
-        const { stats } = get()
+        const { stats, difficulty } = get()
         const newStats = { ...stats }
+
+        const diffConfig = DIFFICULTY_CONFIGS.find(d => d.id === difficulty) ?? DIFFICULTY_CONFIGS[1]
+        const stressMult = diffConfig.stressMultiplier
 
         effects.forEach(({ stat, value }) => {
           if (stat === 'salary') {
             newStats.salary = Math.max(0, newStats.salary + value)
           } else if (stat === 'stress') {
-            // Nhân stress với stressRate của ngày
-            newStats.stress = clampStat(newStats.stress + Math.round(value * stressRate))
+            // Nhân stress với stressRate của ngày và stressMultiplier của độ khó (chỉ nhân khi stress tăng)
+            const multiplier = value > 0 ? stressMult : 1
+            newStats.stress = clampStat(newStats.stress + Math.round(value * stressRate * multiplier))
           } else {
             newStats[stat] = clampStat(newStats[stat] + value)
           }
@@ -646,7 +669,7 @@ export const useGameStore = create<GameStore>()(
       // ==================== BUFFS ====================
 
       buyBuff: (buffId) => {
-        const { stats, activeBuffs, currentTimeSlot, lunchBuffsBought, profession } = get()
+        const { stats, activeBuffs, currentTimeSlot, lunchBuffsBought, profession, difficulty } = get()
         const currentBuffList = getBuffsForProfession(profession)
         const buff = currentBuffList.find(b => b.id === buffId)
         if (!buff) return
@@ -659,12 +682,16 @@ export const useGameStore = create<GameStore>()(
           get().addFeedEntry('Đã mua đủ 2 món rồi, nghỉ trưa đi 😄', 'warning')
           return
         }
-        if (stats.salary < buff.cost) {
+
+        const diffConfig = DIFFICULTY_CONFIGS.find(d => d.id === difficulty) ?? DIFFICULTY_CONFIGS[1]
+        const finalCost = Math.round(buff.cost * diffConfig.buffCostMultiplier)
+
+        if (stats.salary < finalCost) {
           get().addFeedEntry(`Không đủ tiền mua ${buff.name} 💸`, 'warning')
           return
         }
 
-        const newStats = { ...stats, salary: stats.salary - buff.cost }
+        const newStats = { ...stats, salary: stats.salary - finalCost }
         buff.effects.forEach(({ stat, value }) => {
           if (stat === 'salary') {
             newStats.salary = Math.max(0, newStats.salary + value)
@@ -689,6 +716,7 @@ export const useGameStore = create<GameStore>()(
       name: 'song-sot-cong-so-save',
       partialize: (state) => ({
         profession: state.profession,
+        difficulty: state.difficulty,
         currentDay: state.currentDay,
         currentTimeSlot: state.currentTimeSlot,
         stats: state.stats,
