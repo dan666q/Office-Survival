@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGameStore } from "../../store/gameStore";
-import { DAYS_CONFIG } from "../../data";
+import { DAYS_CONFIG, DIFFICULTY_CONFIGS } from "../../data";
 import EventCard from "../event/EventCard";
 import { useEventTimer } from "../../hooks/useEventTimer";
 import { soundManager } from "../../utils/soundManager";
@@ -102,11 +102,16 @@ export default function MobileEventSlot() {
     pushNextActiveEvent,
     nextTimeSlot,
     skipOvertime,
+    difficulty,
   } = useGameStore();
 
   const dayConfig = DAYS_CONFIG.find((d) => d.day === currentDay);
-  const eventTimer = dayConfig?.eventTimer ?? 20;
+  const baseEventTimer = dayConfig?.eventTimer ?? 20;
   const newEventInterval = dayConfig?.newEventInterval ?? 10;
+
+  const diffConfig = DIFFICULTY_CONFIGS.find((d) => d.id === difficulty) ?? DIFFICULTY_CONFIGS[1];
+  const eventTimer = Math.round(baseEventTimer * diffConfig.timerMultiplier);
+
 
   const isBreakSlot = currentTimeSlot === "lunch";
   const isOvertimeSlot = currentTimeSlot === "overtime";

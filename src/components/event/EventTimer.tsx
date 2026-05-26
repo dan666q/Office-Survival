@@ -19,7 +19,8 @@ export default function EventTimer({ timeLeft, progress }: EventTimerProps) {
 
         <div
           className={`
-              rounded-md px-2 py-1 text-sm font-bold transition-all duration-300
+              rounded-md px-2 py-1 text-sm font-bold font-mono tabular-nums transition-all duration-300
+              w-[64px] flex items-center justify-center shrink-0
               ${
                 isCritical
                   ? "animate-pulse bg-red-500/20 text-red-400"
@@ -29,8 +30,9 @@ export default function EventTimer({ timeLeft, progress }: EventTimerProps) {
               }
             `}
         >
-          ⏳ {timeLeft}s
+          ⏳{timeLeft}s
         </div>
+
       </div>
 
       {/* Progress bar */}

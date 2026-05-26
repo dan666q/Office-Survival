@@ -1,5 +1,8 @@
 export type Profession = string
 
+export type DifficultyLevel = 'intern' | 'junior' | 'senior' | 'ceo'
+
+
 export interface Buff {
   id: string
   name: string

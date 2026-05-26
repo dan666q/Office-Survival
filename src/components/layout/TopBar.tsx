@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGameStore } from "../../store/gameStore";
 import { getMood, formatSalary } from "../../utils/statCalculator";
+import { DIFFICULTY_CONFIGS } from "../../data";
+import { soundManager } from "../../utils/soundManager";
 
 const DAY_LABELS: Record<string, string> = {
   monday: "Thứ Hai Kinh Hoàng 💀",
@@ -11,6 +13,23 @@ const DAY_LABELS: Record<string, string> = {
   friday: "Thứ Sáu Quẩy Lên 🎉",
   saturday: "Thứ Bảy OT Báo Thủ 😭",
 };
+
+const SHORT_DAY_LABELS: Record<string, string> = {
+  monday: "Thứ Hai",
+  tuesday: "Thứ Ba",
+  wednesday: "Thứ Tư",
+  thursday: "Thứ Năm",
+  friday: "Thứ Sáu",
+  saturday: "Thứ Bảy",
+};
+
+const SHORT_DIFF_LABELS: Record<string, string> = {
+  intern: "Intern",
+  junior: "Junior",
+  senior: "Senior",
+  ceo: "CEO",
+};
+
 
 interface StatIndicator {
   id: string;
@@ -26,12 +45,19 @@ function getAvatarEmoji(stress: number, energy: number) {
   return "👨‍💻";
 }
 
-export default function TopBar() {
-  const { stats, currentDay } = useGameStore();
+interface TopBarProps {
+  onOpenSettings?: () => void;
+}
+
+export default function TopBar({ onOpenSettings }: TopBarProps) {
+  const { stats, currentDay, difficulty } = useGameStore();
   const mood = getMood(stats);
+
+  const diffConfig = DIFFICULTY_CONFIGS.find((d) => d.id === difficulty) ?? DIFFICULTY_CONFIGS[1];
 
   const stressDanger = stats.stress >= 80;
   const energyDanger = stats.energy <= 20;
+
 
   const [indicators, setIndicators] = useState<StatIndicator[]>([]);
   const prevStatsRef = useRef(stats);
@@ -89,6 +115,11 @@ export default function TopBar() {
               {DAY_LABELS[currentDay]}
             </span>
           )}
+          {difficulty && (
+            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-extrabold whitespace-nowrap">
+              {diffConfig.emoji} {diffConfig.name}
+            </span>
+          )}
         </div>
 
         {/* Center: Avatar */}
@@ -132,7 +163,7 @@ export default function TopBar() {
           </div>
 
           {/* Salary */}
-          <div className="flex items-center gap-1.5 relative bg-zinc-900/50 border border-zinc-800 rounded px-2 py-0.5">
+          <div className="flex items-center gap-1.5 relative bg-zinc-900/50 border border-zinc-800 rounded px-2 py-0.5 animate-pulse-once">
             <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">💰 Lương:</span>
             <span className="text-xs font-black text-yellow-300">{formatSalary(stats.salary)}</span>
             <AnimatePresence>
@@ -143,6 +174,19 @@ export default function TopBar() {
               ))}
             </AnimatePresence>
           </div>
+
+          {/* Settings button */}
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              if (onOpenSettings) onOpenSettings();
+            }}
+            className="flex items-center gap-1.5 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 rounded px-2.5 py-0.5 text-[10px] text-zinc-400 hover:text-white font-bold uppercase tracking-wide cursor-pointer transition-all active:scale-95 shadow shrink-0"
+            title="Cài đặt hệ thống"
+          >
+            <span>⚙️</span>
+            <span>Hệ thống</span>
+          </button>
         </div>
       </div>
 
@@ -150,12 +194,20 @@ export default function TopBar() {
       <div className="flex sm:hidden flex-col px-3 pt-1.5 pb-1 gap-1">
         {/* Row 1: Day badge | Avatar mood | Salary */}
         <div className="flex items-center justify-between">
-          {/* Day */}
-          {currentDay ? (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950/40 border border-cyan-500/20 text-cyan-300 font-extrabold font-mono">
-              {DAY_LABELS[currentDay]}
-            </span>
-          ) : <span />}
+          {/* Day & Difficulty */}
+          <div className="flex items-center gap-1">
+            {currentDay && (
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-950/40 border border-cyan-500/20 text-cyan-300 font-extrabold font-mono whitespace-nowrap">
+                {SHORT_DAY_LABELS[currentDay]}
+              </span>
+            )}
+            {difficulty && (
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-extrabold whitespace-nowrap">
+                {diffConfig.emoji} {SHORT_DIFF_LABELS[difficulty]}
+              </span>
+            )}
+          </div>
+
 
           {/* Avatar mood */}
           <div className="flex items-center gap-1.5 bg-zinc-900/60 border border-zinc-800 rounded-full px-2.5 py-0.5">

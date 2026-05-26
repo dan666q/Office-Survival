@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGameStore } from "../store/gameStore";
 import TopBar from "../components/layout/TopBar";
+import SystemSettingsPanel from "../components/layout/SystemSettingsPanel";
 import TimeSlotBar from "../components/layout/TimeSlotBar";
 import LeftPanel, { parseFeedEntry } from "../components/layout/LeftPanel";
 import CenterPanel from "../components/layout/CenterPanel";
@@ -10,6 +11,7 @@ import { ACHIEVEMENTS } from "../utils/achievementChecker";
 import { soundManager } from "../utils/soundManager";
 import { getBuffsForProfession } from "../store/gameHelpers";
 import { formatSalary } from "../utils/statCalculator";
+import { DIFFICULTY_CONFIGS } from "../data";
 
 // Achievement toast hiển thị trong 3 giây
 interface AchievementToast {
@@ -28,7 +30,9 @@ export default function GameScreen() {
   const lunchBuffsBought = useGameStore((s) => s.lunchBuffsBought);
   const buyBuff = useGameStore((s) => s.buyBuff);
   const profession = useGameStore((s) => s.profession);
+  const difficulty = useGameStore((s) => s.difficulty);
   const feedLog = useGameStore((s) => s.feedLog);
+
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const availableBuffs = getBuffsForProfession(profession);
@@ -43,7 +47,26 @@ export default function GameScreen() {
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Mobile Tab State
-  const [activeMobileTab, setActiveMobileTab] = useState<"work" | "chat">("work");
+  const [activeMobileTab, setActiveMobileTab] = useState<"work" | "chat" | "settings">("work");
+
+  // Desktop Settings Modal State
+  const [isSystemMenuOpen, setIsSystemMenuOpen] = useState(false);
+
+  // Auto-close Desktop settings modal when resizing down to mobile view (< 1024px)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSystemMenuOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Also close desktop modal if activeMobileTab changes (meaning mobile bottom tab was clicked)
+  useEffect(() => {
+    setIsSystemMenuOpen(false);
+  }, [activeMobileTab]);
   
   // Notification Badge for Mobile
   const [lastReadFeedLength, setLastReadFeedLength] = useState(feedLog.length);
@@ -308,7 +331,7 @@ export default function GameScreen() {
       </div>
 
       {/* Top bar */}
-      <TopBar />
+      <TopBar onOpenSettings={() => setIsSystemMenuOpen(true)} />
 
       {/* Timeslot bar */}
       <TimeSlotBar />
@@ -352,6 +375,13 @@ export default function GameScreen() {
           {/* Chat Zalo tab */}
           <div className={`flex-1 min-h-0 flex flex-col bg-zinc-950/40 ${activeMobileTab === "chat" ? "" : "hidden"}`}>
             <LeftPanel />
+          </div>
+
+          {/* System Settings tab */}
+          <div className={`flex-1 min-h-0 flex flex-col bg-zinc-950/40 p-5 overflow-hidden ${activeMobileTab === "settings" ? "" : "hidden"}`}>
+            <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin">
+              <SystemSettingsPanel />
+            </div>
           </div>
         </div>
 
@@ -428,7 +458,10 @@ export default function GameScreen() {
                 {/* Items list viewport */}
                 <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 scrollbar-thin">
                   {availableBuffs.filter(b => !activeBuffs.includes(b.id)).map((buff) => {
-                    const canAfford = stats.salary >= buff.cost;
+                    const diffConfig = DIFFICULTY_CONFIGS.find((d) => d.id === difficulty) ?? DIFFICULTY_CONFIGS[1];
+                    const costMult = diffConfig.buffCostMultiplier;
+                    const finalCost = Math.round(buff.cost * costMult);
+                    const canAfford = stats.salary >= finalCost;
                     const disabled = !canAfford || lunchBuffsBought >= 2;
                     return (
                       <div
@@ -463,7 +496,7 @@ export default function GameScreen() {
                             </div>
                           </div>
                           <span className={`text-[10px] font-black px-2.5 py-1 rounded-full shrink-0 ${canAfford ? "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20" : "text-red-400 bg-red-500/10 border border-red-500/20"}`}>
-                            {formatSalary(buff.cost)}
+                            {formatSalary(finalCost)}
                           </span>
                         </div>
 
@@ -534,8 +567,50 @@ export default function GameScreen() {
               />
             )}
           </button>
+
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              setActiveMobileTab("settings");
+            }}
+            className={`flex-1 py-3.5 text-center text-xs font-black transition-all relative flex flex-col items-center justify-center gap-1 ${
+              activeMobileTab === "settings" ? "text-cyan-400" : "text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            <span className="text-lg">⚙️</span>
+            <span className="text-[10px] tracking-wide font-bold">Hệ Thống</span>
+            {activeMobileTab === "settings" && (
+              <motion.div
+                layoutId="activeTabIndicator"
+                className="absolute top-0 left-4 right-4 h-0.5 bg-cyan-400 rounded-full"
+              />
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Settings Modal (Desktop Only - Rendered at top-level to avoid sticky contains-block bug) */}
+      <AnimatePresence>
+        {isSystemMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSystemMenuOpen(false)}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 10 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#171b26] border border-white/10 w-full max-w-md rounded-3xl p-6 shadow-2xl backdrop-blur-xl relative"
+            >
+              <SystemSettingsPanel onClose={() => setIsSystemMenuOpen(false)} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Visual animations & styles */}
       <style>{`
