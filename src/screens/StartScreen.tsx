@@ -142,7 +142,7 @@ export default function StartScreen() {
 
           {/* Footer */}
           <div className="mt-8 flex items-center justify-between text-[10px] sm:text-xs text-zinc-500 border-t border-white/5 pt-4">
-            <p>hãy giữ gìn sức khỏe nhé</p>
+            <p>hãy nhớ giữ gìn sức khỏe nhé ❤️</p>
             <p>ver 1.0 by @dan666q</p>
           </div>
         </motion.div>
