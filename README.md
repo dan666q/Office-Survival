@@ -1,5 +1,5 @@
 # 👔 Office Survival (Sống Sót Công Sở)
-
+https://office-survival-247.vercel.app/
 **Office Survival** là một ứng dụng nhập vai mô phỏng dưới dạng văn bản (Text-based RPG/Roguelike) nhằm tái hiện lại môi trường và nhịp sống công sở hiện đại với các yếu tố châm biếm và thực tế. Người chơi sẽ hóa thân vào các chức vụ công sở khác nhau để đối mặt với các áp lực công việc, thời hạn hoàn thành (deadline) và các sự kiện ứng xử văn phòng hàng ngày.
 
 ---
