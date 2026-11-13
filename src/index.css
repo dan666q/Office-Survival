@@ -1,1 +1,150 @@
 @import "tailwindcss";
+
+/* Bảng màu văn phòng Việt Nam — tường vàng kem, gạch men, mực bút bi, con dấu đỏ */
+@theme {
+  --color-wall: #efe3c8;
+  --color-wall-dark: #d9c9a6;
+  --color-paper: #fbf7ee;
+  --color-paper-shade: #ece3d0;
+  --color-paper-line: #d8ccb4;
+  --color-ink: #2a251e;
+  --color-ink-soft: #6b6255;
+  --color-ink-faint: #a39a8b;
+  --color-stamp: #c8102e;
+  --color-note: #f6d55c;
+  --color-note-pink: #f4a7a0;
+  --color-note-green: #b8d8a8;
+  --color-pen: #1f3a93;
+  --color-mint: #7fb7a4;
+  --color-mint-dark: #4f8a77;
+  --color-wood: #6b4a32;
+  --color-tile: #b5543a;
+  --color-night: #2b2620;
+  --color-zalo: #0a68d8;
+
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-hand: "Patrick Hand", "Be Vietnam Pro", cursive;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --animate-flicker: flicker 2.4s steps(1) infinite;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  41% { opacity: 0.55; }
+  43% { opacity: 1; }
+  78% { opacity: 0.7; }
+  79% { opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-4px, 1px); }
+  40% { transform: translate(4px, -1px); }
+  60% { transform: translate(-3px, 0); }
+  80% { transform: translate(3px, 1px); }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-night);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+@layer components {
+  /* Tờ giấy văn phòng: phẳng, có bóng đổ thật, không kính mờ */
+  .paper {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow:
+      0 1px 0 rgb(0 0 0 / 0.06),
+      0 2px 3px rgb(60 45 25 / 0.12),
+      0 14px 28px -12px rgb(40 28 14 / 0.45);
+  }
+
+  /* Giấy có dòng kẻ như vở ô li */
+  .paper-ruled {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 27px,
+      var(--color-paper-line) 27px,
+      var(--color-paper-line) 28px
+    );
+  }
+
+  .stamp {
+    display: inline-block;
+    border: 2.5px solid currentColor;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-weight: 800;
+    line-height: 1.2;
+    transform: rotate(-6deg);
+    opacity: 0.88;
+    mix-blend-mode: multiply;
+  }
+
+  .hand {
+    font-family: var(--font-hand);
+  }
+
+  /* Nút mực: chữ đậm trên giấy, gạch chân khi hover */
+  .btn-ink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 6px;
+    padding: 0.6rem 1.1rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    box-shadow: 3px 3px 0 var(--color-ink);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .btn-ink:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--color-ink);
+  }
+  .btn-ink:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-ink);
+  }
+  .btn-ink:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 3px 3px 0 var(--color-ink);
+  }
+
+  .btn-stamp {
+    border-color: var(--color-stamp);
+    color: var(--color-paper);
+    background: var(--color-stamp);
+    box-shadow: 3px 3px 0 var(--color-ink);
+  }
+
+  .shake {
+    animation: shake 0.45s ease-in-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

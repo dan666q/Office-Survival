@@ -53,4 +53,6 @@ export interface GameEvent {
   actions: Action[]
   // Dynamic event requirements:
   requirements?: Requirements
+  // Vị trí trong văn phòng 3D (anchor id). Bỏ trống thì tự suy ra từ nội dung.
+  location?: string
 }

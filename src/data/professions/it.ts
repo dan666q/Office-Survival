@@ -205,6 +205,7 @@ export const itPack: ProfessionPack = {
     },
     {
       id: 'it_team_drama',
+      location: 'it_dev',
       title: 'Drama nội bộ: Dev team chia phe cãi nhau ⚔️',
       description: 'Trong kênh chat ẩn của team dev, cuộc cãi vã bùng nổ về phong cách code và ai chịu trách nhiệm cho lỗi của intern hôm trước.',
       priority: 'high',
@@ -543,6 +544,7 @@ export const itPack: ProfessionPack = {
     },
     {
       id: 'it_legacy_code',
+      location: 'it_dev',
       title: 'Được giao task sửa bug trong file "Legacy" không ai dám đụng 🧓',
       description: 'File code dài 4000 dòng, viết bởi một senior đã nghỉ việc từ 5 năm trước. Không một dòng comment giải thích.',
       priority: 'high',
@@ -686,6 +688,7 @@ export const itPack: ProfessionPack = {
     },
     {
       id: 'it_scam_email',
+      location: 'computer',
       title: 'Email giả danh sếp tổng đòi cung cấp mã bảo mật Git 🔒',
       description: 'Hòm thư công ty nhận được email từ địa chỉ cực giống sếp tổng yêu cầu bạn gửi ngay mã bảo mật hai lớp (2FA) của kho code Git để sếp duyệt code.',
       priority: 'high',
@@ -733,6 +736,7 @@ export const itPack: ProfessionPack = {
     },
     {
       id: 'it_ssl_expired',
+      location: 'server',
       title: 'Chứng chỉ bảo mật SSL hết hạn đột xuất lúc sáng sớm 💀',
       description: 'Khách hàng liên tục réo: "Tại sao website công ty truy cập lại hiện cảnh báo nguy hiểm đỏ lòm, không thể thanh toán được thế này?"',
       priority: 'critical',
@@ -780,6 +784,7 @@ export const itPack: ProfessionPack = {
     },
     {
       id: 'it_ai_copilot_bug',
+      location: 'computer',
       title: 'Hậu quả của việc quá tin tưởng AI GitHub Copilot 🤖',
       description: 'Lúc viết tính năng tính toán dòng tiền, do lười bạn tab tab đồng ý toàn bộ code do AI Copilot gợi ý và nhấn merge thẳng lên nhánh main.',
       priority: 'high',
@@ -827,6 +832,7 @@ export const itPack: ProfessionPack = {
     },
     {
       id: 'it_hardware_blue_screen',
+      location: 'computer',
       title: 'Màn hình xanh chết chóc (BSOD) mất sạch code chưa lưu! 🖥️',
       description: 'Đang gõ hăng say 300 dòng logic phức tạp chưa bấm lưu thì chiếc máy tính Windows đột ngột đứng hình, phát ra tiếng tạch rồi hiện màn hình xanh lè.',
       priority: 'critical',
@@ -1013,6 +1019,7 @@ export const itPack: ProfessionPack = {
     },
     {
       id: 'it_password_expire',
+      location: 'computer',
       title: 'Tài khoản nội bộ AD bị khóa do quên mật khẩu cũ 🔒',
       description: 'Hệ thống ép đổi mật khẩu Windows công ty định kỳ. Bạn đổi bừa một mật khẩu dài loằng ngoằng, sáng nay đến công ty không thể gõ trúng mật khẩu để login.',
       priority: 'low',
@@ -1387,6 +1394,7 @@ export const itPack: ProfessionPack = {
     },
     {
       id: 'it_new_8',
+      location: 'hr',
       title: 'Công ty tổ chức Hackathon cuối tuần bắt buộc tham gia 🏆',
       description: 'Sếp gửi thông báo: "Cuối tuần này công ty tổ chức giải Hackathon để tìm kiếm ý tưởng sản phẩm mới, toàn bộ nhân sự Dev phải có mặt tham gia nhé."',
       priority: 'medium',

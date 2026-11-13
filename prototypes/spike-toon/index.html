@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <title>Spike hoạt hình — Sống Sót Công Sở</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700;800;900&display=swap&subset=vietnamese" rel="stylesheet" />
+    <style>
+      :root {
+        --cream: #fff6e6; --ink: #3b2a20; --ink-soft: #7a6455; --tomato: #e0533d; --tomato-dark: #b23a28;
+        --mustard: #f2b33d; --teal: #3f8f86; --teal-dark: #2c6a63; --sky: #8cc7d9; --line: #e8d8bd;
+      }
+      * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #2a2320; font-family: "Be Vietnam Pro", system-ui, sans-serif; color: var(--ink); user-select: none; }
+      canvas { position: fixed; inset: 0; width: 100vw; height: 100dvh; touch-action: none; }
+
+      /* chip kiểu game mobile: nền kem, viền nâu, đáy dày như nút bấm thật */
+      .chip { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 14px; background: var(--cream); border: 2.5px solid var(--ink); box-shadow: 0 4px 0 var(--ink); font-weight: 800; font-size: 15px; white-space: nowrap; }
+      .chip small { font-weight: 600; color: var(--ink-soft); font-size: 12px; }
+      .chip svg { flex: none; }
+      #top { position: fixed; top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none; }
+      #top .group { display: flex; gap: 8px; }
+      #clock .time { font-variant-numeric: tabular-nums; color: var(--tomato); }
+      .meter { width: 46px; height: 8px; border-radius: 6px; background: var(--line); overflow: hidden; border: 2px solid var(--ink); }
+      .meter > i { display: block; height: 100%; background: var(--teal); }
+
+      /* thẻ nhiệm vụ ở vùng ngón cái */
+      #dock { position: fixed; left: 50%; bottom: max(12px, env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(560px, calc(100vw - 20px)); display: flex; flex-direction: column; gap: 8px; }
+      .card { background: var(--cream); border: 2.5px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); padding: 12px 14px; }
+      #objective { display: flex; align-items: center; gap: 12px; }
+      #objective .tag { flex: none; width: 44px; height: 44px; border-radius: 12px; background: var(--mustard); border: 2.5px solid var(--ink); display: grid; place-items: center; }
+      #objective .txt { flex: 1; min-width: 0; }
+      #objective .txt b { display: block; font-size: 15px; font-weight: 800; line-height: 1.2; }
+      #objective .txt span { display: block; font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+      .btn { flex: none; height: 46px; padding: 0 18px; border-radius: 14px; border: 2.5px solid var(--ink); background: var(--tomato); color: #fff; font: 800 15px "Be Vietnam Pro"; box-shadow: 0 4px 0 var(--ink); cursor: pointer; transition: transform .06s, box-shadow .06s; }
+      .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+      .btn.ghost { background: var(--cream); color: var(--ink); }
+      .btn.teal { background: var(--teal); }
+      #actions { display: none; gap: 8px; flex-wrap: wrap; }
+      #actions .btn { flex: 1; }
+
+      /* bong bóng thoại bật ra */
+      #bubble { position: fixed; left: 0; top: 0; max-width: 260px; padding: 10px 14px; background: #fff; border: 2.5px solid var(--ink); border-radius: 18px; box-shadow: 0 4px 0 var(--ink); font-size: 15px; font-weight: 600; line-height: 1.35; pointer-events: none; opacity: 0; transform-origin: 50% 100%; }
+      #bubble b { display: block; font-size: 12px; font-weight: 800; color: var(--tomato); margin-bottom: 2px; }
+      #bubble::after { content: ""; position: absolute; left: 50%; bottom: -11px; width: 16px; height: 16px; background: #fff; border-right: 2.5px solid var(--ink); border-bottom: 2.5px solid var(--ink); transform: translateX(-50%) rotate(45deg); border-bottom-right-radius: 4px; }
+      #hover { position: fixed; left: 0; top: 0; padding: 4px 10px; border-radius: 10px; background: var(--ink); color: var(--cream); font-size: 13px; font-weight: 700; pointer-events: none; opacity: 0; transform: translate(-50%, -100%); transition: opacity .12s; white-space: nowrap; }
+      .float { position: fixed; font-weight: 900; font-size: 18px; color: var(--teal-dark); pointer-events: none; text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff; animation: rise 1.4s ease-out forwards; transform: translate(-50%, -50%); }
+      @keyframes rise { from { opacity: 0; translate: 0 10px; } 15% { opacity: 1; } to { opacity: 0; translate: 0 -46px; } }
+
+      #timebar { position: fixed; right: 10px; top: 64px; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(59,42,32,.55); }
+      #timebar button { border: 0; border-radius: 8px; padding: 5px 9px; font: 700 12px "Be Vietnam Pro"; color: var(--cream); background: transparent; cursor: pointer; }
+      #timebar button[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
+      @media (max-width: 600px) {
+        .chip { height: 36px; padding: 0 10px; font-size: 14px; gap: 6px; }
+        .chip .label { display: none; }
+        .meter { width: 34px; }
+        #timebar { top: 60px; right: 10px; }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+
+    <div id="top">
+      <div class="group">
+        <div class="chip" id="clock">Thứ Hai <span class="time">09:24</span></div>
+      </div>
+      <div class="group">
+        <div class="chip" id="morale" title="Tinh thần">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" fill="#e0533d" stroke="#3b2a20" stroke-width="2.2" stroke-linejoin="round"/></svg>
+          <span class="label">Tinh thần</span><div class="meter"><i style="width:72%"></i></div>
+        </div>
+        <div class="chip" id="wallet" title="Ví">
+          <svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3" fill="#f2b33d" stroke="#3b2a20" stroke-width="2.2"/><circle cx="16" cy="12.5" r="1.8" fill="#3b2a20"/></svg>
+          <span class="v">500k</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="timebar" aria-label="Đổi giờ (thử)"></div>
+
+    <div id="dock">
+      <div class="card" id="actions"></div>
+      <div class="card" id="objective">
+        <div class="tag"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6Z" fill="#fff6e6" stroke="#3b2a20" stroke-width="2.2" stroke-linejoin="round"/><path d="M9 11h7M9 15h5" stroke="#3b2a20" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+        <div class="txt"><b id="objTitle">Ghé chỗ Độ Mixi</b><span id="objSub">Anh ấy đang vẫy bạn ở tầng 2</span></div>
+        <button class="btn" id="objGo">Đi tới</button>
+      </div>
+    </div>
+
+    <div id="bubble"></div>
+    <div id="hover"></div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

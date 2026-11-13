@@ -1,297 +1,93 @@
-import { motion } from "framer-motion";
-import { useGameStore } from "../store/gameStore";
-import { PROFESSIONS_CONFIG } from "../store/professionRegistry";
-import { ACHIEVEMENTS } from "../utils/achievementChecker";
+// src/screens/VictoryScreen.tsx
+// Hết ca thứ Bảy. Cả phòng ăn mừng, bạn nhận giấy khen.
 
-const formatMoney = (value: number) => {
-  return new Intl.NumberFormat("vi-VN").format(value);
-};
+import { useGameStore } from '../store/gameStore'
+import { PROFESSIONS_CONFIG } from '../store/professionRegistry'
+import { ACHIEVEMENTS } from '../utils/achievementChecker'
+import { soundManager } from '../utils/soundManager'
+import { ScreenPaper } from '../ui/ScreenPaper'
+import { formatEffect, formatMoney, stripEmoji } from '../ui/format'
 
 export default function VictoryScreen() {
-  const { profession, stats, achievements, restartGame, goToScreen, startGame } =
-    useGameStore();
-
-  const profConfig = PROFESSIONS_CONFIG.find((p) => p.id === profession);
+  const profession = useGameStore((s) => s.profession)
+  const difficulty = useGameStore((s) => s.difficulty)
+  const stats = useGameStore((s) => s.stats)
+  const achievements = useGameStore((s) => s.achievements)
+  const startGame = useGameStore((s) => s.startGame)
+  const restartGame = useGameStore((s) => s.restartGame)
+  const goToScreen = useGameStore((s) => s.goToScreen)
+  const prof = PROFESSIONS_CONFIG.find((p) => p.id === profession)
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white flex items-center justify-center px-4 py-8 relative overflow-hidden">
-      {/* GLOW */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,255,170,0.15),transparent_40%)]" />
+    <ScreenPaper width={520} tilt={-0.5}>
+      <div className="border-4 border-double border-stamp p-4 md:p-6">
+        <p className="text-center text-sm font-bold text-stamp">CÔNG TY TNHH SỐNG SÓT CÔNG SỞ</p>
+        <h1 className="mt-2 text-center text-4xl font-extrabold text-stamp md:text-5xl">GIẤY KHEN</h1>
+        <p className="mt-3 text-center text-[15px] leading-relaxed text-ink">
+          Tặng nhân viên vị trí <b>{prof ? stripEmoji(prof.name) : ''}</b>
+          <br />
+          đã sống sót trọn vẹn sáu ngày làm việc, từ Thứ Hai đến hết ca Thứ Bảy.
+        </p>
 
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 w-full max-w-6xl"
-      >
-        {/* HEADER */}
-        <div className="rounded-3xl border border-emerald-400/20 bg-emerald-500/10 backdrop-blur-xl p-4 sm:p-8 mb-4 sm:mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
-            <div>
-              <p className="uppercase tracking-[0.3em] text-emerald-200/70 text-xs sm:text-sm mb-1.5 sm:mb-3">
-                Victory
-              </p>
-
-              <h1 className="text-3xl sm:text-7xl font-black mb-2 sm:mb-4">
-                🏆 Sống sót thành công
-              </h1>
-
-              <p className="text-emerald-50/80 text-lg leading-relaxed max-w-3xl">
-                Bạn đã sống sót qua toàn bộ tuần làm việc. Không ai biết bằng
-                cách nào. Nhưng bạn đã làm được.
-              </p>
-            </div>
-
-            <motion.div
-              animate={{
-                y: [0, -8, 0],
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 2.5,
-              }}
-              className="rounded-3xl border border-emerald-300/20 bg-black/30 px-8 py-6 text-center"
-            >
-              <p className="text-sm text-emerald-100/70 mb-2">Trạng thái</p>
-
-              <div className="text-4xl font-black">VẪN CÒN SỐNG</div>
-            </motion.div>
+        <div className="mt-4 grid grid-cols-3 gap-2 border-y-2 border-ink py-3 text-center text-sm">
+          <div>
+            <p className="text-ink-soft">Stress</p>
+            <p className="font-mono text-lg font-bold">{stats.stress}%</p>
+          </div>
+          <div>
+            <p className="text-ink-soft">Sức</p>
+            <p className="font-mono text-lg font-bold">{stats.energy}%</p>
+          </div>
+          <div>
+            <p className="text-ink-soft">Ví</p>
+            <p className="font-mono text-lg font-bold">{formatMoney(stats.salary)}</p>
           </div>
         </div>
 
-        {/* Sleek Topbar-style Status Bar */}
-        <div className="mb-3 sm:mb-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl px-3 py-2.5 sm:px-6 flex flex-col md:flex-row md:items-center gap-2.5 md:gap-4 justify-between">
-          {/* Title and Mobile Salary Row */}
-          <div className="flex items-center justify-between w-full md:w-auto md:justify-start gap-3 shrink-0">
-            <span className="text-[10px] sm:text-xs text-zinc-400 uppercase tracking-widest font-black shrink-0">
-              📊 Chỉ số cuối cùng:
-            </span>
-            <div className="w-px h-4 bg-zinc-700 hidden md:block" />
-            
-            {/* Inline Salary on Mobile */}
-            <div className="flex items-center gap-1.5 md:hidden">
-              <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">💰 Lương:</span>
-              <span className="text-xs font-black text-yellow-300">
-                {formatMoney(stats.salary)}đ
-              </span>
-            </div>
-          </div>
+        <p className="mt-4 text-sm font-bold text-ink">Thành tích đã đạt ({achievements.length}/10)</p>
+        <ul className="mt-1 space-y-1.5">
+          {achievements.length === 0 && <li className="text-sm text-ink-soft">Chưa có. Tuần sau cố lên.</li>}
+          {achievements.map((id) => {
+            const a = ACHIEVEMENTS.find((x) => x.id === id)
+            if (!a) return null
+            return (
+              <li key={id} className="text-sm leading-snug">
+                <b>{a.label}</b>
+                {a.rewards && <span className="hand ml-1 text-base text-pen">({a.rewards.map((r) => formatEffect(r.stat, r.value)).join(', ')})</span>}
+              </li>
+            )
+          })}
+        </ul>
 
-          {/* Stats Indicators Grid on Mobile */}
-          <div className="grid grid-cols-2 md:flex items-center gap-3 md:gap-8 w-full md:w-auto md:flex-[2]">
-            {/* Stress Indicator */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-wide shrink-0 font-bold">
-                😤 Stress
-              </span>
-              <div className="flex-1 h-1.5 sm:h-2 rounded-full bg-zinc-900 overflow-hidden border border-zinc-800">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    stats.stress >= 80 ? "bg-red-500 animate-pulse" : "bg-red-400"
-                  }`}
-                  style={{ width: `${stats.stress}%` }}
-                />
-              </div>
-              <span className={`text-[10px] font-black shrink-0 w-6 text-right ${stats.stress >= 80 ? "text-red-400 animate-pulse" : "text-zinc-300"}`}>
-                {stats.stress}%
-              </span>
-            </div>
-
-            {/* Energy Indicator */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-wide shrink-0 font-bold">
-                ⚡ Energy
-              </span>
-              <div className="flex-1 h-1.5 sm:h-2 rounded-full bg-zinc-900 overflow-hidden border border-zinc-800">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    stats.energy <= 20 ? "bg-blue-500 animate-pulse" : "bg-emerald-400"
-                  }`}
-                  style={{ width: `${stats.energy}%` }}
-                />
-              </div>
-              <span className={`text-[10px] font-black shrink-0 w-6 text-right ${stats.energy <= 20 ? "text-blue-400 animate-pulse" : "text-zinc-300"}`}>
-                {stats.energy}%
-              </span>
-            </div>
-
-            {/* Desktop Salary Indicator */}
-            <div className="hidden md:flex items-center gap-2 shrink-0">
-              <span className="text-[10px] text-zinc-400 uppercase tracking-wide font-bold">
-                Tổng lương
-              </span>
-              <span className={`text-sm sm:text-base font-black ${stats.salary <= 0 ? "text-red-400" : "text-yellow-300"}`}>
-                {formatMoney(stats.salary)}đ
-              </span>
-            </div>
-          </div>
+        <div className="mt-5 flex items-end justify-between">
+          <p className="hand text-xl text-pen">Thứ Bảy, 25 tháng 10</p>
+          <span className="stamp text-lg text-stamp">GIÁM ĐỐC</span>
         </div>
+      </div>
 
-        {/* CONTENT */}
-        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
-          {/* LEFT */}
-          <div className="order-2 lg:order-1 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 sm:p-6">
-            <h2 className="text-2xl font-bold mb-6">📈 Tổng kết sự nghiệp</h2>
-
-            <div className="space-y-4">
-              <SummaryRow
-                label="Nghề nghiệp"
-                value={
-                  profConfig
-                    ? `${profConfig.emoji} ${profConfig.name}`
-                    : "Vô danh"
-                }
-              />
-
-              <SummaryRow label="Tuần làm việc" value="Hoàn thành" />
-
-              <SummaryRow
-                label="Tình trạng tinh thần"
-                value={
-                  stats.stress >= 80
-                    ? "💀 Sống nhưng không ổn"
-                    : stats.stress >= 50
-                    ? "😵 Hơi mất nhân tính"
-                    : "😌 Tạm thời ổn"
-                }
-              />
-
-              <SummaryRow
-                label="Năng lượng còn lại"
-                value={
-                  stats.energy <= 20
-                    ? "😴 Kiệt sức"
-                    : stats.energy <= 50
-                    ? "😵 Đuối dần"
-                    : "⚡ Vẫn chiến được"
-                }
-              />
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-50/90">
-              “Cuối cùng thì... tới Thứ Hai tiếp theo.”
-            </div>
-          </div>
-
-          {/* RIGHT */}
-          <div className="order-1 lg:order-2 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 sm:p-6 flex flex-col">
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-5 order-1">🏅 Achievements</h2>
- 
-            <div className="order-3 lg:order-2 space-y-3 flex-1 overflow-auto max-h-[400px] pr-1 mt-3 lg:mt-0">
-              {achievements.length > 0 ? (
-                achievements.map((id) => {
-                  const found = ACHIEVEMENTS.find((a) => a.id === id);
-                  if (!found) return null;
- 
-                  const rewardsText = found.rewards
-                    ? found.rewards
-                        .map((r) => {
-                          const name =
-                            r.stat === "salary"
-                              ? "Lương"
-                              : r.stat === "stress"
-                              ? "Stress"
-                              : "Energy";
-                          const val =
-                            r.stat === "salary"
-                              ? `${r.value > 0 ? "+" : ""}${(
-                                  r.value / 1000
-                                ).toFixed(0)}k`
-                              : `${r.value > 0 ? "+" : ""}${r.value}%`;
-                          return `${val} ${name}`;
-                        })
-                        .join(", ")
-                    : "";
- 
-                  return (
-                    <div
-                      key={id}
-                      className="
-                        rounded-2xl border border-emerald-400/20
-                        bg-emerald-500/10
-                        px-4 py-3
-                      "
-                    >
-                      <div className="font-bold flex items-center gap-1.5">
-                        <span className="text-lg">{found.emoji}</span>
-                        <span>{found.label}</span>
-                      </div>
-                      <p className="text-xs text-emerald-200/70 mt-1">
-                        {found.description}
-                      </p>
-                      {rewardsText && (
-                        <div className="text-[10px] font-extrabold text-emerald-300 bg-emerald-500/20 border border-emerald-500/20 px-2 py-0.5 rounded-full inline-block mt-2">
-                          🎁 Nhận: {rewardsText}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="rounded-2xl border border-dashed border-white/10 p-5 text-white/50 text-sm">
-                  Chưa unlock achievement nào 😭
-                </div>
-              )}
-            </div>
- 
-            <div className="order-2 lg:order-3 my-4 lg:my-0 lg:mt-6 space-y-4">
-              <ActionButton
-                title="🔄 Chơi lại nghề này"
-                onClick={() => startGame(profession!)}
-              />
- 
-              <ActionButton
-                title="💼 Đổi nghề"
-                onClick={() => {
-                  restartGame();
-                  goToScreen("profession");
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-
-
-interface SummaryRowProps {
-  label: string;
-  value: string;
-}
-
-function SummaryRow({ label, value }: SummaryRowProps) {
-  return (
-    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-4 py-4 gap-4">
-      <span className="text-white/60">{label}</span>
-
-      <span className="font-semibold text-right">{value}</span>
-    </div>
-  );
-}
-
-interface ActionButtonProps {
-  title: string;
-  onClick: () => void;
-}
-
-function ActionButton({ title, onClick }: ActionButtonProps) {
-  return (
-    <motion.button
-      whileHover={{ scale: 1.015 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      className="
-        w-full rounded-2xl border border-white/10
-        bg-white/5 px-5 py-4
-        font-semibold
-        hover:border-emerald-400/30
-        hover:bg-emerald-500/10
-        transition-all duration-200
-      "
-    >
-      {title}
-    </motion.button>
-  );
+      <div className="mt-5 flex flex-wrap gap-3">
+        <button
+          type="button"
+          className="btn-ink btn-stamp"
+          onClick={() => {
+            soundManager.playClick()
+            if (profession) startGame(profession, difficulty)
+          }}
+        >
+          Làm thêm tuần nữa
+        </button>
+        <button
+          type="button"
+          className="btn-ink"
+          onClick={() => {
+            soundManager.playClick()
+            restartGame()
+            goToScreen('profession')
+          }}
+        >
+          Đổi nghề
+        </button>
+      </div>
+    </ScreenPaper>
+  )
 }

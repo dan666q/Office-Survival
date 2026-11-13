@@ -237,6 +237,7 @@ export const COMMON_EVENTS: GameEvent[] = [
   },
   {
     id: 'com_internet_slow',
+    location: 'server',
     title: 'Mạng Wi-Fi văn phòng bỗng dưng rùa bò 🐢',
     description: 'Cáp quang biển lại đứt, hoặc ai đó đang kéo torrent. Mạng công ty lag đến mức load cái mail mất 5 phút. Bạn đang có báo cáo khẩn cần gửi.',
     priority: 'high',
@@ -414,6 +415,7 @@ export const COMMON_EVENTS: GameEvent[] = [
   },
   {
     id: 'com_ac_leak',
+    location: 'computer',
     title: 'Điều hòa văn phòng rỉ nước ngay trên đầu 💧',
     description: 'Mùa hè nắng nóng, cục lạnh điều hòa hoạt động quá công suất bắt đầu rỉ nước "tóc tóc" ngay sát chiếc máy tính đắt tiền và tập tài liệu của bạn.',
     priority: 'medium',

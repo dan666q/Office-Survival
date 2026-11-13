@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Spike 2D — Tòa nhà</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;700;800&family=Patrick+Hand&display=swap&subset=vietnamese" rel="stylesheet" />
+    <style>
+      :root {
+        --paper: #fbf7ee; --ink: #2a251e; --ink-soft: #6b6255; --stamp: #c8102e; --pen: #1f3a93; --note: #f6d55c; --night: #2b2620;
+      }
+      html, body { margin: 0; height: 100%; background: var(--night); overflow: hidden; font-family: "Be Vietnam Pro", system-ui, sans-serif; color: var(--ink); }
+      canvas { position: fixed; inset: 0; width: 100vw; height: 100dvh; image-rendering: pixelated; touch-action: none; }
+      .paper { background: var(--paper); box-shadow: 0 2px 3px rgb(60 45 25 / .15), 0 14px 28px -12px rgb(40 28 14 / .45); }
+      #hud { position: fixed; top: 10px; left: 10px; padding: 8px 12px; transform: rotate(-1deg); font-size: 13px; max-width: 290px; }
+      #hud b { font-weight: 800; }
+      #hud .hand { font-family: "Patrick Hand", cursive; color: var(--pen); font-size: 16px; line-height: 1.1; margin-top: 4px; }
+      #time { position: fixed; top: 10px; right: 10px; display: flex; gap: 4px; }
+      #time button { font: 700 12px "Be Vietnam Pro"; border: 2px solid var(--ink); background: var(--paper); padding: 4px 8px; border-radius: 5px; box-shadow: 2px 2px 0 var(--ink); cursor: pointer; }
+      #time button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+      #bubble { position: fixed; left: 0; top: 0; max-width: 230px; padding: 8px 12px; border: 2px solid var(--ink); background: var(--paper); box-shadow: 3px 3px 0 var(--ink); border-radius: 8px; font-size: 14px; line-height: 1.3; pointer-events: none; display: none; transform: translate(-50%, -100%); }
+      #bubble small { display: block; font-weight: 700; font-size: 12px; color: var(--stamp); }
+      #status { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%) rotate(-1deg); padding: 6px 12px; font-family: "Patrick Hand", cursive; font-size: 18px; display: none; }
+      @media (max-width: 600px) { #hud { font-size: 12px; max-width: 62vw; } #time { top: auto; bottom: 14px; right: 10px; } #status { bottom: 56px; } }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div id="hud" class="paper">
+      <b>Spike 2D · tòa nhà mặt cắt</b><br />
+      Chạm vào người/đồ vật để đi tới. Chạm sàn tầng khác để đổi tầng.
+      <div class="hand">A/D đi · W/S khi đứng ở thang máy · thử chạm Độ Mixi (có giấy note)</div>
+    </div>
+    <div id="time"></div>
+    <div id="bubble"></div>
+    <div id="status" class="paper"></div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
